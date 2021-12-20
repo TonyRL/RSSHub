@@ -20,6 +20,7 @@ jobs:
       - run: yarn
       - run: npm run jest
         env:
+          CACHE_TYPE: redis
           REDIS_URL: redis://localhost:${{ job.services.redis.ports[6379] }}/
       - run: npm run docs:build
 
