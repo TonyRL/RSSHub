@@ -2169,12 +2169,12 @@
     "@vuepress/types" "1.9.4"
     lodash.debounce "^4.0.8"
 
-"@vuepress/plugin-back-to-top@1.9.3":
-  version "1.9.3"
-  resolved "https://registry.yarnpkg.com/@vuepress/plugin-back-to-top/-/plugin-back-to-top-1.9.3.tgz#7d4e7a66dc74557a003c9cdbb9f785b99a60bb0e"
-  integrity sha512-gdwb5Dy+1k9M6fx+xKgygnWs99FjuzVBS/DmByhKzXpHsi3zKvYGAeiYmCfhdiwYbkqIOttFEF3+Osdpl7fZ6Q==
+"@vuepress/plugin-back-to-top@1.9.4":
+  version "1.9.4"
+  resolved "https://registry.yarnpkg.com/@vuepress/plugin-back-to-top/-/plugin-back-to-top-1.9.4.tgz#d51f9f15178c4837ef4fd67f34eeb3c329defdeb"
+  integrity sha512-qyLDJdBmXRKDnj/MPndZn2Hywz1mQQVfDK7eYCHhw/covGYcwpCmjXtSNg6UH7Oe6SA68CEiOTw1QzkvxUrbvg==
   dependencies:
-    "@vuepress/types" "1.9.3"
+    "@vuepress/types" "1.9.4"
     lodash.debounce "^4.0.8"
 
 "@vuepress/plugin-google-analytics@1.9.4":
