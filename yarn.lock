@@ -2169,12 +2169,12 @@
     "@vuepress/types" "1.9.4"
     lodash.debounce "^4.0.8"
 
-"@vuepress/plugin-back-to-top@1.9.4":
-  version "1.9.4"
-  resolved "https://registry.yarnpkg.com/@vuepress/plugin-back-to-top/-/plugin-back-to-top-1.9.4.tgz#d51f9f15178c4837ef4fd67f34eeb3c329defdeb"
-  integrity sha512-qyLDJdBmXRKDnj/MPndZn2Hywz1mQQVfDK7eYCHhw/covGYcwpCmjXtSNg6UH7Oe6SA68CEiOTw1QzkvxUrbvg==
+"@vuepress/plugin-back-to-top@1.9.5":
+  version "1.9.5"
+  resolved "https://registry.yarnpkg.com/@vuepress/plugin-back-to-top/-/plugin-back-to-top-1.9.5.tgz#61e2f5aa84f07306843db5e13f53a386aa89e443"
+  integrity sha512-zcESgBsH5EYQLUN+EtxDYKHyPmZXIgLEReaKU8ddRaMxzodMXW84WtCmsc0En/P9wkf4SOXZkmWllH53rZWrzQ==
   dependencies:
-    "@vuepress/types" "1.9.4"
+    "@vuepress/types" "1.9.5"
     lodash.debounce "^4.0.8"
 
 "@vuepress/plugin-google-analytics@1.9.4":
@@ -2256,19 +2256,19 @@
     vuepress-plugin-container "^2.0.2"
     vuepress-plugin-smooth-scroll "^0.0.3"
 
-"@vuepress/types@1.9.3":
-  version "1.9.3"
-  resolved "https://registry.yarnpkg.com/@vuepress/types/-/types-1.9.3.tgz#7d93829edff4832d75ae165f9d2c976f192b3e0a"
-  integrity sha512-tKQ2LQknaxdyEJv4iAifXmAd1BrbAoLPfgnFIqfQ5ypnZrJc+scVX9m730f+evw2BGzeSYyq/nQbaZpMyjzCDA==
+"@vuepress/types@1.9.4":
+  version "1.9.4"
+  resolved "https://registry.yarnpkg.com/@vuepress/types/-/types-1.9.4.tgz#e3380cff1a1e8f4f925181280c957c13383b7f10"
+  integrity sha512-I/dArssaOeYyPg9/OKyMm0jj+zNHm72Zj+bu7umfdg7gR0m1Ild9bwUn4Fs/XTZb4Kan/YIcWelxvvG9NGSTBQ==
   dependencies:
     "@types/markdown-it" "^10.0.0"
     "@types/webpack-dev-server" "^3"
     webpack-chain "^6.0.0"
 
-"@vuepress/types@1.9.4":
-  version "1.9.4"
-  resolved "https://registry.yarnpkg.com/@vuepress/types/-/types-1.9.4.tgz#e3380cff1a1e8f4f925181280c957c13383b7f10"
-  integrity sha512-I/dArssaOeYyPg9/OKyMm0jj+zNHm72Zj+bu7umfdg7gR0m1Ild9bwUn4Fs/XTZb4Kan/YIcWelxvvG9NGSTBQ==
+"@vuepress/types@1.9.5":
+  version "1.9.5"
+  resolved "https://registry.yarnpkg.com/@vuepress/types/-/types-1.9.5.tgz#9fe265fac3236cd5f9c01216553825461d5eca9b"
+  integrity sha512-fu1Wyi+cPFyn7nfxNH4MVvU5glYvRB0RMI7besq9kiI/KkZJPb2G1hITopECJOGk+6G/cOU/iSdUDUHH4GQLgA==
   dependencies:
     "@types/markdown-it" "^10.0.0"
     "@types/webpack-dev-server" "^3"
