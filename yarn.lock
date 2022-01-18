@@ -2434,15 +2434,6 @@
     vuepress-plugin-container "^2.0.2"
     vuepress-plugin-smooth-scroll "^0.0.3"
 
-"@vuepress/types@1.9.5":
-  version "1.9.5"
-  resolved "https://registry.yarnpkg.com/@vuepress/types/-/types-1.9.5.tgz#9fe265fac3236cd5f9c01216553825461d5eca9b"
-  integrity sha512-fu1Wyi+cPFyn7nfxNH4MVvU5glYvRB0RMI7besq9kiI/KkZJPb2G1hITopECJOGk+6G/cOU/iSdUDUHH4GQLgA==
-  dependencies:
-    "@types/markdown-it" "^10.0.0"
-    "@types/webpack-dev-server" "^3"
-    webpack-chain "^6.0.0"
-
 "@vuepress/types@1.9.6":
   version "1.9.6"
   resolved "https://registry.yarnpkg.com/@vuepress/types/-/types-1.9.6.tgz#72f27ade625a6504fa9fb14c90fe59231e89ad5f"
@@ -11305,10 +11296,10 @@ pupa@^2.0.1, pupa@^2.1.1:
   dependencies:
     escape-goat "^2.0.0"
 
-puppeteer@13.1.0:
-  version "13.1.0"
-  resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-13.1.0.tgz#f3a997866c05f28854274dda7752d76afe1bfc5a"
-  integrity sha512-6rf16giGGLFMh1VrB89zwaTeA90E+tbpq5o1R1Z+a1z9Hrhrj1MlT8Pe0kaecUV3kjpLRaukCRVXw1dp/gbYEw==
+puppeteer@13.1.1:
+  version "13.1.1"
+  resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-13.1.1.tgz#63771eb744202aa91918c49123f846e1747da121"
+  integrity sha512-GwdFy1JQ43Hhxj6MraXme+XfCX2CKe18MuwToXTMEAk0txg6vUEgwqBnzErTTqDVZ7sWYrDtDaRCfD2y7ZwgGw==
   dependencies:
     debug "4.3.2"
     devtools-protocol "0.0.948846"
