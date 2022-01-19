@@ -1,11 +1,9 @@
-name: test
-
-on: [push, pull_request]
+name: Automatic merge Dependabot
+on: pull_request
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     services:
       redis:
         image: redis
@@ -13,16 +11,11 @@ jobs:
           - 6379/tcp
         options: --entrypoint redis-server
 
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: ['14', '16']
-
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '16'
           cache: 'yarn'
       - run: yarn
       - run: npm run jest
@@ -30,7 +23,17 @@ jobs:
           CACHE_TYPE: redis
           REDIS_URL: redis://localhost:${{ job.services.redis.ports[6379] }}/
       - run: npm run docs:build
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2.1.0
+
+  automerge:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write
+      contents: write
+
+    steps:
+      - uses: fastify/github-action-merge-dependabot@v3
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          target: minor
