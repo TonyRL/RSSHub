@@ -68,7 +68,7 @@
     "remark-preset-prettier": "0.5.1",
     "staged-git-files": "1.2.0",
     "string-width": "4.2.3",
-    "supertest": "6.2.1",
+    "supertest": "6.2.2",
     "tosource": "2.0.0-alpha.3",
     "vuepress": "1.9.7",
     "yorkie": "2.0.0"
