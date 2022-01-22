@@ -316,6 +316,9 @@
     "/nju/zbb/:type": [
         "ret-1"
     ],
+    "/nodejs/blog/:language?": [
+        "nczitzk"
+    ],
     "/nsfc/news/:type?": [
         "Derekmini"
     ],
@@ -408,6 +411,15 @@
     ],
     "/wechat/feeddd/:id": [
         "TonyRL"
+    ],
+    "/wenku8/:category?": [
+        "Fatpandac"
+    ],
+    "/wenku8/volume/:id": [
+        "huangliangshusheng"
+    ],
+    "/wenku8/chapter/:id": [
+        "zsakvo"
     ],
     "/wsyu/news/:type?": [
         "Derekmini"
@@ -1178,8 +1190,6 @@
     "/woshipm/user_article/:id": [],
     "/woshipm/latest": [],
     "/gaoqing/latest": [],
-    "/wenku8/chapter/:id": [],
-    "/wenku8/volume/:id": [],
     "/whalegogo/home": [],
     "/whalegogo/portal/:type_id/:tagid?": [],
     "/aisixiang/column/:id": [],
