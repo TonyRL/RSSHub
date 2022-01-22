@@ -50,11 +50,23 @@
     "/ccac/news/:type/:lang?": [
         "linbuxiao"
     ],
+    "/cde/:channel/:category": [
+        "Fatpandac"
+    ],
     "/cebbank/quotation/all": [
         "linbuxiao"
     ],
     "/cebbank/quotation/history/:type": [
         "linbuxiao"
+    ],
+    "/cnbeta/": [
+        "nczitzk"
+    ],
+    "/cnbeta/category/:id": [
+        "nczitzk"
+    ],
+    "/cnbeta/topics/:id": [
+        "nczitzk"
     ],
     "/csc/notice/:type?": [
         "Derekmini"
@@ -108,6 +120,15 @@
     ],
     "/gf-cn/news/:category?": [
         "nczitzk"
+    ],
+    "/gov/shanghai/rsj/ksxm": [
+        "Fatpandac"
+    ],
+    "/gov/guangdong/tqyb/tfxtq": [
+        "Fatpandac"
+    ],
+    "/gov/guangdong/tqyb/sncsyjxh": [
+        "Fatpandac"
     ],
     "/hbr/topic/:topic?/:type?": [
         "nczitzk"
@@ -174,6 +195,12 @@
     "/ithome/zt/:id": [
         "nczitzk"
     ],
+    "/jandan/:category?": [
+        "nczitzk"
+    ],
+    "/jandan/": [
+        "nczitzk"
+    ],
     "/jasa/latest": [
         "Derekmini",
         "auto-bot-ty"
@@ -211,6 +238,9 @@
     "/jump/discount/:platform/:filter?/:countries?": [
         "zytomorrow"
     ],
+    "/learnku/:community/:category?": [
+        "kayw-geek"
+    ],
     "/lfsyd/home": [
         "auto-bot-ty"
     ],
@@ -247,6 +277,12 @@
     "/mygopen/:label?": [
         "nczitzk"
     ],
+    "/neea/jlpt": [
+        "nczitzk"
+    ],
+    "/neea/:type?": [
+        "SunShinenny"
+    ],
     "/netease/renjian/:category?": [
         "nczitzk"
     ],
@@ -261,6 +297,24 @@
     ],
     "/ngocn2/:category?": [
         "nczitzk"
+    ],
+    "/nju/jw/:type": [
+        "ret-1"
+    ],
+    "/nju/gra": [
+        "ret-1"
+    ],
+    "/nju/rczp/:type": [
+        "ret-1"
+    ],
+    "/nju/scit/:type": [
+        "ret-1"
+    ],
+    "/nju/zcc": [
+        "ret-1"
+    ],
+    "/nju/zbb/:type": [
+        "ret-1"
     ],
     "/nsfc/news/:type?": [
         "Derekmini"
@@ -503,8 +557,6 @@
     "/douban/channel/:id/subject/:nav": [],
     "/douban/celebrity/:id/:sort?": [],
     "/plainlaw/archives": [],
-    "/jandan/article": [],
-    "/jandan/:sub_model": [],
     "/dapenti/tugua": [],
     "/dapenti/subject/:id": [],
     "/dockone/weekly": [],
@@ -1321,8 +1373,6 @@
     "/maoyan/hot": [],
     "/maoyan/upcoming": [],
     "/maoyan/hotComplete/:orderby?/:ascOrDesc?/:top?": [],
-    "/cnbeta": [],
-    "/cnbeta/topic/:topic_id": [],
     "/gov/veterans/:type": [],
     "/gov/veterans/hebei/:type": [],
     "/dilbert/strip": [],
@@ -1706,8 +1756,6 @@
     "/yzu/yjszs/:type": [],
     "/krankenkassen": [],
     "/guat/news/:type?": [],
-    "/learnku/:community/:category?": [],
-    "/neea/:type": [],
     "/cauyjs": [],
     "/sustyjs": [],
     "/sustech/newshub-zh": [],
