@@ -597,6 +597,18 @@ Tag
 
 <Route author="xyqfer" example="/itjuzi/merge" path="/itjuzi/merge"/>
 
+## KBS
+
+### Today
+
+<Route author="nczitzk" example="/kbs/today" path="/kbs/today/:language?" :paramsDesc="['语言，见下表，默认为 e 即 English']">
+
+| 한국어 | عربي | 中国语 | English | Français | Deutsch | Bahasa Indonesia | 日本語 | Русский | Español | Tiếng Việt |
+| ------ | ---- | ------ | ------- | -------- | ------- | ---------------- | ------ | ------- | ------- | ---------- |
+| k      | a    | c      | e       | f        | g       | i                | j      | r       | s       | v          |
+
+</Route>
+
 ## Kotaku
 
 ### Story
@@ -626,6 +638,20 @@ Tag
 ### Following diary
 
 <Route author="loganrockmore" example="/letterboxd/user/followingdiary/demiadejuyigbe" path="/letterboxd/user/followingdiary/:username" :paramsDesc="['username']" />
+
+## Line
+
+### Today
+
+<Route author="nczitzk" example="/line/today" path="/line/today/:edition?/:tab?" :paramsDesc="['版本，见下表，默认为 Taiwan', '标签, 可在对应标签页的地址中找到, 默认为 top']">
+
+Edition
+
+| Taiwan | Thailand | Indonesia | Hong Kong |
+| ------ | -------- | --------- | --------- |
+| tw     | th       | id        | hk        |
+
+</Route>
 
 ## MakeUseOf
 
@@ -2472,6 +2498,18 @@ column 为 third 时可选的 category:
 
 <Route author="Jeason0228" example="/sspai/tag/apple" path="/sspai/tag/:keyword" :paramsDesc="['关键词']" radar="1"/>
 
+## 深焦
+
+### 分类
+
+<Route author="nczitzk" example="/filmdeepfocus" path="/filmdeepfocus/:category?" :paramsDesc="['分类，见下表，默认为影评']">
+
+| 影评 | 影人       | 特别策划   | 专访       | 书评       |
+| ---- | ---------- | ---------- | ---------- | ---------- |
+| page | new-page-3 | new-page-2 | new-page-4 | new-page-1 |
+
+</Route>
+
 ## 深圳新闻网
 
 ### 深圳市政府新闻发布厅
@@ -2535,6 +2573,20 @@ column 为 third 时可选的 category:
 | 推荐 | 时事日报 | 时事专题 | 备考技巧 | 招考信息 | 时事月报 | 重要会议 | 领导讲话 | 时事周刊 | 官网公告 | 时事评论 |
 | ---- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
 | 0    | 3        | 6        | 13       | 12       | 4        | 10       | 11       | 5        | 8        | 7        |
+
+</Route>
+
+## 识媒体
+
+### 频道
+
+<Route author="Fatpandac" example="/knowmedia/jqgx" path="/knowmedia/:category?" :paramsDesc="['分类，见下表，默认为近期更新']">
+
+分类
+
+| 近期更新 | 精选专栏 | 活动讯息 | 影音专区 |
+| :------: | :------: | :------: | :------: |
+|   jqgx   |   jxzl   |   hdxx   |   yyzq   |
 
 </Route>
 
