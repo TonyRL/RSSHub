@@ -127,6 +127,30 @@ pageClass: routes
 
 <Route author="y2361547758" example="/gov/nppa/318/45948" path="/gov/nppa/:channel/:content" :paramsDesc="['栏目名id', '文章id']" radar="1" rssbud="1"/>
 
+## 国家药品审评网站
+
+### 首页
+
+<Route author="Fatpandac" example="/cde/news/gzdt" path="/cde/:channel/:category" :paramsDesc="['频道', '类别']">
+
+-   频道
+
+| 新闻中心 | 政策法规 |
+| :------: | :------: |
+|   news   |  policy  |
+
+-   类别
+
+| 新闻中心 | 政务新闻 | 要闻导读 | 图片新闻 | 工作动态 |
+| :------: | :------: | :------: | :------: | :------: |
+|          |   zwxw   |   ywdd   |   tpxw   |   gzdt   |
+
+| 政策法规 | 法律法规 | 中心规章 |
+| :------: | :------: | :------: |
+|          |   flfg   |   zxgz   |
+
+</Route>
+
 ## 哈尔滨市科技局
 
 ### 政务公开
@@ -211,6 +235,12 @@ pageClass: routes
 ### 記者会見
 
 <Route author="sgqy" example="/go.jp/mofa" path="/go.jp/mofa"/>
+
+## 上海市职业能力考试院
+
+### 考试项目
+
+<Route author="Fatpandac" example="/gov/shanghai/rsj/ksxm" path="/gov/shanghai/rsj/ksxm"/>
 
 ## 世界贸易组织
 
