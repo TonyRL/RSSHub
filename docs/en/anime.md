@@ -10,6 +10,18 @@ pageClass: routes
 
 <RouteEn author="EsuRt" example="/hanime/video" path="/hanime/video"/>
 
+## iwara
+
+### User
+
+<RouteEn author="Fatpandac" example="/iwara/users/kelpie/video" path="/iwara/users/:username/:type?" :paramsDesc="['username, can find in userpage', 'video by default']" radar="1" rssbud="1">
+
+| type | video | image |
+| :--: | :---: | :---: |
+|      | video | image |
+
+</RouteEn>
+
 ## Kemono
 
 ### Posts

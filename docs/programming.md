@@ -10,6 +10,12 @@ pageClass: routes
 
 <Route author="nczitzk" example="/acm/amturingaward" path="/acm/amturingaward"/>
 
+## ACM-ECNU 比赛
+
+### 华东师范大学 ACM OJ 比赛列表
+
+<Route author="a180285" example="/acm-ecnu/contest/public" path="/acm-ecnu/contest/:category?" radar="1" rssbud="1" :paramsDesc="['分类可选，不写代表全部，public 代表仅订阅公开比赛']" />
+
 ## AI 研习社
 
 ### 首页
@@ -23,6 +29,56 @@ pageClass: routes
 <Route author="ImSingee" example="/algocasts" path="/algocasts" radar="1" rssbud="1"></Route>
 
 > AlgoCasts 需要付费订阅，RSS 仅做更新提醒，不含付费内容.
+
+## AtCoder
+
+### Present Contests
+
+<Route author="nczitzk" example="/atcoder/contest/en/upcoming" path="/atcoder/contest/:language?/:status?" :paramsDesc="['语言，可选 `jp` 即日语 或 `en` 即英语，默认为英语', '状态，见下表，默认为 Recent Contests']">
+
+状态
+
+| Active Contests | Upcoming Contests | Recent Contests |
+| --------------- | ----------------- | --------------- |
+| active          | upcoming          | recent          |
+
+</Route>
+
+### Contests Archive
+
+<Route author="nczitzk" example="/atcoder/contest" path="/atcoder/contest/:language?/:rated?/:category?/:keyword?" :paramsDesc="['语言，可选 `jp` 即日语 或 `en` 即英语，默认为英语', 'Rated 对象，见下表，默认为全部', '分类，见下表，默认为全部', '关键字，默认为空']">
+
+Rated 对象
+
+| ABC Class (Rated for ~1999) | ARC Class (Rated for ~2799) | AGC Class (Rated for ~9999) |
+| --------------------------- | --------------------------- | --------------------------- |
+| 1                           | 2                           | 3                           |
+
+分类
+
+| All | AtCoder Typical Contest | PAST Archive | Unofficial(unrated) |
+| --- | ----------------------- | ------------ | ------------------- |
+| 0   | 6                       | 50           | 101                 |
+
+| JOI Archive | Sponsored Tournament | Sponsored Parallel(rated) |
+| ----------- | -------------------- | ------------------------- |
+| 200         | 1000                 | 1001                      |
+
+| Sponsored Parallel(unrated) | Optimization Contest |
+| --------------------------- | -------------------- |
+| 1002                        | 1200                 |
+
+</Route>
+
+### Posts
+
+<Route author="nczitzk" example="/atcoder/post" path="/atcoder/post/:language?/:keyword?" :paramsDesc="['语言，可选 `jp` 即日语 或 `en` 即英语，默认为英语', '关键字，默认为空']"/>
+
+## Codeforces
+
+#### 最新比赛
+
+<Route author="Fatpandac" example="/codeforces/contests" path="/codeforces/contests"/>
 
 ## cve.mitre.org
 
@@ -190,6 +246,10 @@ GitHub 官方也提供了一些 RSS:
 ### 仓库 Contirbutors
 
 <Route author="zoenglinghou" example="/github/contributors/DIYgod/RSSHub" path="/github/contributors/:user/:repo/:order?/:anon?" :paramsDesc="['用户名', '仓库名', 'Commit 数量排序顺序，desc和asc（默认desc降序）', '是否包括匿名用户，默认不包含，任意值包含匿名用户']" radar="1" rssbud="1"/>
+
+### Issues / Pull Requests 评论
+
+<Route author="TonyRL" example="/github/comments/DIYgod/RSSHub/issues/8116" path="/github/comments/:user/:repo/:type/:number" :paramsDesc="['用户名', '仓库', '类型，`issues`或`pull`', '编号']"/>
 
 ## GitLab
 
@@ -652,6 +712,20 @@ GitHub 官方也提供了一些 RSS:
 ### 职位招聘
 
 <Route author="hoilc" example="/lagou/jobs/JavaScript/上海" path="/lagou/jobs/:position/:city" :paramsDesc="['职位名，可以参考[拉勾网首页](https://www.lagou.com)的职位列表', '城市名，请参考[拉勾网支持的全部城市](https://www.lagou.com/jobs/allCity.html)']" anticrawler="1"/>
+
+## 蓝桥云课
+
+### 最新发布的课程
+
+<Route author="huhuhang" example="/lanqiao/courses/全部" path="/lanqiao/courses/:tag"  :paramsDesc="['课程标签 tag 可在该页面找到：https://www.lanqiao.cn/courses/']" radar="1" rssbud="1"/>
+
+### 作者发布的课程
+
+<Route author="huhuhang" example="/lanqiao/author/1701267" path="/lanqiao/author/:uid"  :paramsDesc="['作者 uid 可在作者主页 URL 中找到']" radar="1" rssbud="1"/>
+
+### 社区最新技术问答
+
+<Route author="huhuhang" example="/questions/2" path="/lanqiao/questions/:id" :paramsDesc="['topic_id 主题 id 可在社区板块 URL 中找到']" radar="1" rssbud="1"/>
 
 ## 洛谷
 
