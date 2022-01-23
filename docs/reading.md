@@ -109,7 +109,7 @@ pageClass: routes
 
 ### 最新章节
 
-<Route author="JeasonLau" example="/axdzs/191/191976" path="/axdzs/:id1/:id2" :paramsDesc="['小说网站链接倒数第二部分的数字, 可在对应小说页 URL 中找到', '小说网站链接最后的数字, 可在对应小说页 URL 中找到']"  />
+<Route author="JeasonLau Maecenas" example="/axdzs/诡秘之主" path="/axdzs/:novel" :paramsDesc="['小说的中文名, 可在对应小说页 URL 中找到']"  />
 
 ## 笔趣阁
 
@@ -312,6 +312,28 @@ count 的取值范围为 1-12，为防止请求次数过多，推荐设置为 5 
 ### 限时免费下期预告
 
 <Route author="LogicJake" example="/qidian/free-next" path="/qidian/free-next/:type?" :paramsDesc="['默认不填为起点中文网，填 mm 为起点女生网']"/>
+
+## 起点图
+
+### 首订
+
+<Route author="nczitzk" example="/qidiantu/shouding" path="/qidiantu/shouding"/>
+
+### 榜单
+
+<Route author="nczitzk" example="/qidiantu" path="/qidiantu/:category?/:type?/:is_history?" :paramsDesc="['分类', '类型', '是否查看历史榜单，填写 true/yes 表示是，默认否']">
+
+::: tip 提示
+
+参数 **是否查看历史榜单** 设置为 `true` `yes` `t` `y` 等值后，RSS 会返回历史榜单。
+
+如 [`/qidiantu/1/1/t`](https://rsshub.app/qidiantu/1/1/t) 将会返回 [起点首页 - 封推 的历史推荐记录](https://www.qidiantu.com/bang/1/1/) 的结果。
+
+而 [`/qidiantu/1/1`](https://rsshub.app/qidiantu/1/1) 将会返回最新一期 [收藏增长 (起点首页 - 封推)](https://www.qidiantu.com/bang/1/1/2021-12-14) 的结果（编写文档时最新一期为 2021-12-14）。
+
+:::
+
+</Route>
 
 ## 青空文庫
 

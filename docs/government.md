@@ -16,6 +16,24 @@ pageClass: routes
 
 </Route>
 
+## 澳门卫生局
+
+### 最新消息
+
+<Route author="Fatpandac" exmaple="/ssm/news" path="/ssm/news"/>
+
+## 北京市科学技术委员会、中关村科技园区管理委员会
+
+### 频道
+
+<Route author="Fatpandac" example="/kwbeijing/col736" path="/kwbeijing/:channel" :paramsDesc="['频道']">
+
+频道参数可在官网获取，如：
+
+`http://kw.beijing.gov.cn/col/col736/index.html` 对应 `/kwbeijing/col736`
+
+</Route>
+
 ## 北京市卫生健康委员会
 
 ### 新闻中心
@@ -87,6 +105,26 @@ pageClass: routes
 | 通知公告 | 政府采购 | 资金信息 | 重大项目 |
 | :------: | :------: | :------: | :------: |
 |   tzgg   |   zfcg   |   zjxx   |   zdxm   |
+
+</Route>
+
+### 深圳市委组织部
+
+<Route author="zlasd" example="/gov/shenzhen/zzb/tzgg" path="/gov/shenzhen/zzb/:caty/:page?" :paramsDesc="['信息类别', '页码']">
+
+| 通知公告 | 任前公示 | 政策法规 | 工作动态 | 部门预算决算公开 | 业务表格下载 |
+| :------: | :------: | :------: | :------: | :--------------: | :----------: |
+|   tzgg   |   rqgs   |   zcfg   |   gzdt   |       xcbd       |     bgxz     |
+
+</Route>
+
+### 深圳市考试院
+
+<Route author="zlasd" example="/gov/shenzhen/hrss/szksy/bmxx/2" path="/gov/shenzhen/hrss/szksy/:caty/:page?" :paramsDesc="['信息类别', '页码']">
+
+| 通知公告 | 报名信息 | 成绩信息 | 合格标准 | 合格人员公示 | 证书发放信息 |
+| :------: | :------: | :------: | :------: | :----------: | :----------: |
+|   tzgg   |   bmxx   |   cjxx   |   hgbz   |    hgrygs    |     zsff     |
 
 </Route>
 
@@ -264,6 +302,18 @@ pageClass: routes
 
 <Route author="EsuRt" example="/gov/suzhou/doc" path="/gov/suzhou/doc"/>
 
+## 台湾行政院消费者保护会
+
+### 消费资讯
+
+<Route author="Fatpandac" example="/cpcey/xwg" path="/cpcey/:type?" :paramsDesc="['默认为 xwg']">
+
+| 新闻稿 | 消费资讯 |
+| :----: | :------: |
+|   xwg  |   xfzx   |
+
+</Route>
+
 ## 台灣衛生福利部
 
 ### 即時新聞澄清
@@ -331,6 +381,18 @@ pageClass: routes
 | English | 中文简体 | 中文繁體 |
 | ------- | -------- | -------- |
 | english | chs      | tc_chi   |
+
+</Route>
+
+## 浙江省土地使用权网上交易系统
+
+### 公告信息
+
+<Route author="Fatpandac" example="/zjgtjy/all" path="zjgtjy/:type" :paramsDesc="['分类名']">
+
+| 全部公告 | 挂牌公告 | 拍卖公告 | 补充公告 |
+| :------: | :------: | :------: | :------: |
+|    all   |   gpgg   |   pmgg   |   bcgg   |
 
 </Route>
 

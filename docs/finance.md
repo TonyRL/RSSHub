@@ -38,6 +38,20 @@ pageClass: routes
 | -------- | -------- | -------- | -------- | -------- | -------- | -------- | ---------- |
 | 1        | 2        | 3        | 4        | 5        | 6        | 7        | 8          |
 
+## 巴伦周刊中文版
+
+### 栏目
+
+<Route author="nczitzk" example="/barronschina" path="/barronschina/:id?" :paramsDesc="['栏目 id，默认为快讯']">
+
+::: tip 提示
+
+栏目 id 留空则返回快讯，在对应页地址栏 `columnId=` 后可以看到。
+
+:::
+
+</Route>
+
 ## 北京证券交易所
 
 ### 栏目
@@ -107,6 +121,18 @@ pageClass: routes
 ### 搜索关键字
 
 <Route author="nczitzk" example="/gelonghui/keyword/早报" path="/gelonghui/keyword/:keyword" :paramsDesc="['搜索关键字']"/>
+
+## 国家金融与发展实验室
+
+### 研究
+
+<Route author="Fatpandac" example="/nifd/research/3333d2af-91d6-429b-be83-28b92f31b6d7" path="/nifd/research/:categoryGuid?" :paramsDesc="['资讯类型，默认为周报']">
+
+资讯类型可以从网址中获取，如：
+
+`http://www.nifd.cn/Research?categoryGuid=7a6a826d-b525-42aa-b550-4236e524227f` 对应 `/nifd/research/7a6a826d-b525-42aa-b550-4236e524227f`
+
+</Route>
 
 ## 金十数据
 
@@ -246,6 +272,12 @@ pageClass: routes
 ### 股票评论
 
 <Route author="zytomorrow" example="/xueqiu/stock_comments/SZ002626" path="/xueqiu/stock_comments/:id/:titleLength?" :paramsDesc="['股票代码（需要带上交易所）', '标题长度']"/>
+
+## 有知有行
+
+### 有知文章
+
+<Route author="broven" example="/youzhiyouxing/materials" path="/youzhiyouxing/materials" />
 
 ## 证券时报网
 

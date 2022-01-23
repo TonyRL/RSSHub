@@ -10,6 +10,63 @@ pageClass: routes
 
 <Route author="nczitzk" example="/acm/amturingaward" path="/acm/amturingaward"/>
 
+
+## ACM-ECNU
+
+### ECNU ACM Online-Judge contests list
+
+<RouteEn author="a180285" example="/acm-ecnu/contest/public" path="/acm-ecnu/contest/:category?" radar="1" rssbud="1" :paramsDesc="['category is optional, default is all, use `public` for public only contests']" />
+
+## AtCoder
+
+### Present Contests
+
+<RouteEn author="nczitzk" example="/atcoder/contest/en/upcoming" path="/atcoder/contest/:language?/:status?" :paramsDesc="['Language, `jp` as Japanese or `en` as English, English by default', 'Status, see below, Recent Contests by default']">
+
+Status
+
+| Active Contests | Upcoming Contests | Recent Contests |
+| --------------- | ----------------- | --------------- |
+| active          | upcoming          | recent          |
+
+</RouteEn>
+
+### Contests Archive
+
+<RouteEn author="nczitzk" example="/atcoder/contest" path="/atcoder/contest/:language?/:rated?/:category?/:keyword?" :paramsDesc="['Language, `jp` as Japanese or `en` as English, English by default', 'Rated Range, see below, all by default', 'Category, see below, all by default', 'Keyword']">
+
+Rated Range
+
+| ABC Class (Rated for ~1999) | ARC Class (Rated for ~2799) | AGC Class (Rated for ~9999) |
+| --------------------------- | --------------------------- | --------------------------- |
+| 1                           | 2                           | 3                           |
+
+Category
+
+| All | AtCoder Typical Contest | PAST Archive | Unofficial(unrated) |
+| --- | ----------------------- | ------------ | ------------------- |
+| 0   | 6                       | 50           | 101                 |
+
+| JOI Archive | Sponsored Tournament | Sponsored Parallel(rated) |
+| ----------- | -------------------- | ------------------------- |
+| 200         | 1000                 | 1001                      |
+
+| Sponsored Parallel(unrated) | Optimization Contest |
+| --------------------------- | -------------------- |
+| 1002                        | 1200                 |
+
+</RouteEn>
+
+### Posts
+
+<RouteEn author="nczitzk" example="/atcoder/post" path="/atcoder/post/:language?/:keyword?" :paramsDesc="['Language, `jp` as Japanese or `en` as English, English by default', 'Keyword']"/>
+
+## Codeforces
+
+### Latest contests
+
+<RouteEn author="Fatpandac" example="/codeforces/contests" path="/codeforces/contests"/>
+
 ## cve.mitre.org
 
 ### Search Result
@@ -112,6 +169,10 @@ For instance, the `/github/topics/framework/l=php&o=desc&s=stars` route will gen
 ### Repo Contributors
 
 <RouteEn author="zoenglinghou" example="/github/contributors/DIYgod/RSSHub" path="/github/contributors/:user/:repo/:order?/:anon?" :paramsDesc="['User name','Repo name','Sort order by commit numbers, desc and asc (descending by default)','Show anonymous users. Defaults to no, use any values for yes.']" radar="1" rssbud="1"/>
+
+### Issues / Pull Requests comments
+
+<RouteEn author="TonyRL" example="/github/comments/DIYgod/RSSHub/issues/8116" path="/github/comments/:user/:repo/:type/:number" :paramsDesc="['User / Org name', 'Repo name', 'Type, `issues` or `pull`', 'Number']"/>
 
 ## GitLab
 

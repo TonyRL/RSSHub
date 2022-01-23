@@ -429,6 +429,12 @@ Edition
 
 <RouteEn author="Cerebrater xosdy" example="/matters/author/az" path="/matters/author/:uid" :paramsDesc="['Author id, can be found at author\'s homepage url']" radar="1" rssbud="1"/>
 
+## Mirror
+
+### User
+
+<RouteEn author="fifteen42 rde9" example="/mirror/tingfei.eth" path="/mirror/:id" :paramsDesc="['user id']" />
+
 ## National Association of Colleges and Employers
 
 ### Blog
@@ -626,7 +632,7 @@ Language
 | ------- | ------- | ---- | -------- | ------- | ------- | --------- |
 | en      | ar      | zh   | fr       | ru      | es      | pt        |
 
-</Route>
+</RouteEn>
 
 ### Newsroom
 
@@ -642,4 +648,4 @@ Language
 | ------- | ------- | ---- | -------- | ------- | ------- | --------- |
 | en      | ar      | zh   | fr       | ru      | es      | pt        |
 
-</Route>
+</RouteEn>
