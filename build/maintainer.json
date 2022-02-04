@@ -47,6 +47,9 @@
     "/ajmide/:id": [
         "Fatpandac"
     ],
+    "/app-center/release/:user/:app/:distribution_group": [
+        "Rongronggg9"
+    ],
     "/appledaily/:channel?": [
         "Fatpandac"
     ],
@@ -410,8 +413,9 @@
     "/guduodata/daily": [
         "Gem1ni"
     ],
-    "/hackernews/:section?/:type?": [
-        "nczitzk"
+    "/hackernews/:section?/:type?/:user?": [
+        "nczitzk",
+        "xie-dongping"
     ],
     "/hbr/topic/:topic?/:type?": [
         "nczitzk"
@@ -663,6 +667,9 @@
     "/nifd/research/:categoryGuid?": [
         "Fatpandac"
     ],
+    "/nikkei-asia/nikkei-asia": [
+        "rainrdx"
+    ],
     "/nikkei-cn/:language?/:category?/:type?": [
         "nczitzk"
     ],
@@ -791,6 +798,21 @@
         "sgqy",
         "hang333",
         "TonyRL"
+    ],
+    "/spotify/artist/:id": [
+        "outloudvi"
+    ],
+    "/spotify/playlist/:id": [
+        "outloudvi"
+    ],
+    "/spotify/saved/:limit?": [
+        "outloudvi"
+    ],
+    "/spotify/top/tracks": [
+        "outloudvi"
+    ],
+    "/spotify/top/artists": [
+        "outloudvi"
     ],
     "/ssm/news": [
         "Fatpandac"
