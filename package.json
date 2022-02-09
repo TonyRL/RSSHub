@@ -122,7 +122,7 @@
     "showdown": "1.9.1",
     "simplecc-wasm": "0.1.4",
     "socks-proxy-agent": "6.1.1",
-    "string-similarity": "4.0.3",
+    "string-similarity": "4.0.4",
     "tiny-async-pool": "1.2.0",
     "tough-cookie": "4.0.0",
     "tunnel": "0.0.6",
