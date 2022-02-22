@@ -27,6 +27,8 @@ RUN if [ "$PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" = 0 ]; then \
 
 RUN yarn --frozen-lockfile --network-timeout 1000000
 COPY . /app
+RUN bash scripts/docker/install-deps.sh
+COPY . /app
 RUN node scripts/docker/minify-docker.js
 
 
