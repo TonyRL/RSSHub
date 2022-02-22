@@ -1,4 +1,4 @@
-FROM node:14-buster-slim as dep-builder
+FROM node:lts-bullseye-slim as dep-builder
 
 LABEL MAINTAINER https://github.com/DIYgod/RSSHub/
 
@@ -32,7 +32,7 @@ COPY . /app
 RUN node scripts/docker/minify-docker.js
 
 
-FROM node:14-slim as app
+FROM node:lts-bullseye-slim as app
 
 ENV NODE_ENV production
 ENV TZ Asia/Shanghai
