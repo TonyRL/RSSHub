@@ -46,7 +46,7 @@ Language
 
 | English | 中文简体 | 中文繁體 |
 | ------- | -------- | -------- |
-| english | chs | tc_chi |
+| english | chs      | tc_chi   |
 
 </RouteEn>
 
@@ -63,9 +63,9 @@ Language
 <RouteEn author="linbuxiao" example="/ccac/news/all" path="/ccac/news/:type/:lang?" :paramsDesc="['Category', 'Language, default to `sc`. Supprot `en`(English), `sc`(Simplified Chinese), `tc`(Traditional Chinese) and `pt`(Portuguese)']">
 Category
 
-| All  | Detected Cases | Investigation Reports or Recommendations  | Annual Reports | CCAC's Updates |
-| ---- | -------------- | ----------------------------------------- | -------------- | -------------- |
-| all  | case           | Persuasion                                | AnnualReport   | PCANews        |
+| All | Detected Cases | Investigation Reports or Recommendations | Annual Reports | CCAC's Updates |
+| --- | -------------- | ---------------------------------------- | -------------- | -------------- |
+| all | case           | Persuasion                               | AnnualReport   | PCANews        |
 
 </RouteEn>
 
@@ -102,8 +102,8 @@ Fill in the English expression for the month in the Month field, eg `December` f
 <RouteEn author="nczitzk" example="/whitehouse/briefing-room" path="/whitehouse/briefing-room/:category?" :paramsDesc="['Category, see below, all by default']">
 
 | All | Blog | Legislation | Presidential Actions | Press Briefings | Speeches and Remarks | Statements and Releases |
-| - | - | - | - | - | - | - |
-| | blog | legislation | presidential-actions | press-briefings | speeches-remarks | statements-releases |
+| --- | ---- | ----------- | -------------------- | --------------- | -------------------- | ----------------------- |
+|     | blog | legislation | presidential-actions | press-briefings | speeches-remarks     | statements-releases     |
 
 </RouteEn>
 

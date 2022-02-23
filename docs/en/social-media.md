@@ -42,8 +42,8 @@ pageClass: routes
 
 Type
 
-| artwork | crafts | music | writing | 
-| ---- | ---- | ---- | ---- | 
+| artwork | crafts | music | writing |
+| ------- | ------ | ----- | ------- |
 | artwork | crafts | music | writing |
 
 </RouteEn>
@@ -72,7 +72,7 @@ Type
 
 <RouteEn author="TigerCubDen" example="/furaffinity/watchers/malikshadowclaw" path="/furaffinity/watchers/:username" :paramsDesc="['Username, can find in userpage']" radar="1"/>
 
-### User's Commission Information 
+### User's Commission Information
 
 <RouteEn author="TigerCubDen" example="/furaffinity/commissions/flashlioness" path="/furaffinity/commissions/:username" :paramsDesc="['Username, can find in userpage']" radar="1"/>
 
@@ -150,8 +150,8 @@ If you don't want to setup credentials, use Picuki.
 
 Official user RSS:
 
-- RSS: `https://**:instance**/users/**:username**.rss` ([Example](https://pawoo.net/users/pawoo_support.rss))
-- Atom: ~~`https://**:instance**/users/**:username**.atom`~~ (Only for pawoo.net, [example](https://pawoo.net/users/pawoo_support.atom))
+-   RSS: `https://**:instance**/users/**:username**.rss` ([Example](https://pawoo.net/users/pawoo_support.rss))
+-   Atom: ~~`https://**:instance**/users/**:username**.atom`~~ (Only for pawoo.net, [example](https://pawoo.net/users/pawoo_support.atom))
 
 These feed do not include boosts (a.k.a. reblogs). RSSHub provides a feed for user timeline based on the Mastodon API, but to use that, you will need to create application on a Mastodon instance, and configure your RSSHub instance. Check the [Deploy Guide](/en/install/#route-specific-configurations) for route-specific configurations.
 
@@ -217,9 +217,9 @@ These feed do not include boosts (a.k.a. reblogs). RSSHub provides a feed for us
 
 <RouteEn author="DIYgod" example="/pixiv/search/麻衣/popular/2" path="/pixiv/search/:keyword/:order?/:mode?" :paramsDesc="['keyword', 'rank mode, empty or other for time order, popular for popular order', 'filte R18 content']" radar="1" rssbud="1">
 
-| only not R18 | only R18 | no filter |
-| ----------------- | ------------------------- | ------------------------- |
-| safe           | r18              | empty or other            |
+| only not R18 | only R18 | no filter      |
+| ------------ | -------- | -------------- |
+| safe         | r18      | empty or other |
 
 </RouteEn>
 
@@ -269,26 +269,26 @@ Due to Twitter API restrictions, the Twitter Routes currently supports tweets wi
 
 Specify options (in query string's format) in parameter `routeParams` to control some extra features for Tweets
 
-| Key    | Description | Accepts | Defaults to |
-| ------ | ----------- | ------- | ------------ |
-| readable                  | Enable readable layout    | 0/1/true/false | false |
-| authorNameBold            | Display author name in bold | 0/1/true/false | false |
-| showAuthorInTitle         | Show author name in title | 0/1/true/false | false (true in `/twitter/followings`) |
-| showAuthorInDesc          | Show author name in description (RSS body) | 0/1/true/false | false (true in `/twitter/followings`) |
-| showQuotedAuthorAvatarInDesc | Show avatar of quoted Tweet's author in description (RSS body) (Not recommended if your RSS reader extracts images from description) | 0/1/true/false | false |
-| showAuthorAvatarInDesc    | Show avatar of author in description (RSS body) (Not recommended if your RSS reader extracts images from description)| 0/1/true/false | false |
-| showEmojiForRetweetAndReply | Use "🔁" instead of "Rt", "↩️" & "💬" instead of "Re" | 0/1/true/false | false |
-| showRetweetTextInTitle    | Show quote comments in title | 0/1/true/false | true |
-| addLinkForPics           | Add clickable links for Tweet pictures | 0/1/true/false | false |
-| showTimestampInDescription| Show timestamp in description | 0/1/true/false | false |
-| showQuotedInTitle         | Show quoted tweet in title    | 0/1/true/false | false |
-| widthOfPics               | Width of Tweet pictures | Unspecified/Integer      | Unspecified |
-| heightOfPics              | Height of Tweet pictures | Unspecified/Integer | Unspecified |
-| sizeOfAuthorAvatar        | Size of author's avatar | Integer | 48 |
-| sizeOfQuotedAuthorAvatar  | Size of quoted tweet's author's avatar | Integer | 24 |
-| excludeReplies            | Exclude replies, only available in "User timeline" | 0/1/true/false | false |
-| includeRts                | Include retweets, only available in "User timeline" | 0/1/true/false | true |
-| count                     | `count` parameter passed to Twitter API, only available in "User timeline" | Unspecified/Integer | Unspecified |
+| Key                          | Description                                                                                                                          | Accepts             | Defaults to                           |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------- | ------------------------------------- |
+| readable                     | Enable readable layout                                                                                                               | 0/1/true/false      | false                                 |
+| authorNameBold               | Display author name in bold                                                                                                          | 0/1/true/false      | false                                 |
+| showAuthorInTitle            | Show author name in title                                                                                                            | 0/1/true/false      | false (true in `/twitter/followings`) |
+| showAuthorInDesc             | Show author name in description (RSS body)                                                                                           | 0/1/true/false      | false (true in `/twitter/followings`) |
+| showQuotedAuthorAvatarInDesc | Show avatar of quoted Tweet's author in description (RSS body) (Not recommended if your RSS reader extracts images from description) | 0/1/true/false      | false                                 |
+| showAuthorAvatarInDesc       | Show avatar of author in description (RSS body) (Not recommended if your RSS reader extracts images from description)                | 0/1/true/false      | false                                 |
+| showEmojiForRetweetAndReply  | Use "🔁" instead of "Rt", "↩️" & "💬" instead of "Re"                                                                                | 0/1/true/false      | false                                 |
+| showRetweetTextInTitle       | Show quote comments in title                                                                                                         | 0/1/true/false      | true                                  |
+| addLinkForPics               | Add clickable links for Tweet pictures                                                                                               | 0/1/true/false      | false                                 |
+| showTimestampInDescription   | Show timestamp in description                                                                                                        | 0/1/true/false      | false                                 |
+| showQuotedInTitle            | Show quoted tweet in title                                                                                                           | 0/1/true/false      | false                                 |
+| widthOfPics                  | Width of Tweet pictures                                                                                                              | Unspecified/Integer | Unspecified                           |
+| heightOfPics                 | Height of Tweet pictures                                                                                                             | Unspecified/Integer | Unspecified                           |
+| sizeOfAuthorAvatar           | Size of author's avatar                                                                                                              | Integer             | 48                                    |
+| sizeOfQuotedAuthorAvatar     | Size of quoted tweet's author's avatar                                                                                               | Integer             | 24                                    |
+| excludeReplies               | Exclude replies, only available in "User timeline"                                                                                   | 0/1/true/false      | false                                 |
+| includeRts                   | Include retweets, only available in "User timeline"                                                                                  | 0/1/true/false      | true                                  |
+| count                        | `count` parameter passed to Twitter API, only available in "User timeline"                                                           | Unspecified/Integer | Unspecified                           |
 
 Specify different option values than default values to improve readablility. The URL
 
