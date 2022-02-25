@@ -4,16 +4,11 @@ updates:
     directory: '/'
     schedule:
       interval: daily
-      time: '21:00'
     open-pull-requests-limit: 10
-    target-branch: 'build/railway'
-    reviewers:
-      - DIYgod
+    target-branch: 'deploy/railway'
     labels:
       - dependencies
     ignore:
-
-    # ESM only
       - dependency-name: got
         versions:
           - '>=12.0.0'
@@ -38,13 +33,11 @@ updates:
       - dependency-name: string-width
         versions:
           - '>=5.0.0'
+
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
       interval: daily
-      time: '21:00'
     open-pull-requests-limit: 10
-    reviewers:
-      - DIYgod
     labels:
       - dependencies
