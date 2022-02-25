@@ -60,6 +60,9 @@
     "/abmedia/abmedia/:category?": [
         "Fatpandac"
     ],
+    "/abskoop/": [
+        "zhenhappy"
+    ],
     "/acm-ecnu/contest/:category?": [
         "a180285"
     ],
@@ -81,8 +84,28 @@
     "/app-center/release/:user/:app/:distribution_group": [
         "Rongronggg9"
     ],
+    "/apple/exchange_repair/:country?": [
+        "metowolf",
+        "HenryQW",
+        "kt286"
+    ],
     "/appledaily/:channel?": [
         "Fatpandac"
+    ],
+    "/appstore/update/:country/:id": [
+        "HenryQW"
+    ],
+    "/appstore/price/:country/:type/:id": [
+        "HenryQW"
+    ],
+    "/appstore/iap/:country/:id": [
+        "HenryQW"
+    ],
+    "/appstore/xianmian": [
+        "Andiedie"
+    ],
+    "/appstore/gofans": [
+        "HenryQW"
     ],
     "/ash-maurya/ash-maurya": [
         "james-tindal"
@@ -710,6 +733,12 @@
     "/jump/discount/:platform/:filter?/:countries?": [
         "zytomorrow"
     ],
+    "/kbs/news/:category?/:language?": [
+        "nczitzk"
+    ],
+    "/kbs/today/:language?": [
+        "nczitzk"
+    ],
     "/kemono/:source?/:id?": [
         "nczitzk"
     ],
@@ -864,6 +893,12 @@
     "/nippon/:category?": [
         "laampui"
     ],
+    "/njnu/jwc/:type": [
+        "Shujakuinkuraudo"
+    ],
+    "/njnu/ceai/:type": [
+        "Shujakuinkuraudo"
+    ],
     "/nju/jw/:type": [
         "ret-1"
     ],
@@ -881,6 +916,9 @@
     ],
     "/nju/zbb/:type": [
         "ret-1"
+    ],
+    "/nltimes/news/:category?": [
+        "Hivol"
     ],
     "/nodejs/blog/:language?": [
         "nczitzk"
@@ -1627,11 +1665,6 @@
     "/fir/update/:id": [],
     "/nvidia/webdriverupdate": [],
     "/imuseum/:city/:type?": [],
-    "/appstore/update/:country/:id": [],
-    "/appstore/price/:country/:type/:id": [],
-    "/appstore/iap/:country/:id": [],
-    "/appstore/xianmian": [],
-    "/appstore/gofans": [],
     "/hopper/:lowestOnly/:from/:to?": [],
     "/mafengwo/note/:type": [],
     "/mafengwo/ziyouxing/:code": [],
@@ -1821,7 +1854,6 @@
     "/ifanr/:channel?": [],
     "/guokr/scientific": [],
     "/guokr/:channel": [],
-    "/apple/exchange_repair/:country?": [],
     "/ipsw/index/:ptype/:pname": [],
     "/curseforge/files/:project": [],
     "/sspai/series": [],
@@ -3161,6 +3193,5 @@
     "/secrss/category/:category?": [],
     "/secrss/author/:author?": [],
     "/fashionnetwork/headline/:country?": [],
-    "/mirror/:id": [],
-    "/kbs/today/:language?": []
+    "/mirror/:id": []
 }
