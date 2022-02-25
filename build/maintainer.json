@@ -51,6 +51,15 @@
     "/52hrtt/:area?/:type?": [
         "nczitzk"
     ],
+    "/8kcos/": [
+        "KotoriK"
+    ],
+    "/8kcos/cat/:cat*": [
+        "KotoriK"
+    ],
+    "/8kcos/tag/:tag": [
+        "KotoriK"
+    ],
     "/8world/:category?": [
         "nczitzk"
     ],
@@ -250,6 +259,9 @@
     ],
     "/csc/notice/:type?": [
         "Derekmini"
+    ],
+    "/dahecube/:type?": [
+        "linbuxiao"
     ],
     "/ddosi/": [
         "XinRoom"
@@ -675,6 +687,67 @@
     ],
     "/jasa/section/:id": [
         "Derekmini"
+    ],
+    "/javbus/genre/:gid": [
+        "MegrezZhu",
+        "CoderTonyChan"
+    ],
+    "/javbus/home": [
+        "MegrezZhu",
+        "CoderTonyChan"
+    ],
+    "/javbus/label/:labelid": [
+        "MegrezZhu",
+        "CoderTonyChan",
+        "Felix2yu"
+    ],
+    "/javbus/series/:seriesid": [
+        "MegrezZhu",
+        "CoderTonyChan",
+        "Felix2yu"
+    ],
+    "/javbus/star/:sid": [
+        "MegrezZhu",
+        "CoderTonyChan"
+    ],
+    "/javbus/studio/:studioid": [
+        "MegrezZhu",
+        "CoderTonyChan",
+        "Felix2yu"
+    ],
+    "/javbus/uncensored/home": [
+        "MegrezZhu",
+        "CoderTonyChan"
+    ],
+    "/javbus/uncensored/genre/:gid": [
+        "MegrezZhu",
+        "CoderTonyChan"
+    ],
+    "/javbus/uncensored/series/:seriesid": [
+        "MegrezZhu",
+        "CoderTonyChan",
+        "Felix2yu"
+    ],
+    "/javbus/uncensored/star/:sid": [
+        "MegrezZhu",
+        "CoderTonyChan"
+    ],
+    "/javbus/western/home": [
+        "MegrezZhu",
+        "CoderTonyChan"
+    ],
+    "/javbus/western/genre/:gid": [
+        "MegrezZhu",
+        "CoderTonyChan"
+    ],
+    "/javbus/western/series/:seriesid": [
+        "MegrezZhu",
+        "CoderTonyChan",
+        "Felix2yu"
+    ],
+    "/javbus/western/star/:sid": [
+        "MegrezZhu",
+        "CoderTonyChan"
     ],
     "/javdb/home/:category?/:sort?/:filter?": [
         "nczitzk"
@@ -1131,6 +1204,11 @@
     "/swpu/scs/:code": [
         "CYTMWIA"
     ],
+    "/sysu/sysu/cse": [
+        "Neutrino3316",
+        "MegrezZhu",
+        "nczitzk"
+    ],
     "/szse/rule": [
         "nczitzk"
     ],
@@ -1146,6 +1224,9 @@
     ],
     "/telegram/telegram/blog": [
         "fengkx"
+    ],
+    "/tencent/qq/sdk/changelog/:platform": [
+        "nuomi1"
     ],
     "/test/:id": [
         "DIYgod",
@@ -1966,19 +2047,6 @@
     "/nga/forum/:fid/:recommend?": [],
     "/nga/post/:tid": [],
     "/nautilus/topic/:tid": [],
-    "/javbus/home": [],
-    "/javbus/genre/:gid": [],
-    "/javbus/star/:sid": [],
-    "/javbus/series/:seriesid": [],
-    "/javbus/uncensored/home": [],
-    "/javbus/uncensored/genre/:gid": [],
-    "/javbus/uncensored/star/:sid": [],
-    "/javbus/uncensored/series/:seriesid": [],
-    "/javbus/western/home": [],
-    "/javbus/western/genre/:gid": [],
-    "/javbus/western/star/:sid": [],
-    "/javbus/western/series/:seriesid": [],
-    "/sysu/sdcs": [],
     "/anigamer/new_anime": [],
     "/anigamer/anime/:sn": [],
     "/apkpure/versions/:region/:pkg": [],
@@ -2932,8 +3000,6 @@
     "/dedao/knowledge/:topic?/:type?": [],
     "/dedao/:caty?": [],
     "/mitbbs/:caty?": [],
-    "/8kcos/": [],
-    "/8kcos/cat/:cat*": [],
     "/jiazhen108": [],
     "/instagram/:category/:key": [],
     "/uisdc/talk/:sort?": [],
