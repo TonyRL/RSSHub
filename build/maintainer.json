@@ -664,6 +664,9 @@
         "Derekmini",
         "auto-bot-ty"
     ],
+    "/ielts/": [
+        "zenxds"
+    ],
     "/independent/ps5-stock-uk": [
         "DIYgod"
     ],
@@ -1422,6 +1425,9 @@
     "/whoscall/categories/:category?": [
         "nczitzk"
     ],
+    "/wikinews/latest": [
+        "KotoriK"
+    ],
     "/wsj/:lang/:category?": [
         "oppilate"
     ],
@@ -1449,7 +1455,8 @@
         "Maecenas"
     ],
     "/xiaoyuzhou/podcast/:id": [
-        "hondajojo"
+        "hondajojo",
+        "jtsang4"
     ],
     "/yaohuo/": [
         "nczitzk"
