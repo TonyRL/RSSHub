@@ -17,7 +17,7 @@ jobs:
         node-version: ['14', '16']
     name: Jest on Node ${{ matrix.node-version }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3.0.0
         with:
           node-version: ${{ matrix.node-version }}
@@ -39,7 +39,7 @@ jobs:
         node-version: ['14', '16']
     name: Build docs on Node ${{ matrix.node-version }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3.0.0
         with:
           node-version: ${{ matrix.node-version }}
@@ -55,7 +55,7 @@ jobs:
         node-version: ['14', '16']
     name: Build radar and maintainer on Node ${{ matrix.node-version }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3.0.0
         with:
           node-version: ${{ matrix.node-version }}
