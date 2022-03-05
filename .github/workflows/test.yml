@@ -25,7 +25,6 @@ jobs:
       - run: yarn
       - run: npm run jest
         env:
-          CACHE_TYPE: redis
           REDIS_URL: redis://localhost:${{ job.services.redis.ports[6379] }}/
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2.1.0
