@@ -2,32 +2,66 @@ name: Automatic merge Dependabot
 on: pull_request
 
 jobs:
-  build:
+  jest:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: ['14', '16']
     services:
       redis:
         image: redis
         ports:
           - 6379/tcp
         options: --entrypoint redis-server
-
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [ 14, 16 ]
+    name: Jest on Node ${{ matrix.node-version }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node }}
+          node-version: ${{ matrix.node-version }}
           cache: 'yarn'
-      - run: yarn
-      - run: npm run jest
+      - name: Install dependencies (yarn)
+        run: yarn
+      - name: Test all and generate coverage
+        run: npm run jest:coverage
         env:
           REDIS_URL: redis://localhost:${{ job.services.redis.ports[6379] }}/
-      - run: npm run docs:build
+
+  docs:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 14, 16 ]
+    name: Build docs on Node ${{ matrix.node-version }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+      - run: yarn
+      - name: Build docs
+        run: npm run docs:build
+
+  all:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 14, 16 ]
+    name: Build radar and maintainer on Node ${{ matrix.node-version }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+      - run: yarn
+      - name: Build radar and maintainer
+        run: npm run build:all
 
   automerge:
-    needs: build
+    needs: [ jest, docs, all ]
     runs-on: ubuntu-latest
 
     permissions:
