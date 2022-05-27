@@ -64,7 +64,7 @@ ${detail.slice(0, 65300 - temp_com.length)}
     }
 
 //     if (context.payload.diff_url) {
-    core.info(context)
+    core.info(context.payload.pull_request)
         await github.rest.issues
             .addLabels({
                 issue_number: number,
