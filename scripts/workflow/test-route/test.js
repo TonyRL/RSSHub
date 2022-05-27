@@ -63,7 +63,8 @@ ${detail.slice(0, 65300 - temp_com.length)}
         com_l = com_l.slice(0, 5);
     }
 
-    if (context.payload.diff_url) {
+//     if (context.payload.diff_url) {
+    core.info(context.payload)
         await github.rest.issues
             .addLabels({
                 issue_number: number,
@@ -74,7 +75,7 @@ ${detail.slice(0, 65300 - temp_com.length)}
             .catch((e) => {
                 core.warning(e);
             });
-    }
+//     }
 
     for (const com_s of com_l) {
         // Intended, one at a time
