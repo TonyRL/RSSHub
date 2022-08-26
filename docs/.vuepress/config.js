@@ -20,6 +20,9 @@ module.exports = {
             },
         },
         '@vuepress/back-to-top': true,
+        sitemap: {
+            hostname: 'https://docs-rsshub.pages.dev',
+        },
     },
     locales: {
         '/': {
