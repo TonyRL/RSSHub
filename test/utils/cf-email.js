@@ -1,4 +1,4 @@
-const { decodeCFEmail, encodeCFEmail } = require('@/utils/cf-email');
+const { decodeCFEmail, encodeCFEmail } = require('#utils/cf-email');
 
 describe('Cloudflare email address obfuscation', () => {
     const email = 'no@thankyou.com';

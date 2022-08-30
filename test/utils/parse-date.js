@@ -1,4 +1,4 @@
-const { parseRelativeDate } = require('@/utils/parse-date');
+const { parseRelativeDate } = require('#utils/parse-date');
 const MockDate = require('mockdate');
 
 describe('parseRelativeDate', () => {

@@ -26,7 +26,7 @@ This is a utility class for using [Day.js](https://github.com/iamkun/dayjs). In 
 Please refer to Day.js GitHub description for specific parsing parameters
 
 ```javascript
-const { parseDate } = require('@/utils/parse-date');
+const { parseDate } = require('#utils/parse-date');
 
 const pubDate = parseDate('2020/12/30', 'YYYY/MM/DD');
 ```
@@ -34,7 +34,7 @@ const pubDate = parseDate('2020/12/30', 'YYYY/MM/DD');
 If you need to parse a relative date, use `parseRelativeDate`.
 
 ```javascript
-const { parseRelativeDate } = require('@/utils/parse-date');
+const { parseRelativeDate } = require('#utils/parse-date');
 
 const pubDate = parseRelativeDate('2 days ago');
 const pubDate = parseRelativeDate('day before yesterday 15:36');
@@ -49,7 +49,7 @@ Now, the time will be converted to server time, which facilitates middleware pro
 :::
 
 ```javascript
-const timezone = require('@/utils/timezone');
+const timezone = require('#utils/timezone');
 
 const pubDate = timezone(new Date(), +8);
 ```

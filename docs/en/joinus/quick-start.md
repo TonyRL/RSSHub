@@ -166,7 +166,7 @@ Create a new js script in the corresponding [/lib/v2/](https://github.com/DIYgod
 
     ```js
     // use puppeteer util class, initialise a browser instance
-    const browser = await require('@/utils/puppeteer')();
+    const browser = await require('#utils/puppeteer')();
     // open a new page
     const page = await browser.newPage();
     // access the target link
@@ -226,7 +226,7 @@ Create a new js script in the corresponding [/lib/v2/](https://github.com/DIYgod
     3. RSS title (not item title)
 
     ```js
-    const buildData = require('@/utils/common-config');
+    const buildData = require('#utils/common-config');
     module.exports = async (ctx) => {
         ctx.state.data = await buildData({
             link: '', // RSS source link
@@ -243,7 +243,7 @@ Create a new js script in the corresponding [/lib/v2/](https://github.com/DIYgod
     Here is an example
 
     ```js
-    const buildData = require('@/utils/common-config');
+    const buildData = require('#utils/common-config');
 
     module.exports = async (ctx) => {
         const link = `https://www.uraaka-joshi.com/`;

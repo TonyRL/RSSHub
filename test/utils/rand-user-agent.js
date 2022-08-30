@@ -1,8 +1,8 @@
-const got = require('@/utils/got');
-const config = require('@/config').value;
+const got = require('#utils/got');
+const config = require('#config').value;
 const nock = require('nock');
-const randUserAgent = require('@/utils/rand-user-agent');
-const mobileUa = require('@/utils/rand-user-agent')({ browser: 'mobile safari', os: 'ios', device: 'mobile' });
+const randUserAgent = require('#utils/rand-user-agent');
+const mobileUa = require('#utils/rand-user-agent')({ browser: 'mobile safari', os: 'ios', device: 'mobile' });
 
 describe('rand-user-agent', () => {
     it('chrome should not include headlesschrome', () => {

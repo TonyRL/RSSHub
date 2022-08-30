@@ -2,8 +2,11 @@
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
-            "@/*": ["./lib/*"]
+            "#config": ["./lib/config.js"],
+            "#errors": ["./lib/errors/index.js"],
+            "#utils/*": ["./lib/utils/*.js"]
         }
     },
-    "include": ["./lib/**/*"]
+    "include": ["./lib/**/*"],
+    "exclude": ["node_modules"]
 }

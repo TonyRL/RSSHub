@@ -39,6 +39,14 @@
   "bugs": {
     "url": "https://github.com/DIYgod/RSSHub/issues"
   },
+  "engines": {
+    "node": ">=14"
+  },
+  "imports": {
+    "#config": "./lib/config.js",
+    "#errors": "./lib/errors/index.js",
+    "#utils/*": "./lib/utils/*.js"
+  },
   "homepage": "https://github.com/DIYgod/RSSHub#readme",
   "devDependencies": {
     "@napi-rs/pinyin": "1.7.0",
@@ -117,7 +125,6 @@
     "lz-string": "1.4.4",
     "mailparser": "3.5.0",
     "markdown-it": "13.0.1",
-    "module-alias": "2.2.2",
     "parse-torrent": "9.1.5",
     "pidusage": "3.0.0",
     "plist": "3.0.6",
@@ -163,7 +170,9 @@
     "bail": true,
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "@/(.*)": "<rootDir>/lib/$1"
+      "#config": "<rootDir>/lib/config.js",
+      "#errors": "<rootDir>/lib/errors/index.js",
+      "#utils/(.*)": "<rootDir>/lib/utils/$1.js"
     }
   },
   "nodemonConfig": {
@@ -173,8 +182,5 @@
       "test"
     ],
     "ext": "art,js,mjs,json"
-  },
-  "engines": {
-    "node": ">=14"
   }
 }

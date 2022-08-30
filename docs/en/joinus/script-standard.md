@@ -136,7 +136,7 @@ Apart from that, all templates should be placed in the script's `templates` fold
 ```
 
 ```js
-const { art } = require('@/utils/render');
+const { art } = require('#utils/render');
 const renderAuthor = (author) => art(path.join(__dirname, 'templates/author.art'), author);
 ```
 
