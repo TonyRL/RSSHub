@@ -1,3 +1,4 @@
+.devcontainer
 .github
 .idea
 .vscode
@@ -13,14 +14,16 @@ test
 .codecov.yml
 .dockerignore
 .editorconfig
-.env
+.env*
 .eslint*
 .gitignore
+.gitpod.yml
 .prettier*
 .(yarn|npm|nvm)rc
 *.md
 app.json
 docker-compose*
+fly.toml
 jsconfig.json
 npm-debug.log
 process.json
@@ -33,3 +36,11 @@ vercel.json
 .git/index
 .git/info
 .git/hooks
+
+#rsshub auxiliary files
+lib/radar-rules.js
+lib/v2/**/radar.js
+
+#dotenv-vault
+!.env.project
+!.env.vault

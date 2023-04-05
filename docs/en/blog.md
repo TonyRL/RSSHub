@@ -4,6 +4,18 @@ pageClass: routes
 
 # Blog
 
+## Amazon
+
+### AWS Blogs
+
+<RouteEn author="HankChow" example="/amazon/awsblogs" path="/awsblogs/:locale?" :paramsDesc="['Blog postes in a specified language, only the following options are supported. Default `zh_CN`']">
+
+| zh_CN | en_US | fr_FR | de_DE | ja_JP | ko_KR | pt_BR | es_ES | ru_RU | id_ID | tr_TR |
+| ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |
+| Chinese    | English    | French    | German    | Japanese    | Korean    | Portuguese  | Spainish  | Russian    | Indonesian   | Turkish  |
+
+</RouteEn>
+
 ## archdaily
 
 ### Home
@@ -15,6 +27,12 @@ pageClass: routes
 ### User Feed
 
 <RouteEn author="Jkker" example="/csdn/blog/csdngeeknews" path="/csdn/blog/:user" radar="1" :paramsDesc="['`user` is the username of a CSDN blog which can be found in the url of the home page']" />
+
+## Geocaching
+
+### Official Blogs
+
+<RouteEn author="HankChow" example="/geocaching/blogs" path="/geocaching/blogs" radar="1"/>
 
 ## Google Sites
 
@@ -90,6 +108,12 @@ Limit the number of entries to be retrieved by adding `?limit=x` to the end of t
 
 <RouteEn author="chazeon" example="/stratechery" path="/stratechery" />
 
+## Uber
+
+### Engineering
+
+<RouteEn author="hulb" example="/uber/blog" path="/uber/blog/:maxPage?" :paramsDesc="['max number of pages to retrieve, default to 1 page at most']" />
+
 ## WordPress
 
 ### Blog
@@ -101,4 +125,3 @@ Limit the number of entries to be retrieved by adding `?limit=x` to the end of t
 ### Entry
 
 <RouteEn author="nczitzk" example="/yuzu-emu/entry" path="/yuzu-emu/entry" />
-

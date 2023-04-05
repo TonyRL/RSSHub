@@ -1,10 +1,12 @@
 image: gitpod/workspace-node-lts
 
 ports:
-  - port: 1200
+  - name: app
+    port: 1200
     onOpen: notify
     visibility: public
-  - port: 8080
+  - name: docs
+    port: 8080
     onOpen: notify
     visibility: public
 
@@ -14,18 +16,35 @@ tasks:
       sudo apt update
       sudo apt install -y ca-certificates fonts-liberation libasound2 libatk-bridge2.0-0 libatk1.0-0 libatspi2.0-0 libcairo2 libcups2 libdbus-1-3 libexpat1 libgbm1 libglib2.0-0 libnspr4 libnss3 libpango-1.0-0 libx11-6 libxcb1 libxcomposite1 libxdamage1 libxext6 libxfixes3 libxkbcommon0 libxrandr2 wget xdg-util
       sudo apt install -y redis-server
-    init:
-      yarn
+    init: yarn
   - name: app
     command: yarn dev
     openMode: tab-after
-  - name: docs
-    command: yarn docs:dev
-    openMode: tab-after
+  # - name: docs
+  #   command: yarn docs:dev
+  #   openMode: tab-after
+  - name: Restore Tailscale daemon
+    command: |
+      if [ -n "${TS_STATE_TAILSCALE}" ]; then
+        # restore the tailscale state from gitpod user's env vars
+        sudo mkdir -p /var/lib/tailscale
+        echo "${TS_STATE_TAILSCALE}" | sudo tee /var/lib/tailscale/tailscaled.state > /dev/null
+      fi
+      sudo tailscaled
+  - name: Connect to Tailscale
+    command: |
+      if [ -n "${TS_STATE_TAILSCALE}" ]; then
+        sudo -E tailscale up --hostname "gitpod-${GITPOD_GIT_USER_NAME}-$(echo ${GITPOD_WORKSPACE_CONTEXT} | jq -r .repository.name)" --authkey $TAILSCALE_AUTHKEY --accept-routes
+      else
+        sudo -E tailscale up --hostname "gitpod-${GITPOD_GIT_USER_NAME}-$(echo ${GITPOD_WORKSPACE_CONTEXT} | jq -r .repository.name)" --authkey $TAILSCALE_AUTHKEY --accept-routes
+        # store the tailscale state into gitpod user
+        gp env TS_STATE_TAILSCALE="$(sudo cat /var/lib/tailscale/tailscaled.state)"
+      fi
+      exit
 
 vscode:
   extensions:
-    - cweijan.vscode-database-client2
+    - cweijan.vscode-database-client2@5.3.1 # you may need to rollback to v5.3.1 or below in **VS Code Desktop**
     - DavidAnson.vscode-markdownlint
     - dbaeumer.vscode-eslint
     - eamodio.gitlens
@@ -35,10 +54,11 @@ vscode:
     - foxundermoon.shell-format
     - octref.vetur
     - rangav.vscode-thunder-client
-    - TabNine.tabnine-vscode
+    - sonarsource.sonarlint-vscode
     - vivaxy.vscode-conventional-commits
     - WakaTime.vscode-wakatime
     - yzhang.markdown-all-in-one
+    # - ZihanLi.at-helper not available on Open VSX
 
 github:
   prebuilds:
@@ -48,3 +68,4 @@ github:
     pullRequestsFromForks: false
     addCheck: false
     addComment: false
+    addBadge: false

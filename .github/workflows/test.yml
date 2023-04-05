@@ -21,6 +21,7 @@ permissions:
 jobs:
   jest:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     services:
       redis:
         image: redis
@@ -30,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [ 14, 16, 18 ]
+        node-version: [ 16, 18 ]
     name: Jest on Node ${{ matrix.node-version }}
     steps:
       - name: Collect Workflow Telemetry
@@ -68,10 +69,11 @@ jobs:
 
   puppeteer:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        node-version: [ 14, 16, 18 ]
+        node-version: [ 16, 18 ]
         chromium:
           - name: bundled Chromium
             dependency: ''
@@ -93,9 +95,10 @@ jobs:
         run: yarn
       - name: Install Chromium
         if: ${{ matrix.chromium.dependency != '' }}
-        # Chromium from Ubuntu is too old (85), but can still pass the tests
-        # That's not really a problem since Chromium-bundled Docker image is based on Debian bullseye,
-        # which updates Chromium frequently, and only on arm/arm64 the image needs Chromium from Debian.
+        # 'chromium-browser' from Ubuntu APT repo is a dummy package. Its version (85.0.4183.83) means
+        # nothing since it calls Snap (disgusting!) to install Chromium, which should be up-to-date.
+        # That's not really a problem since the Chromium-bundled Docker image is based on Debian bullseye,
+        # which provides up-to-date native packages.
         run: |
           set -ex
           curl -s "https://dl.google.com/linux/linux_signing_key.pub" | gpg --dearmor |
@@ -110,10 +113,11 @@ jobs:
 
   docs:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
-        node-version: [ 14, 16, 18 ]
+        node-version: [ 16, 18 ]
     name: Build docs on Node ${{ matrix.node-version }}
     steps:
       - uses: actions/checkout@v3
@@ -133,10 +137,11 @@ jobs:
 
   all:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
-        node-version: [ 14, 16, 18 ]
+        node-version: [ 16, 18 ]
     name: Build radar and maintainer on Node ${{ matrix.node-version }}
     steps:
       - uses: actions/checkout@v3
