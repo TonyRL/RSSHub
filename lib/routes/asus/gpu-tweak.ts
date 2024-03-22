@@ -8,15 +8,6 @@ export const route: Route = {
     path: '/gpu-tweak',
     categories: ['program-update'],
     example: '/asus/gpu-tweak',
-    parameters: {},
-    features: {
-        requireConfig: false,
-        requirePuppeteer: false,
-        antiCrawler: false,
-        supportBT: false,
-        supportPodcast: false,
-        supportScihub: false,
-    },
     radar: [
         {
             source: ['asus.com/campaign/GPU-Tweak-III/*', 'asus.com/'],
