@@ -704,11 +704,15 @@
 
 <Route author="nczitzk" example="/hkjunkcall" path="/hkjunkcall" anticrawler="1" />
 
-## iDaily 每日环球视野 {#idaily-mei-ri-huan-qiu-shi-ye}
+## iDaily {#idaily}
 
-### 今日 Timeline {#idaily-mei-ri-huan-qiu-shi-ye-jin-ri-timeline}
+### 每日环球视野 {#idaily-mei-ri-huan-qiu-shi-ye}
 
-<Route author="zphw" example="/idaily/today" path="/idaily/today" />
+<Route author="zphw nczitzk" example="/idaily" path="/idaily/:language?" paramsDesc={['语言，见下表，默认为简体中文']} radar="1">
+  | 简体中文 | 繁体中文 |
+  | -------- | -------- |
+  | zh-hans  | zh-hant  |
+</Route>
 
 ## iDownloadBlog {#idownloadblog}
 
@@ -4235,16 +4239,6 @@
 ### 标签订阅 {#shao-shu-pai-sspai-biao-qian-ding-yue}
 
 <Route author="Jeason0228" example="/sspai/tag/apple" path="/sspai/tag/:keyword" paramsDesc={['关键词']} radar="1" />
-
-## 深潮 TechFlow {#shen-chao-techflow}
-
-### 首页 {#shen-chao-techflow-shou-ye}
-
-<Route author="nczitzk" example="/techflowpost" path="/techflowpost" notOperational="1" />
-
-### 快讯 {#shen-chao-techflow-kuai-xun}
-
-<Route author="nczitzk" example="/techflowpost/express" path="/techflowpost/express" notOperational="1" />
 
 ## 深圳新闻网 {#shen-zhen-xin-wen-wang}
 
