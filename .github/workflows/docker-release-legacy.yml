@@ -1,10 +1,10 @@
-name: 'Docker Stable Releases'
+name: 'Docker Legacy Releases'
 'on':
   push:
     branches:
-      - stable
+      - legacy
     paths:
-      - .github/workflows/docker-release-stable.yml
+      - .github/workflows/docker-release-legacy.yml
       - lib/**
       - '!**/maintainer.js'
       - '!**/radar.js'
@@ -38,27 +38,27 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker metadata (stable)
-        id: meta-stable
+      - name: Extract Docker metadata (legacy)
+        id: meta-legacy
         uses: docker/metadata-action@v5
         with:
           images: |
             ${{ secrets.DOCKER_USERNAME }}/rsshub
             ghcr.io/${{ github.repository }}
           tags: |
-            type=raw,value=stable,enable=true
-            type=raw,value=stable-{{date 'YYYY-MM-DD'}},enable=true
+            type=raw,value=legacy,enable=true
+            type=raw,value=legacy-{{date 'YYYY-MM-DD'}},enable=true
             type=sha,format=long,prefix=,enable=true
           flavor: latest=false
 
-      - name: Build and push Docker image (stable)
+      - name: Build and push Docker image (legacy)
         id: build-and-push
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ steps.meta-stable.outputs.tags }}
-          labels: ${{ steps.meta-stable.outputs.labels }}
+          tags: ${{ steps.meta-legacy.outputs.tags }}
+          labels: ${{ steps.meta-legacy.outputs.labels }}
           platforms: linux/amd64,linux/arm/v7,linux/arm64
           cache-from: type=gha,scope=docker-release
           cache-to: type=gha,mode=max,scope=docker-release
