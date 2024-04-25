@@ -124,8 +124,8 @@ const config: Config = {
         announcementBar: {
             id: 'official_doc',
             content: 'This is <b>NOT</b> the official documentation. Please visit the official documentation at <a target="_blank" rel="noopener noreferrer" href="https://docs.rsshub.app">https://docs.rsshub.app</a>',
-            backgroundColor: '#fafbfc',
-            textColor: '#091E42',
+            backgroundColor: '#F5712C',
+            textColor: '#FFFFFF',
             isCloseable: false,
         },
         // Replace with your project's social card
