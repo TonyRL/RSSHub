@@ -113,8 +113,8 @@ const config: Config = {
 
     customFields: {
         'meilisearch-docsearch': {
-            host: 'https://meilisearch.rsshub.app',
-            apiKey: '375c36cd9573a2c1d1e536214158c37120fdd0ba6cd8829f7a848e940cc22245',
+            host: 'https://meilisearch.toni.sh',
+            apiKey: '180acc49976a2001f8543e47189e8536906b927c37ebd344b5a228b49d6baaf8',
             indexUid: 'rsshub',
             container: '#docsearch',
         } satisfies DocSearchOptions,
