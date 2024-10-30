@@ -103,68 +103,79 @@ async function handler(ctx) {
 
     const feed = await parser.parseURL(link);
     const items = await Promise.all(
-        feed.items.map((item) =>
-            cache.tryGet(item.link, async () => {
-                const response = await ofetch(item.link, {
-                    headers: {
-                        Referer: 'https://news.mingpao.com/',
-                    },
-                });
+        feed.items
+            .map((item) => ({
+                ...item,
+                // bug from mingpao
+                link: item.link?.replaceAll(/" target="blank$/g, ''),
+            }))
+            .map((item) =>
+                cache.tryGet(item.link, async () => {
+                    const response = await ofetch(item.link, {
+                        headers: {
+                            Referer: 'https://news.mingpao.com/',
+                        },
+                    });
 
-                const $ = cheerio.load(response);
-                const topVideo = $('#topvideo').length
-                    ? $('#topvideo iframe')
-                          .toArray()
-                          .map((e) => $(e).attr('href', $(e).attr('src')))
-                          .map((e) => fixFancybox(e, $))
-                    : [];
-                const fancyboxImg = $('a.fancybox').length ? $('a.fancybox') : $('a.fancybox-buttons');
+                    const $ = cheerio.load(response);
 
-                // remove unwanted elements
-                $('div.ad300ins_m').remove();
-                $('div.clear, div.inReadLrecGroup, div.clr').remove();
-                $('div#ssm2').remove();
-                $('iframe').remove();
-                $('p[dir=ltr]').remove();
+                    if ($('.txt4, .article_content.line_1_5em, .txt3').length === 0) {
+                        return item;
+                    }
 
-                // extract categories
-                item.category = item.categories;
+                    const topVideo = $('#topvideo').length
+                        ? $('#topvideo iframe')
+                              .toArray()
+                              .map((e) => $(e).attr('href', $(e).attr('src')))
+                              .map((e) => fixFancybox(e, $))
+                        : [];
+                    const fancyboxImg = $('a.fancybox').length ? $('a.fancybox') : $('a.fancybox-buttons');
 
-                // fix fancybox image
-                let fancybox = [...topVideo, ...fancyboxImg.toArray().map((e) => fixFancybox(e, $))];
-                const script = $('script')
-                    .toArray()
-                    .find((e) => $(e).text()?.includes("$('#lower').prepend('"));
-                const lowerContent = script
-                    ? $(script)
-                          .text()
-                          ?.match(/\$\('#lower'\)\.prepend\('(.*)'\);/)?.[1]
-                          ?.replaceAll(/\\"/g, '"')
-                    : '';
-                if (lowerContent) {
-                    const $ = cheerio.load(lowerContent, null, false);
-                    fancybox = [
-                        ...fancybox,
-                        ...$('a.fancybox')
-                            .toArray()
-                            .map((e) => fixFancybox(e, $)),
-                    ];
-                }
+                    // remove unwanted elements
+                    $('div.ad300ins_m').remove();
+                    $('div.clear, div.inReadLrecGroup, div.clr').remove();
+                    $('div#ssm2').remove();
+                    $('iframe').remove();
+                    $('p[dir=ltr]').remove();
 
-                // remove unwanted key value
-                delete item.categories;
-                delete item.content;
-                delete item.contentSnippet;
-                delete item.creator;
-                delete item.isoDate;
+                    // extract categories
+                    item.category = item.categories;
 
-                item.description = renderDesc(fancybox, $('.txt4').html() ?? $('.article_content.line_1_5em').html() ?? $('.txt3').html());
-                item.pubDate = parseDate(item.pubDate);
-                item.guid = item.link.includes('?') ? item.link : item.link.substring(0, item.link.lastIndexOf('/'));
+                    // fix fancybox image
+                    let fancybox = [...topVideo, ...fancyboxImg.toArray().map((e) => fixFancybox(e, $))];
+                    const script = $('script')
+                        .toArray()
+                        .find((e) => $(e).text()?.includes("$('#lower').prepend('"));
+                    const lowerContent = script
+                        ? $(script)
+                              .text()
+                              ?.match(/\$\('#lower'\)\.prepend\('(.*)'\);/)?.[1]
+                              ?.replaceAll(/\\"/g, '"')
+                        : '';
+                    if (lowerContent) {
+                        const $ = cheerio.load(lowerContent, null, false);
+                        fancybox = [
+                            ...fancybox,
+                            ...$('a.fancybox')
+                                .toArray()
+                                .map((e) => fixFancybox(e, $)),
+                        ];
+                    }
 
-                return item;
-            })
-        )
+                    // remove unwanted key value
+                    delete item.categories;
+                    delete item.content;
+                    delete item.contentSnippet;
+                    delete item.creator;
+                    delete item.isoDate;
+
+                    item.description = renderDesc(fancybox, $('.txt4').html() ?? $('.article_content.line_1_5em').html() ?? $('.txt3').html());
+                    item.pubDate = parseDate(item.pubDate);
+                    item.guid = item.link.includes('?') ? item.link : item.link.substring(0, item.link.lastIndexOf('/'));
+
+                    return item;
+                })
+            )
     );
 
     return {
