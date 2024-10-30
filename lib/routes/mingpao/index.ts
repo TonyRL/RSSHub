@@ -105,6 +105,8 @@ async function handler(ctx) {
     const items = await Promise.all(
         feed.items.map((item) =>
             cache.tryGet(item.link, async () => {
+                // bug from mingpao
+                item.link = item.link?.replaceAll(/" target="blank$/g, '');
                 const response = await ofetch(item.link, {
                     headers: {
                         Referer: 'https://news.mingpao.com/',
