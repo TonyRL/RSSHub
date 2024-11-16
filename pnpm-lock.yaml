@@ -147,8 +147,8 @@ importers:
         specifier: 1.0.0
         version: 1.0.0
       jsrsasign:
-        specifier: 10.9.0
-        version: 10.9.0
+        specifier: 11.0.0
+        version: 11.0.0
       lru-cache:
         specifier: 11.0.2
         version: 11.0.2
@@ -3864,8 +3864,8 @@ packages:
     resolution: {integrity: sha512-gqXddjPqQ6G40VdnI6T6yObEC+pDNvyP95wdQhkWkg7crHH3km5qP1FsOXEkzEQwnz6gz5qGTn1c2Y52wP3OyQ==}
     engines: {'0': node >=0.6.0}
 
-  jsrsasign@10.9.0:
-    resolution: {integrity: sha512-QWLUikj1SBJGuyGK8tjKSx3K7Y69KYJnrs/pQ1KZ6wvZIkHkWjZ1PJDpuvc1/28c1uP0KW9qn1eI1LzHQqDOwQ==}
+  jsrsasign@11.0.0:
+    resolution: {integrity: sha512-BtRwVKS+5dsgPpAtzJcpo5OoWjSs1/zllSBG0+8o8/aV0Ki76m6iZwHnwnsqoTdhfFZDN1XIdcaZr5ZkP+H2gg==}
 
   jwa@2.0.0:
     resolution: {integrity: sha512-jrZ2Qx916EA+fq9cEAeCROWPTfCwi1IVHqT2tapuqLEVVDKFDENFw1oL+MwrTvH6msKxsd1YTDVw6uKEcsrLEA==}
@@ -9721,7 +9721,7 @@ snapshots:
       json-schema: 0.4.0
       verror: 1.10.0
 
-  jsrsasign@10.9.0: {}
+  jsrsasign@11.0.0: {}
 
   jwa@2.0.0:
     dependencies:
