@@ -87,9 +87,11 @@ jobs:
         with:
           script: |
             const event = JSON.parse(process.env.EVENT)
+            const body = event.comment.body
             const number = event.issue.number
+            const sender = event.comment.user.login
             const { default: identify } = await import('${{ github.workspace }}/scripts/workflow/test-route/identify.mjs')
-            return identify({ github, context, core }, number)
+            return identify({ github, context, core }, body, number, sender)
 
       - name: Build RSSHub
         if: env.TEST_CONTINUE
