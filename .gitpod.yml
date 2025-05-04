@@ -50,16 +50,15 @@ vscode:
     - cweijan.vscode-database-client2 # It no longer blocks gitpod
     - DavidAnson.vscode-markdownlint
     - dbaeumer.vscode-eslint
+    - deepscan.vscode-deepscan
     - eamodio.gitlens
     - EditorConfig.EditorConfig
     - esbenp.prettier-vscode
-    - deepscan.vscode-deepscan
     - foxundermoon.shell-format
-    - octref.vetur
     - sonarsource.sonarlint-vscode
-    # - VASubasRaj.flashpost not available on Open VSX, Thunder Client is paywalled in WSL/Codespaces/SSH > 2.30.0
     - unifiedjs.vscode-mdx
     - vivaxy.vscode-conventional-commits
     - WakaTime.vscode-wakatime
     - yzhang.markdown-all-in-one
+    # - VASubasRaj.flashpost and KeyRunner.keyrunner are not available on Open VSX, Thunder Client is paywalled in WSL/Codespaces/SSH > 2.30.0
     # - ZihanLi.at-helper not available on Open VSX

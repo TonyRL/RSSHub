@@ -4,15 +4,6 @@
     "name": "Node.js",
     "image": "mcr.microsoft.com/devcontainers/javascript-node:22-bookworm",
 
-    // Set *default* container specific settings.json values on container create.
-    "settings": {
-        "terminal.integrated.profiles.linux": {
-            "zsh": {
-                "path": "/usr/bin/zsh"
-            }
-        },
-        "terminal.integrated.defaultProfile.linux": "zsh"
-    },
     // Configure tool-specific properties.
     "customizations": {
         // Configure properties specific to VS Code.
@@ -24,13 +15,21 @@
                 "eamodio.gitlens",
                 "EditorConfig.EditorConfig",
                 "esbenp.prettier-vscode",
-                "deepscan.vscode-deepscan",
                 "SonarSource.sonarlint-vscode",
                 "unifiedjs.vscode-mdx",
-                "vivaxy.vscode-conventional-commits",
                 "VASubasRaj.flashpost", // Thunder Client is paywalled in WSL/Codespaces/SSH > 2.30.0
+                "vivaxy.vscode-conventional-commits",
                 "ZihanLi.at-helper"
-            ]
+            ],
+            // Set *default* container specific settings.json values on container create.
+            "settings": {
+                "terminal.integrated.profiles.linux": {
+                    "zsh": {
+                        "path": "/usr/bin/zsh"
+                    }
+                },
+                "terminal.integrated.defaultProfile.linux": "zsh"
+            }
         }
     },
 
