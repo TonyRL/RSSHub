@@ -7,7 +7,7 @@ import { parseDate } from '@/utils/parse-date';
 import path from 'node:path';
 
 export const route: Route = {
-    path: ['/timeline/:user'],
+    path: '/timeline/:user',
     categories: ['social-media'],
     example: '/cara/timeline/fengz',
     parameters: { user: 'username' },

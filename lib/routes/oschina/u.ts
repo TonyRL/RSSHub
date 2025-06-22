@@ -1,4 +1,5 @@
 import { Route } from '@/types';
+// import { handler } from './user';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 import { load } from 'cheerio';
@@ -6,10 +7,10 @@ import { parseDate, parseRelativeDate } from '@/utils/parse-date';
 import timezone from '@/utils/timezone';
 
 export const route: Route = {
-    path: '/user/:id',
+    path: '/u/:uid',
     categories: ['programming'],
-    example: '/oschina/user/lenve',
-    parameters: { uid: '用户 id，可通过查看用户博客网址得到' },
+    example: '/oschina/u/3920392',
+    parameters: { uid: '用户 id，可通过查看用户博客网址得到，以 u/数字结尾，数字即为 id' },
     features: {
         requireConfig: false,
         requirePuppeteer: false,
@@ -23,21 +24,32 @@ export const route: Route = {
             source: ['my.oschina.net/u/:uid'],
         },
     ],
-    name: '用户博客',
+    name: '数字型账号用户博客',
     maintainers: ['dxmpalb'],
     handler,
 };
 
 async function handler(ctx) {
-    const { id } = ctx.req.param();
-    const res = await ofetch(`https://my.oschina.net/${id}`);
-    const $ = load(res);
+    const { uid } = ctx.req.param();
 
-    const author = $('.user-name .name').text();
-    const list = $('#newestBlogList .blog-item')
+    const res = await ofetch(`https://my.oschina.net/u/${uid}`);
+    const $page = load(res);
+    const listResponse = await ofetch(`https://my.oschina.net/u/3920392/widgets/_space_index_newest_blog`, {
+        query: {
+            catalogId: 0,
+            q: '',
+            p: 2,
+            sortType: 'time',
+            type: 'ajax',
+        },
+    });
+    const $list = load(listResponse);
+
+    const author = $page('.user-name .name').text();
+    const list = $list('.blog-item')
         .toArray()
         .map((item) => {
-            item = $(item);
+            item = $list(item);
             const date = item.find('.extra div .item:nth-of-type(2)').text();
             const accessible = !item.find('div.label[data-tooltip=审核中]').length;
             item.find('.label').remove();
@@ -68,8 +80,8 @@ async function handler(ctx) {
 
     return {
         title: author + '的博客',
-        description: $('.user-text .user-signature').text(),
-        link: `https://my.oschina.net/u/${id}`,
+        description: $page('.user-text .user-signature').text(),
+        link: `https://my.oschina.net/u/${uid}`,
         item: resultItem,
     };
 }

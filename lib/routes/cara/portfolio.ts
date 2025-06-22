@@ -5,7 +5,7 @@ import { API_HOST, CDN_HOST, HOST } from './constant';
 import cache from '@/utils/cache';
 
 export const route: Route = {
-    path: ['/portfolio/:user'],
+    path: '/portfolio/:user',
     categories: ['social-media'],
     example: '/cara/portfolio/fengz',
     parameters: { user: 'username' },

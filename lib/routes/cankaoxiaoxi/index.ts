@@ -8,7 +8,7 @@ import { art } from '@/utils/render';
 import path from 'node:path';
 
 export const route: Route = {
-    path: ['/column/:id?', '/:id?'],
+    path: '/column/:id?',
     categories: ['traditional-media'],
     example: '/cankaoxiaoxi/column/diyi',
     parameters: { id: '栏目 id，默认为 `diyi`，即第一关注' },

@@ -7,7 +7,7 @@ import { parseDate } from '@/utils/parse-date';
 import path from 'node:path';
 
 export const route: Route = {
-    path: ['/likes/:user'],
+    path: '/likes/:user',
     categories: ['social-media'],
     example: '/cara/likes/fengz',
     parameters: { user: 'username' },
