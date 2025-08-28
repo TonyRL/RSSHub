@@ -145,7 +145,7 @@ importers:
         version: 9.0.5
       http-cookie-agent:
         specifier: 6.0.8
-        version: 6.0.8(tough-cookie@5.1.2)(undici@6.21.3)
+        version: 6.0.8(tough-cookie@6.0.0)(undici@6.21.3)
       https-proxy-agent:
         specifier: 7.0.6
         version: 7.0.6
@@ -174,8 +174,8 @@ importers:
         specifier: 10.3.0
         version: 10.3.0
       jsrsasign:
-        specifier: 10.9.0
-        version: 10.9.0
+        specifier: 11.0.0
+        version: 11.0.0
       lru-cache:
         specifier: 11.1.0
         version: 11.1.0
@@ -261,8 +261,8 @@ importers:
         specifier: 2.0.0-alpha.3
         version: 2.0.0-alpha.3
       tough-cookie:
-        specifier: 5.1.2
-        version: 5.1.2
+        specifier: 6.0.0
+        version: 6.0.0
       tsx:
         specifier: 4.20.5
         version: 4.20.5
@@ -4291,8 +4291,8 @@ packages:
     resolution: {integrity: sha512-gqXddjPqQ6G40VdnI6T6yObEC+pDNvyP95wdQhkWkg7crHH3km5qP1FsOXEkzEQwnz6gz5qGTn1c2Y52wP3OyQ==}
     engines: {'0': node >=0.6.0}
 
-  jsrsasign@10.9.0:
-    resolution: {integrity: sha512-QWLUikj1SBJGuyGK8tjKSx3K7Y69KYJnrs/pQ1KZ6wvZIkHkWjZ1PJDpuvc1/28c1uP0KW9qn1eI1LzHQqDOwQ==}
+  jsrsasign@11.0.0:
+    resolution: {integrity: sha512-BtRwVKS+5dsgPpAtzJcpo5OoWjSs1/zllSBG0+8o8/aV0Ki76m6iZwHnwnsqoTdhfFZDN1XIdcaZr5ZkP+H2gg==}
 
   jwa@2.0.1:
     resolution: {integrity: sha512-hRF04fqJIP8Abbkq5NKGN0Bbr3JxlQ+qhZufXVr0DvujKy93ZCbXZMHDL4EOtodSbCWxOqR8MS1tXA5hwqCXDg==}
@@ -5618,6 +5618,10 @@ packages:
 
   tough-cookie@5.1.2:
     resolution: {integrity: sha512-FVDYdxtnj0G6Qm/DhNPSb8Ju59ULcup3tuJxkFb5K8Bv2pUXILbf0xZWU8PX8Ov19OXljbUyveOFwRMwkXzO+A==}
+    engines: {node: '>=16'}
+
+  tough-cookie@6.0.0:
+    resolution: {integrity: sha512-kXuRi1mtaKMrsLUxz3sQYvVl37B0Ns6MzfrtV5DvJceE9bPyspOqk9xxv7XbZWcfLWbFmm997vl83qUWVJA64w==}
     engines: {node: '>=16'}
 
   tr46@0.0.3:
@@ -9988,10 +9992,10 @@ snapshots:
 
   http-cache-semantics@4.2.0: {}
 
-  http-cookie-agent@6.0.8(tough-cookie@5.1.2)(undici@6.21.3):
+  http-cookie-agent@6.0.8(tough-cookie@6.0.0)(undici@6.21.3):
     dependencies:
       agent-base: 7.1.4
-      tough-cookie: 5.1.2
+      tough-cookie: 6.0.0
     optionalDependencies:
       undici: 6.21.3
 
@@ -10345,7 +10349,7 @@ snapshots:
       json-schema: 0.4.0
       verror: 1.10.0
 
-  jsrsasign@10.9.0: {}
+  jsrsasign@11.0.0: {}
 
   jwa@2.0.1:
     dependencies:
@@ -11858,6 +11862,10 @@ snapshots:
   tough-cookie@5.1.2:
     dependencies:
       tldts: 6.1.86
+
+  tough-cookie@6.0.0:
+    dependencies:
+      tldts: 7.0.12
 
   tr46@0.0.3: {}
 
