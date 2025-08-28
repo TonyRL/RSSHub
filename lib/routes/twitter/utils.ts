@@ -254,7 +254,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
                 }
                 quote += formatMedia(quoteData);
                 picsPrefix += generatePicsPrefix(quoteData);
-                quoteInTitle += showEmojiForRetweetAndReply ? ' 💬 ' : (showSymbolForRetweetAndReply ? ' RT ' : '');
+                quoteInTitle += showEmojiForRetweetAndReply ? ' 💬 ' : showSymbolForRetweetAndReply ? ' RT ' : '';
                 quoteInTitle += `${author.name}: ${formatText(quoteData)}`;
 
                 if (readable) {
@@ -280,21 +280,21 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
         // Make title
         let title = '';
         if (showAuthorInTitle) {
-            title += originalItem.user.name + ': ';
+            title += originalItem.user?.name + ': ';
         }
         const isRetweet = originalItem !== item;
         const isQuote = item.is_quote_status;
         if (!isRetweet && (!isQuote || showRetweetTextInTitle)) {
             if (item.in_reply_to_screen_name) {
-                title += showEmojiForRetweetAndReply ? '↩️ ' : (showSymbolForRetweetAndReply ? 'Re ' : '');
+                title += showEmojiForRetweetAndReply ? '↩️ ' : showSymbolForRetweetAndReply ? 'Re ' : '';
             }
             title += replaceBreak(originalItem.full_text);
         }
         if (isRetweet) {
-            title += showEmojiForRetweetAndReply ? '🔁 ' : (showSymbolForRetweetAndReply ? 'RT ' : '');
+            title += showEmojiForRetweetAndReply ? '🔁 ' : showSymbolForRetweetAndReply ? 'RT ' : '';
             title += item.user.name + ': ';
             if (item.in_reply_to_screen_name) {
-                title += showEmojiForRetweetAndReply ? ' ↩️ ' : (showSymbolForRetweetAndReply ? ' Re ' : '');
+                title += showEmojiForRetweetAndReply ? ' ↩️ ' : showSymbolForRetweetAndReply ? ' Re ' : '';
             }
             title += replaceBreak(item.full_text);
         }
@@ -304,7 +304,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
         }
 
         if (showAuthorAsTitleOnly) {
-            title = originalItem.user.name;
+            title = originalItem.user?.name;
         }
 
         // Make description
@@ -316,12 +316,12 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
             if (showAuthorInDesc) {
                 if (readable) {
                     description += '<small>';
-                    description += `<a href='https://x.com/${originalItem.user.screen_name}' target='_blank' rel='noopener noreferrer'>`;
+                    description += `<a href='https://x.com/${originalItem.user?.screen_name}' target='_blank' rel='noopener noreferrer'>`;
                 }
                 if (authorNameBold) {
                     description += `<strong>`;
                 }
-                description += originalItem.user.name;
+                description += originalItem.user?.name;
                 if (authorNameBold) {
                     description += `</strong>`;
                 }
@@ -330,16 +330,16 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
                 }
                 description += '&ensp;';
             }
-            description += showEmojiForRetweetAndReply ? '🔁' : (showSymbolForRetweetAndReply ? 'RT' : '');
+            description += showEmojiForRetweetAndReply ? '🔁' : showSymbolForRetweetAndReply ? 'RT' : '';
             if (!showAuthorInDesc) {
                 description += '&ensp;';
                 if (readable) {
-                    description += `<a href='https://x.com/${item.user.screen_name}' target='_blank' rel='noopener noreferrer'>`;
+                    description += `<a href='https://x.com/${item.user?.screen_name}' target='_blank' rel='noopener noreferrer'>`;
                 }
                 if (authorNameBold) {
                     description += `<strong>`;
                 }
-                description += item.user.name;
+                description += item.user?.name;
                 if (authorNameBold) {
                     description += `</strong>`;
                 }
@@ -354,7 +354,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
         }
         if (showAuthorInDesc) {
             if (readable) {
-                description += `<a href='https://x.com/${item.user.screen_name}' target='_blank' rel='noopener noreferrer'>`;
+                description += `<a href='https://x.com/${item.user?.screen_name}' target='_blank' rel='noopener noreferrer'>`;
             }
 
             if (showAuthorAvatarInDesc) {
@@ -363,7 +363,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
             if (authorNameBold) {
                 description += `<strong>`;
             }
-            description += item.user.name;
+            description += item.user?.name;
             if (authorNameBold) {
                 description += `</strong>`;
             }
@@ -373,7 +373,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
             description += `:&ensp;`;
         }
         if (item.in_reply_to_screen_name) {
-            description += showEmojiForRetweetAndReply ? '↩️ ' : (showSymbolForRetweetAndReply ? 'Re ' : '');
+            description += showEmojiForRetweetAndReply ? '↩️ ' : showSymbolForRetweetAndReply ? 'Re ' : '';
         }
 
         description += item.full_text;
@@ -393,16 +393,16 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
         }
 
         const link =
-            originalItem.user.screen_name && (originalItem.id_str || originalItem.conversation_id_str)
-                ? `https://x.com/${originalItem.user.screen_name}/status/${originalItem.id_str || originalItem.conversation_id_str}`
-                : `https://x.com/${item.user.screen_name}/status/${item.id_str || item.conversation_id_str}`;
+            originalItem.user?.screen_name && (originalItem.id_str || originalItem.conversation_id_str)
+                ? `https://x.com/${originalItem.user?.screen_name}/status/${originalItem.id_str || originalItem.conversation_id_str}`
+                : `https://x.com/${item.user?.screen_name}/status/${item.id_str || item.conversation_id_str}`;
         return {
             title,
             author: [
                 {
-                    name: originalItem.user.name,
-                    url: `https://x.com/${originalItem.user.screen_name}`,
-                    avatar: originalItem.user.profile_image_url_https,
+                    name: originalItem.user?.name,
+                    url: `https://x.com/${originalItem.user?.screen_name}`,
+                    avatar: originalItem.user?.profile_image_url_https,
                 },
             ],
             description,
@@ -414,7 +414,7 @@ const ProcessFeed = (ctx, { data = [] }, params = {}) => {
                 (isRetweet && {
                     links: [
                         {
-                            url: `https://x.com/${item.user?.screen_name}/status/${item.conversation_id_str}`,
+                            url: `https://x.com/${item.user?.screen_name || userScreenName}/status/${item.conversation_id_str}`,
                             type: 'repost',
                         },
                     ],

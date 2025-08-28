@@ -50,18 +50,18 @@ export const getChannelWithUsername = (username, part, cache) =>
         );
         return res;
     });
-// not in use
-// export const getVideoAuthor = async (id, part) => {
-//     const res = await exec((youtube) =>
-//         youtube.videos.list({
-//             part,
-//             id,
-//         })
-//     );
-//     return res;
-// }
+export const getVideos = (id, part, cache) =>
+    cache.tryGet(`youtube:getVideos:${id}`, async () => {
+        const res = await exec((youtube) =>
+            youtube.videos.list({
+                part,
+                id,
+            })
+        );
+        return res;
+    });
 export const getThumbnail = (thumbnails) => thumbnails.maxres || thumbnails.standard || thumbnails.high || thumbnails.medium || thumbnails.default;
-export const formatDescription = (description) => description.replaceAll(/\r\n|\r|\n/g, '<br>');
+export const formatDescription = (description) => description?.replaceAll(/\r\n|\r|\n/g, '<br>');
 export const renderDescription = (embed, videoId, img, description) =>
     art(path.join(__dirname, 'templates/description.art'), {
         embed,
@@ -93,7 +93,9 @@ export async function getSubscriptionsRecusive(part, nextPageToken?) {
     // recursively get next page
     if (res.data.nextPageToken) {
         const next = await getSubscriptionsRecusive(part, res.data.nextPageToken);
-        res.data.items = [...res.data.items, ...next.data.items];
+        if (next.data.items) {
+            res.data.items = [...(res.data.items || []), ...next.data.items];
+        }
     }
     return res;
 }
@@ -140,11 +142,12 @@ export const callApi = async <T>({ googleApi, youtubeiApi, params }: { googleApi
     return await youtubeiApi(params);
 };
 
-const youtubeUtils = {
+export default {
     getPlaylistItems,
     getPlaylist,
     getChannelWithId,
     getChannelWithUsername,
+    getVideos,
     getThumbnail,
     formatDescription,
     renderDescription,
@@ -155,4 +158,3 @@ const youtubeUtils = {
     getVideoUrl,
     getPlaylistWithShortsFilter,
 };
-export default youtubeUtils;
