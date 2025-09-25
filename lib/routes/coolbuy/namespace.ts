@@ -1,9 +1,9 @@
 import type { Namespace } from '@/types';
 
 export const namespace: Namespace = {
-    name: '新华网',
-    url: 'xinhuanet.com',
-    categories: ['traditional-media'],
+    name: '玩物志',
+    url: 'coolbuy.com',
+    categories: ['shopping'],
     description: '',
     lang: 'zh-CN',
 };

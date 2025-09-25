@@ -101,6 +101,9 @@ unicorn.configs.recommended,
         }, {
             selector: "CallExpression[callee.property.name='toArray'] MemberExpression[object.callee.property.name='map']",
             message: "Please use .toArray() before .map().",
+        }, {
+            selector: 'CallExpression[callee.property.name="catch"] > ArrowFunctionExpression[params.length<=1][body.value=null]',
+            message: "Usage of .catch(() => null) is not allowed. Please handle the error appropriately."
         }],
 
         'no-unneeded-ternary': 'error',
@@ -141,6 +144,7 @@ unicorn.configs.recommended,
 
         'unicorn/no-array-callback-reference': 'warn',
         'unicorn/no-array-reduce': 'warn',
+        'unicorn/no-array-sort': 'warn',
         'unicorn/no-await-expression-member': 'off',
         'unicorn/no-empty-file': 'warn',
         'unicorn/no-hex-escape': 'warn',
@@ -235,6 +239,11 @@ unicorn.configs.recommended,
 
         'n/no-unpublished-require': ['error', {
             allowModules: ['tosource'],
+        }],
+
+        "n/no-unsupported-features/node-builtins": ["error", {
+            "version": ">=22.16.0",
+            "ignores": []
         }],
 
         'prettier/prettier': 'off',
