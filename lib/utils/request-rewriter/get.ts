@@ -3,13 +3,19 @@ import https from 'node:https';
 import logger from '@/utils/logger';
 import { config } from '@/config';
 import proxy from '@/utils/proxy';
+import { generateHeaders } from '@/utils/header-generator';
+import type { HeaderGeneratorOptions } from 'header-generator';
 
 type Get = typeof http.get | typeof https.get | typeof http.request | typeof https.request;
+
+interface ExtendedRequestOptions extends http.RequestOptions {
+    headerGeneratorOptions?: Partial<HeaderGeneratorOptions>;
+}
 
 const getWrappedGet: <T extends Get>(origin: T) => T = (origin) =>
     function (this: any, ...args: Parameters<typeof origin>) {
         let url: URL | null;
-        let options: http.RequestOptions = {};
+        let options: ExtendedRequestOptions = {};
         let callback: ((res: http.IncomingMessage) => void) | undefined;
         if (typeof args[0] === 'string' || args[0] instanceof URL) {
             url = new URL(args[0]);
@@ -40,14 +46,30 @@ const getWrappedGet: <T extends Get>(origin: T) => T = (origin) =>
         options.headers = options.headers || {};
         const headersLowerCaseKeys = new Set(Object.keys(options.headers).map((key) => key.toLowerCase()));
 
+        // Generate headers using header-generator for realistic browser headers
+        // Use the provided preset or default to MODERN_MACOS_CHROME
+        const generatedHeaders = generateHeaders(options.headerGeneratorOptions);
+
         // ua
         if (!headersLowerCaseKeys.has('user-agent')) {
             options.headers['user-agent'] = config.ua;
         }
 
-        // Accept
-        if (!headersLowerCaseKeys.has('accept')) {
-            options.headers.accept = '*/*';
+        for (const header of [
+            'accept',
+            // sec-ch-ua (chrome client hints)
+            'sec-ch-ua',
+            'sec-ch-ua-mobile',
+            'sec-ch-ua-platform',
+            // sec-fetch (fetch metadata)
+            'sec-fetch-site',
+            'sec-fetch-mode',
+            'sec-fetch-user',
+            'sec-fetch-dest',
+        ]) {
+            if (!headersLowerCaseKeys.has(header) && generatedHeaders[header]) {
+                options.headers[header] = generatedHeaders[header];
+            }
         }
 
         // referer
@@ -71,7 +93,11 @@ const getWrappedGet: <T extends Get>(origin: T) => T = (origin) =>
             }
         }
 
-        return Reflect.apply(origin, this, [url, options, callback]) as ReturnType<typeof origin>;
+        // Remove the headerGeneratorOptions before passing to the original function
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { headerGeneratorOptions, ...cleanOptions } = options;
+
+        return Reflect.apply(origin, this, [url, cleanOptions, callback]) as ReturnType<typeof origin>;
     };
 
 export default getWrappedGet;
