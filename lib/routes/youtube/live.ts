@@ -16,7 +16,7 @@ export const route: Route = {
         requireConfig: [
             {
                 name: 'YOUTUBE_KEY',
-                description: ' YouTube API Key, support multiple keys, split them with `,`, [API Key application](https://console.developers.google.com/)',
+                description: 'YouTube API Key, support multiple keys, split them with `,`, [API Key application](https://console.developers.google.com/)',
             },
         ],
         requirePuppeteer: false,
@@ -68,6 +68,7 @@ async function handler(ctx) {
                 pubDate: parseDate(snippet.publishedAt),
                 guid: liveVideoId,
                 link: `https://www.youtube.com/watch?v=${liveVideoId}`,
+                image: img.url,
             };
         }),
         allowEmpty: true,

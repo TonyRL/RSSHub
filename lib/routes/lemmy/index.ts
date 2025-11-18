@@ -12,7 +12,34 @@ export const route: Route = {
     path: '/:community/:sort?',
     categories: ['social-media'],
     example: '/lemmy/technology@lemmy.world/Hot',
-    parameters: { community: 'Lemmmy community, for example technology@lemmy.world', sort: 'Sort by, defaut to Active' },
+    parameters: {
+        community: 'Lemmmy community, for example technology@lemmy.world',
+        sort: {
+            description: 'Sort by',
+            options: [
+                { value: 'Active', label: 'Active' },
+                { value: 'Hot', label: 'Hot' },
+                { value: 'New', label: 'New' },
+                { value: 'Old', label: 'Old' },
+                { value: 'TopDay', label: 'TopDay' },
+                { value: 'TopWeek', label: 'TopWeek' },
+                { value: 'TopMonth', label: 'TopMonth' },
+                { value: 'TopYear', label: 'TopYear' },
+                { value: 'TopAll', label: 'TopAll' },
+                { value: 'MostComments', label: 'MostComments' },
+                { value: 'NewComments', label: 'NewComments' },
+                { value: 'TopHour', label: 'TopHour' },
+                { value: 'TopSixHour', label: 'TopSixHour' },
+                { value: 'TopTwelveHour', label: 'TopTwelveHour' },
+                { value: 'TopThreeMonths', label: 'TopThreeMonths' },
+                { value: 'TopSixMonths', label: 'TopSixMonths' },
+                { value: 'TopNineMonths', label: 'TopNineMonths' },
+                { value: 'Controversial', label: 'Controversial' },
+                { value: 'Scaled', label: 'Scaled' },
+            ],
+            default: 'Active',
+        },
+    },
     features: {
         requireConfig: [
             {
@@ -27,7 +54,7 @@ export const route: Route = {
         supportScihub: false,
     },
     name: 'Community',
-    maintainers: ['wb14123'],
+    maintainers: ['wb14123', 'pseudoyu'],
     handler,
 };
 
@@ -65,11 +92,16 @@ async function handler(ctx) {
         const post = e.post;
         const creator = e.creator;
         const counts = e.counts;
-        const item = {};
-        item.title = post.name;
-        item.author = creator.name;
-        item.pubDate = parseDate(post.published);
-        item.link = post.ap_id;
+        const item = {
+            title: post.name,
+            author: creator.name,
+            pubDate: parseDate(post.published),
+            link: post.ap_id,
+            description: '',
+            comments: 0,
+            upvotes: 0,
+            downvotes: 0,
+        };
         const url = post.url;
         const urlContent = url ? `<p><a href="${url}">${url}</a></p>` : '';
         const body = post.body ? md.render(post.body) : '';

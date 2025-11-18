@@ -1,4 +1,4 @@
-import { Route } from '@/types';
+import { Route, ViewType } from '@/types';
 import cache from '@/utils/cache';
 import got from '@/utils/got';
 import { load } from 'cheerio';
@@ -7,8 +7,19 @@ import { parseDate } from '@/utils/parse-date';
 export const route: Route = {
     path: '/:section?/:type?/:user?',
     categories: ['programming'],
+    view: ViewType.Articles,
     example: '/hackernews/threads/comments_list/dang',
-    parameters: { section: '内容分区，见上表，默认为 `index`', type: '链接类型，见上表，默认为 `sources`', user: '设定用户，只在 `threads` 和 `submitted` 分区有效' },
+    parameters: {
+        section: {
+            description: 'Content section, default to `index`',
+        },
+        type: {
+            description: 'Link type, default to `sources`',
+        },
+        user: {
+            description: 'Set user, only valid in `threads` and `submitted` sections',
+        },
+    },
     features: {
         requireConfig: false,
         requirePuppeteer: false,
@@ -22,10 +33,10 @@ export const route: Route = {
             source: ['news.ycombinator.com/:section', 'news.ycombinator.com/'],
         },
     ],
-    name: '用户',
+    name: 'User',
     maintainers: ['nczitzk', 'xie-dongping'],
     handler,
-    description: `订阅特定用户的内容`,
+    description: `Subscribe to the content of a specific user`,
 };
 
 async function handler(ctx) {
@@ -48,32 +59,34 @@ async function handler(ctx) {
 
     const list = $('.athing')
         .slice(0, ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit')) : 30)
-        .map((_, thing) => {
+        .toArray()
+        .map((thing) => {
             thing = $(thing);
 
-            const item = {};
+            const item = {
+                guid: thing.attr('id'),
+                title: thing.find('.titleline').children('a').text(),
+                category: thing.find('.sitestr').text(),
+                author: thing.next().find('.hnuser').text(),
+                pubDate: parseDate(thing.find('.age').attr('title') ?? thing.next().find('.age').attr('title')),
 
-            item.guid = thing.attr('id');
-            item.title = thing.find('.titleline').children('a').text();
-            item.category = thing.find('.sitestr').text();
-            item.author = thing.next().find('.hnuser').text();
-            item.pubDate = parseDate(thing.find('.age').attr('title') ?? thing.next().find('.age').attr('title'));
+                link: '',
+                origin: thing.find('.titleline').children('a').attr('href'),
+                onStory: thing.find('.onstory').text().slice(2),
+
+                comments: thing.next().find('a').last().text().split(' comment')[0],
+                upvotes: thing.next().find('.score').text().split(' point')[0],
+
+                currentComment: thing.find('.comment').text(),
+                description: '',
+            };
 
             item.link = `${rootUrl}/item?id=${item.guid}`;
-            item.origin = thing.find('.titleline').children('a').attr('href');
-            item.onStory = thing.find('.onstory').text().substring(2);
-
-            item.comments = thing.next().find('a').last().text().split(' comment')[0];
-            item.upvotes = thing.next().find('.score').text().split(' point')[0];
-
-            item.currentComment = thing.find('.comment').text();
             item.guid = type === 'sources' ? item.guid : `${item.guid}${item.comments === 'discuss' ? '' : `-${item.comments}`}`;
-
             item.description = `<a href="${item.link}">Comments on Hacker News</a> | <a href="${item.origin}">Source</a>`;
 
             return item;
-        })
-        .get();
+        });
 
     const items = await Promise.all(
         list.map((item) =>
@@ -117,7 +130,7 @@ async function handler(ctx) {
                     item.description = item.currentComment;
                 }
 
-                if (isNaN(item.comments)) {
+                if (Number.isNaN(item.comments)) {
                     item.comments = 0;
                 }
 

@@ -11,7 +11,7 @@ const baseUrl = 'https://sehuatang.org/';
 
 export const route: Route = {
     path: '/user/:uid',
-    categories: ['multimedia', 'popular'],
+    categories: ['multimedia'],
     example: '/sehuatang/user/411096',
     parameters: { uid: '用户 uid, 可在用户主页 URL 中找到' },
     features: {
@@ -26,6 +26,7 @@ export const route: Route = {
         supportBT: false,
         supportPodcast: false,
         supportScihub: false,
+        nsfw: true,
     },
     name: '作者文章',
     maintainers: ['JamYiz'],

@@ -1,8 +1,8 @@
-import { Route } from '@/types';
+import { Route, Data } from '@/types';
 import got from '@/utils/got';
 import { load } from 'cheerio';
 import { isValidHost } from '@/utils/valid-host';
-import { headers, parseItems } from './utils';
+import { headers, parseItems, getRadarDomin } from './utils';
 import InvalidParameterError from '@/errors/types/invalid-parameter';
 
 export const route: Route = {
@@ -17,19 +17,15 @@ export const route: Route = {
         supportBT: false,
         supportPodcast: false,
         supportScihub: false,
+        nsfw: true,
     },
-    radar: [
-        {
-            source: ['pornhub.com/users/:username/*'],
-            target: '/users/:username',
-        },
-    ],
+    radar: getRadarDomin('/users/:username'),
     name: 'Users',
     maintainers: ['I2IMk', 'queensferryme'],
     handler,
 };
 
-async function handler(ctx) {
+async function handler(ctx): Promise<Data> {
     const { language = 'www', username } = ctx.req.param();
     const link = `https://${language}.pornhub.com/users/${username}/videos`;
     if (!isValidHost(language)) {
@@ -46,9 +42,7 @@ async function handler(ctx) {
         title: $('.profileUserName a').text(),
         description: $('.aboutMeText').text().trim(),
         link,
-        image: $('#coverPictureDefault').attr('src'),
-        logo: $('#getAvatar').attr('src'),
-        icon: $('#getAvatar').attr('src'),
+        image: $('#getAvatar').attr('src'),
         language: $('html').attr('lang'),
         allowEmpty: true,
         item: items,

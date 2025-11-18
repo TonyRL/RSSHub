@@ -3,12 +3,11 @@
 .github
 .husky
 .idea
+.idx
 .vscode
-Dockerfile*
-LICENSE
-Procfile
 app-minimal
 coverage
+eslint-plugins
 node_modules
 test
 
@@ -24,13 +23,17 @@ test
 .prettier*
 .(yarn|npm|nvm)rc
 *.md
+Dockerfile*
+LICENSE
 app.json
+eslint.config.mjs
 docker-compose*
 fly.toml
 jsconfig.json
 npm-debug.log
 process.json
 package-lock.json
+vitest.config.ts
 vercel.json
 
 # git but keep the git commit hash

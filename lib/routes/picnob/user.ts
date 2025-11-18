@@ -1,21 +1,27 @@
-import { Route } from '@/types';
-import { getCurrentPath } from '@/utils/helpers';
-const __dirname = getCurrentPath(import.meta.url);
-
+import { config } from '@/config';
+import { Route, ViewType } from '@/types';
 import cache from '@/utils/cache';
-import got from '@/utils/got';
+import { parseRelativeDate } from '@/utils/parse-date';
 import { load } from 'cheerio';
-import { parseDate } from '@/utils/parse-date';
-import { art } from '@/utils/render';
-import path from 'node:path';
-import { puppeteerGet } from './utils';
-import puppeteer from '@/utils/puppeteer';
+
+async function getPageWithRealBrowser(url: string, selector: string) {
+    try {
+        const res = await fetch(`${config.puppeteerRealBrowserService}?url=${encodeURIComponent(url)}&selector=${encodeURIComponent(selector)}`);
+        const json = await res.json();
+        return (json.data?.at(0) || '') as string;
+    } catch {
+        return '';
+    }
+}
 
 export const route: Route = {
-    path: '/user/:id',
+    path: '/user/:id/:type?',
     categories: ['social-media'],
     example: '/picnob/user/xlisa_olivex',
-    parameters: { id: 'Instagram id' },
+    parameters: {
+        id: 'Instagram id',
+        type: 'Type of profile page (profile or tagged)',
+    },
     features: {
         requireConfig: false,
         requirePuppeteer: true,
@@ -26,104 +32,83 @@ export const route: Route = {
     },
     radar: [
         {
-            source: ['picnob.com/profile/:id/*'],
+            source: ['www.pixnoy.com/profile/:id'],
             target: '/user/:id',
         },
+        {
+            source: ['www.pixnoy.com/profile/:id/tagged'],
+            target: '/user/:id/tagged',
+        },
     ],
-    name: 'User Profile - Picnob',
-    maintainers: ['TonyRL', 'micheal-death'],
+    name: 'User Profile - Pixnoy',
+    maintainers: ['TonyRL', 'micheal-death', 'AiraNadih', 'DIYgod', 'hyoban'],
     handler,
+    view: ViewType.Pictures,
 };
 
 async function handler(ctx) {
-    // NOTE: 'picnob' is still available, but all requests to 'picnob' will be redirected to 'pixwox' eventually
-    const baseUrl = 'https://www.pixwox.com';
+    if (!config.puppeteerRealBrowserService) {
+        throw new Error('PUPPETEER_REAL_BROWSER_SERVICE is required to use this route.');
+    }
+
+    // NOTE: 'picnob' is still available, but all requests to 'picnob' will be redirected to 'pixnoy' eventually
+    const baseUrl = 'https://www.pixnoy.com';
     const id = ctx.req.param('id');
-    const url = `${baseUrl}/profile/${id}/`;
+    const type = ctx.req.param('type') ?? 'profile';
+    const profileUrl = `${baseUrl}/profile/${id}/${type === 'tagged' ? 'tagged/' : ''}`;
 
-    const browser = await puppeteer();
-    // TODO: can't bypass cloudflare 403 error without puppeteer
-    let html;
-    let usePuppeteer = false;
-    try {
-        const { data } = await got(url, {
-            headers: {
-                accept: 'text/html',
-                referer: 'https://www.google.com/',
-            },
-        });
-        html = data;
-    } catch (error: any) {
-        if (error.message.includes('403')) {
-            html = await puppeteerGet(url, browser);
-            usePuppeteer = true;
-        }
+    const html = await getPageWithRealBrowser(profileUrl, '.post_box');
+    if (!html) {
+        throw new Error('Failed to fetch user profile page. User may not exist or there are no posts available.');
     }
+
     const $ = load(html);
-    const profileName = $('h1.fullname').text();
-    const userId = $('input[name=userid]').attr('value');
 
-    let posts;
-    if (usePuppeteer) {
-        const data = await puppeteerGet(`${baseUrl}/api/posts?userid=${userId}`, browser);
-        posts = data.posts;
-    } else {
-        const { data } = await got(`${baseUrl}/api/posts`, {
-            headers: {
-                accept: 'application/json',
-            },
-            searchParams: {
-                userid: userId,
-            },
-        });
-        posts = data.posts;
-    }
-
-    const list = await Promise.all(
-        posts.items.map(async (item) => {
-            const { shortcode, type, sum_pure, time } = item;
-            const link = `${baseUrl}/post/${shortcode}/`;
-            if (type === 'img_multi') {
-                item.images = await cache.tryGet(link, async () => {
-                    let html;
-                    if (usePuppeteer) {
-                        html = await puppeteerGet(link, browser);
-                    } else {
-                        const { data } = await got(link);
-                        html = data;
-                    }
-                    const $ = load(html);
-                    return [
-                        ...new Set(
-                            $('.post_slide a')
-                                .toArray()
-                                .map((a: any) => {
-                                    a = $(a);
-                                    return {
-                                        ori: a.attr('href'),
-                                        url: a.find('img').attr('data-src'),
-                                    };
-                                })
-                        ),
-                    ];
-                });
-            }
+    const list = $('.post_box')
+        .toArray()
+        .map((item) => {
+            const $item = $(item);
+            const coverLink = $item.find('.cover_link').attr('href');
+            const shortcode = coverLink?.split('/')?.[2];
+            const image = $item.find('.cover .cover_link img');
+            const title = image.attr('alt') || '';
 
             return {
-                title: sum_pure,
-                description: art(path.join(__dirname, 'templates/desc.art'), { item }),
-                link,
-                pubDate: parseDate(time, 'X'),
+                title,
+                description: `<img src="${image.attr('data-src')}" /><br />${title}`,
+                link: `${baseUrl}${coverLink}`,
+                guid: shortcode,
+                pubDate: parseRelativeDate($item.find('.time .txt').text()),
             };
-        })
-    );
-    await browser.close();
+        });
+
+    const htmlList = (await Promise.all(list.map((item) => cache.tryGet(`picnob:user:${id}:${item.guid}:html`, async () => await getPageWithRealBrowser(item.link, '.view'))))) as string[];
+
+    const newDescription = htmlList.map((html) => {
+        if (!html) {
+            return '';
+        }
+        const $ = load(html);
+        if ($('.video_img').length > 0) {
+            return `<video src="${$('.video_img a').attr('href')}" poster="${$('.video_img img').attr('data-src')}"></video><br />${$('.sum_full').text()}`;
+        } else {
+            let description = '';
+            for (const pic of $('.pic img').toArray()) {
+                description += `<img src="${$(pic).attr('data-src')}" /><br />`;
+            }
+            description += $('.sum_full').text();
+            return description;
+        }
+    });
 
     return {
-        title: `${profileName} (@${id}) - Picnob`,
+        title: `${$('h1.fullname').text()} (@${id}) ${type === 'tagged' ? 'tagged' : 'public'} posts - Picnob`,
         description: $('.info .sum').text(),
-        link: url,
+        link: profileUrl,
         image: $('.ava .pic img').attr('src'),
-        item: list,
+        item: list.map((item, index) => ({
+            ...item,
+            description: newDescription[index] || item.description,
+        })),
     };
 }

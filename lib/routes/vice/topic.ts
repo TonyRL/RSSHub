@@ -3,12 +3,10 @@ import ofetch from '@/utils/ofetch';
 import { load } from 'cheerio';
 import { parseDate } from '@/utils/parse-date';
 import cache from '@/utils/cache';
-import path from 'path';
-import { getCurrentPath } from '@/utils/helpers';
+import path from 'node:path';
 import { art } from '@/utils/render';
 
-const __dirname = getCurrentPath(import.meta.url);
-const render = (data) => art(path.join(__dirname, 'templates', 'article.art'), data);
+const render = (data) => art(path.join(__dirname, 'templates/article.art'), data);
 
 export const route: Route = {
     path: '/topic/:topic/:language?',
@@ -16,7 +14,6 @@ export const route: Route = {
     example: '/vice/topic/politics/en',
     parameters: {
         topic: 'Can be found in the URL',
-        content: 'Set to true to retrieve the full article (images are blurry), anything else will pull the short text',
         language: 'defaults to `en`, use the website to discover other codes',
     },
     radar: [
@@ -70,9 +67,6 @@ async function handler(ctx) {
                                     return render({ body: { html: component.html } });
                                 case 'heading2':
                                     return render({ heading2: { html: component.html } });
-                                case 'article':
-                                case 'divider':
-                                    return '';
                                 case 'image':
                                     return render({
                                         image: {
@@ -86,7 +80,7 @@ async function handler(ctx) {
                                 case 'youtube':
                                     return render({ oembed: { html: component.oembed.html } });
                                 default:
-                                    throw new Error(`Unhandled component: ${component.role} from ${item.link}`);
+                                    return '';
                             }
                         })
                         .join('');

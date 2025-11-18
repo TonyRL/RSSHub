@@ -31,7 +31,7 @@ const server = setupServer(
             choices: [
                 {
                     message: {
-                        content: 'Summary of the article.',
+                        content: 'AI processed content.',
                     },
                 },
             ],
@@ -48,10 +48,12 @@ const server = setupServer(
                 <li>
                     <a href="/1">1</a>
                     <div class="description">RSSHub1</div>
+                    <div class="date">2025-01-01</div>
                 </li>
                 <li>
                     <a href="/2">2</a>
                     <div class="description">RSSHub2</div>
+                    <div class="date">2025-01-02</div>
                 </li>
             </ul>
         </div>`)

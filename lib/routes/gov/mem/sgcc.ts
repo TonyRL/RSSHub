@@ -27,8 +27,8 @@ export const route: Route = {
     maintainers: ['nczitzk'],
     handler,
     description: `| 挂牌督办 | 调查报告   |
-  | -------- | ---------- |
-  | sggpdbqk | tbzdsgdcbg |`,
+| -------- | ---------- |
+| sggpdbqk | tbzdsgdcbg |`,
 };
 
 async function handler(ctx) {
@@ -49,7 +49,7 @@ async function handler(ctx) {
         .map((item) => {
             item = $(item);
 
-            const regExp = new RegExp(`\\/sgcc\\/${category}\\/\\.\\.\\.`);
+            const regExp = new RegExp(String.raw`\/sgcc\/${category}\/\.\.\.`);
             const link = new URL(`${category}/${item.prop('href').replace(/\.\//, '')}`, currentUrl).href.replace(regExp, '');
 
             return {

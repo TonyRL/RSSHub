@@ -1,6 +1,4 @@
-import { Route } from '@/types';
-import { getCurrentPath } from '@/utils/helpers';
-const __dirname = getCurrentPath(import.meta.url);
+import { Route, ViewType } from '@/types';
 
 import { getSubPath } from '@/utils/common-utils';
 import cache from '@/utils/cache';
@@ -29,9 +27,19 @@ export const route: Route = {
     ],
     name: 'Works',
     maintainers: ['MegrezZhu', 'CoderTonyChan', 'nczitzk', 'Felix2yu'],
-    categories: ['multimedia', 'popular'],
+    categories: ['multimedia'],
+    view: ViewType.Videos,
     handler,
     url: 'www.javbus.com',
+    example: '/javbus/star/rwt',
+    parameters: {
+        path: {
+            description: 'Any path of list page on javbus',
+        },
+    },
+    features: {
+        nsfw: true,
+    },
 };
 
 async function handler(ctx) {
@@ -150,7 +158,7 @@ async function handler(ctx) {
                         });
 
                     if (magnets) {
-                        item.enclosure_url = magnets.sort((a, b) => b.score - a.score)[0].link;
+                        item.enclosure_url = magnets.toSorted((a, b) => b.score - a.score)[0].link;
                         item.enclosure_type = 'application/x-bittorrent';
                     }
                 } catch {

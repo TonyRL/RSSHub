@@ -1,8 +1,10 @@
 import { Route } from '@/types';
-import ofetch from '@/utils/ofetch';
-import { header, getSignedHeader, processImage } from './utils';
 import { load } from 'cheerio';
+import ofetch from '@/utils/ofetch';
+import cache from '@/utils/cache';
+import { header, getSignedHeader, processImage } from './utils';
 import { parseDate } from '@/utils/parse-date';
+import { Articles, Profile } from './types';
 
 export const route: Route = {
     path: '/posts/:usertype/:id',
@@ -10,7 +12,13 @@ export const route: Route = {
     example: '/zhihu/posts/people/frederchen',
     parameters: { usertype: '作者 id，可在用户主页 URL 中找到', id: '用户类型usertype，参考用户主页的URL。目前有两种，见下表' },
     features: {
-        requireConfig: false,
+        requireConfig: [
+            {
+                name: 'ZHIHU_COOKIES',
+                description: '',
+                optional: true,
+            },
+        ],
         requirePuppeteer: false,
         antiCrawler: true,
         supportBT: false,
@@ -19,7 +27,7 @@ export const route: Route = {
     },
     radar: [
         {
-            source: ['www.zhihu.com/:usertype/:id/posts'],
+            source: ['www.zhihu.com/:usertype/:id/posts', 'www.zhihu.com/:usertype/:id'],
         },
     ],
     name: '用户文章',
@@ -34,15 +42,20 @@ async function handler(ctx) {
     const id = ctx.req.param('id');
     const usertype = ctx.req.param('usertype');
 
-    const data = await ofetch(`https://www.zhihu.com/${usertype}/${id}/posts`, {
-        headers: {
-            ...header,
-            Referer: `https://www.zhihu.com/${usertype}/${id}/`,
-        },
+    const userProfile = await cache.tryGet(`zhihu:posts:profile:${id}`, async () => {
+        const userAPIPath = `/${usertype === 'people' ? 'people' : 'org'}/${id}`;
+
+        const result = await ofetch(`https://www.zhihu.com${userAPIPath}`, {
+            headers: {
+                ...header,
+                ...(await getSignedHeader(`https://www.zhihu.com/${usertype}/${id}/`, userAPIPath)),
+                Referer: `https://www.zhihu.com/${usertype}/${id}/`,
+            },
+        });
+        const $ = load(result);
+        const data = JSON.parse($('#js-initialData').text());
+        return data?.initialState?.entities?.users[id] as Profile;
     });
-    const $ = load(data);
-    const initialData = JSON.parse($('#js-initialData').text());
-    const userData = initialData?.initialState?.entities?.users?.[id];
 
     const apiPath = `/api/v4/${usertype === 'people' ? 'members' : 'org'}/${id}/articles?${new URLSearchParams({
         include:
@@ -54,7 +67,7 @@ async function handler(ctx) {
 
     const signedHeader = await getSignedHeader(`https://www.zhihu.com/${usertype}/${id}/posts`, apiPath);
 
-    const articleResponse = await ofetch(`https://www.zhihu.com${apiPath}`, {
+    const articleResponse = await ofetch<Articles>(`https://www.zhihu.com${apiPath}`, {
         headers: {
             ...header,
             ...signedHeader,
@@ -72,11 +85,11 @@ async function handler(ctx) {
     }));
 
     return {
-        title: `${userData?.name} 的知乎文章`,
+        title: `${userProfile.name} 的知乎文章`,
         link: `https://www.zhihu.com/${usertype}/${id}/posts`,
-        description: userData?.headline,
-        image: userData?.avatarUrlTemplate?.split('?')[0],
-        banner: userData?.coverUrl?.split('?')[0],
+        description: userProfile.headline,
+        image: userProfile.avatarUrl.split('?')[0],
+        // banner: userData?.coverUrl?.split('?')[0],
         item: items,
     };
 }
