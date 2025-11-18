@@ -1,6 +1,9 @@
 import { Route } from '@/types';
 import got from '@/utils/got';
-import utils from './utils';
+import utils, { getVideoUrl } from './utils';
+import { parseDuration } from '@/utils/helpers';
+import { config } from '@/config';
+import cache from './cache';
 
 export const route: Route = {
     path: '/weekly/:embed?',
@@ -21,6 +24,7 @@ export const route: Route = {
 };
 
 async function handler(ctx) {
+    const isJsonFeed = ctx.req.query('format') === 'json';
     const embed = !ctx.req.param('embed');
 
     const status_response = await got({
@@ -46,10 +50,23 @@ async function handler(ctx) {
         title: 'B站每周必看',
         link: 'https://www.bilibili.com/h5/weekly-recommend',
         description: 'B站每周必看',
-        item: data.map((item) => ({
-            title: item.title,
-            description: utils.renderUGCDescription(embed, item.cover, `${weekly_name} ${item.title} - ${item.rcmd_reason}`, item.param, undefined, item.bvid),
-            link: weekly_number > 60 && item.bvid ? `https://www.bilibili.com/video/${item.bvid}` : `https://www.bilibili.com/video/av${item.param}`,
-        })),
+        item: data.map(async (item) => {
+            const subtitles = isJsonFeed && !config.bilibili.excludeSubtitles && item.bvid ? await cache.getVideoSubtitleAttachment(item.bvid) : [];
+            return {
+                title: item.title,
+                description: utils.renderUGCDescription(embed, item.cover, `${weekly_name} ${item.title} - ${item.rcmd_reason}`, item.param, undefined, item.bvid),
+                link: weekly_number > 60 && item.bvid ? `https://www.bilibili.com/video/${item.bvid}` : `https://www.bilibili.com/video/av${item.param}`,
+                attachments: item.bvid
+                    ? [
+                          {
+                              url: getVideoUrl(item.bvid),
+                              mime_type: 'text/html',
+                              duration_in_seconds: parseDuration(item.cover_right_text_1),
+                          },
+                          ...subtitles,
+                      ]
+                    : undefined,
+            };
+        }),
     };
 }

@@ -20,10 +20,11 @@ export const route: Route = {
         supportBT: false,
         supportPodcast: false,
         supportScihub: false,
+        nsfw: true,
     },
     radar: [
         {
-            source: ['www.pixiv.net/users/:id'],
+            source: ['www.pixiv.net/users/:id', 'www.pixiv.net/en/users/:id'],
         },
     ],
     name: 'User Activity',

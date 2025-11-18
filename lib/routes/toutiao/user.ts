@@ -2,7 +2,7 @@ import { Route } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
-import randUserAgent from '@/utils/rand-user-agent';
+import { PRESETS, generateHeaders } from '@/utils/header-generator';
 import { generate_a_bogus } from './a-bogus';
 import { Feed } from './types';
 import RejectError from '@/errors/types/reject';
@@ -30,17 +30,17 @@ export const route: Route = {
 
 async function handler(ctx) {
     const { token } = ctx.req.param();
-    const ua = randUserAgent({ browser: 'chrome', os: 'windows', device: 'desktop' });
 
     const feed = (await cache.tryGet(
         `toutiao:user:${token}`,
         async () => {
             const query = `category=profile_all&token=${token}&max_behot_time=0&entrance_gid&aid=24&app_name=toutiao_web`;
 
-            const data = await ofetch(`https://www.toutiao.com/api/pc/list/feed?${query}&a_bogus=${generate_a_bogus(query, ua)}`, {
-                headers: {
-                    'User-Agent': ua,
-                },
+            const headers = generateHeaders(PRESETS.MODERN_WINDOWS_CHROME);
+            const userAgent = headers['user-agent'];
+
+            const data = await ofetch(`https://www.toutiao.com/api/pc/list/feed?${query}&a_bogus=${generate_a_bogus(query, userAgent)}`, {
+                headerGeneratorOptions: PRESETS.MODERN_WINDOWS_CHROME,
             });
 
             return data.data;
@@ -57,12 +57,12 @@ async function handler(ctx) {
         switch (item.cell_type) {
             case 0:
             case 49: {
-                const video = item.video.play_addr_list.sort((a, b) => b.bitrate - a.bitrate)[0];
+                const video = item.video.play_addr_list.toSorted((a, b) => b.bitrate - a.bitrate)[0];
                 return {
                     title: item.title,
                     description: art(path.join(__dirname, 'templates/video.art'), {
                         poster: item.video.origin_cover.url_list[0],
-                        url: item.video.play_addr_list.sort((a, b) => b.bitrate - a.bitrate)[0].play_url_list[0],
+                        url: item.video.play_addr_list.toSorted((a, b) => b.bitrate - a.bitrate)[0].play_url_list[0],
                     }),
                     link: `https://www.toutiao.com/video/${item.id}/`,
                     pubDate: parseDate(item.publish_time, 'X'),

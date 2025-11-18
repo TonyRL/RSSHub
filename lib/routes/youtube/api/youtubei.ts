@@ -1,10 +1,20 @@
+import { Data } from '@/types';
 import cache from '@/utils/cache';
+import { parseRelativeDate } from '@/utils/parse-date';
 import { Innertube } from 'youtubei.js';
 import utils, { getVideoUrl } from '../utils';
-import { Data } from '@/types';
-import { parseRelativeDate } from '@/utils/parse-date';
+import { getSrtAttachmentBatch } from './subtitles';
 
-const innertubePromise = Innertube.create();
+const innertubePromise = Innertube.create({
+    fetch: (input, init) => {
+        const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+
+        return fetch(url, {
+            method: input?.method,
+            ...init,
+        });
+    },
+});
 
 export const getChannelIdByUsername = (username: string) =>
     cache.tryGet(`youtube:getChannelIdByUsername:${username}`, async () => {
@@ -13,15 +23,16 @@ export const getChannelIdByUsername = (username: string) =>
         return navigationEndpoint.payload.browseId;
     });
 
-export const getDataByUsername = async ({ username, embed, filterShorts }: { username: string; embed: boolean; filterShorts: boolean }): Promise<Data> => {
+export const getDataByUsername = async ({ username, embed, filterShorts, isJsonFeed }: { username: string; embed: boolean; filterShorts: boolean; isJsonFeed: boolean }): Promise<Data> => {
     const channelId = (await getChannelIdByUsername(username)) as string;
-    return getDataByChannelId({ channelId, embed, filterShorts });
+    return getDataByChannelId({ channelId, embed, filterShorts, isJsonFeed });
 };
 
-export const getDataByChannelId = async ({ channelId, embed }: { channelId: string; embed: boolean; filterShorts: boolean }): Promise<Data> => {
+export const getDataByChannelId = async ({ channelId, embed, isJsonFeed }: { channelId: string; embed: boolean; filterShorts: boolean; isJsonFeed: boolean }): Promise<Data> => {
     const innertube = await innertubePromise;
     const channel = await innertube.getChannel(channelId);
     const videos = await channel.getVideos();
+    const videoSubtitles = isJsonFeed ? await getSrtAttachmentBatch(videos.videos.filter((video) => 'video_id' in video).map((video) => video.video_id)) : {};
 
     return {
         title: `${channel.metadata.title || channelId} - YouTube`,
@@ -29,31 +40,35 @@ export const getDataByChannelId = async ({ channelId, embed }: { channelId: stri
         image: channel.metadata.avatar?.[0].url,
         description: channel.metadata.description,
 
-        item: videos.videos
-            .filter((video) => 'video_id' in video)
-            .map((video) => {
-                const img = 'best_thumbnail' in video ? video.best_thumbnail?.url : ('thumbnails' in video ? video.thumbnails?.[0]?.url : undefined);
+        item: await Promise.all(
+            videos.videos
+                .filter((video) => 'video_id' in video)
+                .map((video) => {
+                    const srtAttachments = isJsonFeed ? videoSubtitles[video.video_id] || [] : [];
+                    const img = 'best_thumbnail' in video ? video.best_thumbnail?.url : 'thumbnails' in video ? video.thumbnails?.[0]?.url : undefined;
 
-                return {
-                    title: video.title.text || `YouTube Video ${video.video_id}`,
-                    description: 'description_snippet' in video ? utils.renderDescription(embed, video.video_id, img, utils.formatDescription(video.description_snippet?.toHTML())) : null,
-                    link: `https://www.youtube.com/watch?v=${video.video_id}`,
-                    author: typeof video.author === 'string' ? video.author : (video.author.name === 'N/A' ? undefined : video.author.name),
-                    image: img,
-                    pubDate: 'published' in video && video.published?.text ? parseRelativeDate(video.published.text) : undefined,
-                    attachments: [
-                        {
-                            url: getVideoUrl(video.video_id),
-                            mime_type: 'text/html',
-                            duration_in_seconds: video.duration && 'seconds' in video.duration ? video.duration.seconds : undefined,
-                        },
-                    ],
-                };
-            }),
+                    return {
+                        title: video.title.text || `YouTube Video ${video.video_id}`,
+                        description: 'description_snippet' in video ? utils.renderDescription(embed, video.video_id, img, utils.formatDescription(video.description_snippet?.toHTML())) : null,
+                        link: `https://www.youtube.com/watch?v=${video.video_id}`,
+                        author: typeof video.author === 'string' ? video.author : video.author.name === 'N/A' ? undefined : video.author.name,
+                        image: img,
+                        pubDate: 'published' in video && video.published?.text ? parseRelativeDate(video.published.text) : undefined,
+                        attachments: [
+                            {
+                                url: getVideoUrl(video.video_id),
+                                mime_type: 'text/html',
+                                duration_in_seconds: video.duration && 'seconds' in video.duration ? video.duration.seconds : undefined,
+                            },
+                            ...srtAttachments,
+                        ],
+                    };
+                })
+        ),
     };
 };
 
-export const getDataByPlaylistId = async ({ playlistId, embed }: { playlistId: string; embed: boolean }): Promise<Data> => {
+export const getDataByPlaylistId = async ({ playlistId, embed }: { playlistId: string; embed: boolean; isJsonFeed: boolean }): Promise<Data> => {
     const innertube = await innertubePromise;
     const playlist = await innertube.getPlaylist(playlistId);
     const videos = await playlist.videos;
