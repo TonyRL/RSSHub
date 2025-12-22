@@ -1,8 +1,16 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
-// https://github.com/devcontainers/images/blob/v0.3.24/src/javascript-node/.devcontainer/devcontainer.json
+// https://github.com/devcontainers/images/blob/v0.4.19/src/typescript-node/.devcontainer/devcontainer.json
 {
-    "name": "Node.js",
-    "image": "mcr.microsoft.com/devcontainers/javascript-node:22-bookworm",
+    "name": "Node.js & TypeScript",
+    "image": "mcr.microsoft.com/devcontainers/typescript-node:24-bookworm",
+    "features": {
+        "ghcr.io/devcontainers/features/docker-in-docker": {
+            "version": "latest"
+        },
+        "ghcr.io/devcontainers/features/github-cli": {
+            "version": "latest"
+        }
+    },
 
     // Configure tool-specific properties.
     "customizations": {
@@ -14,7 +22,7 @@
                 "dbaeumer.vscode-eslint",
                 "eamodio.gitlens",
                 "EditorConfig.EditorConfig",
-                "esbenp.prettier-vscode",
+                "prettier.prettier-vscode",
                 "SonarSource.sonarlint-vscode",
                 "unifiedjs.vscode-mdx",
                 "VASubasRaj.flashpost", // Thunder Client is paywalled in WSL/Codespaces/SSH > 2.30.0
@@ -34,7 +42,7 @@
     },
 
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
-    "forwardPorts": [1200, 3000],
+    "forwardPorts": [1200],
 
     "portsAttributes": {
         "1200": {

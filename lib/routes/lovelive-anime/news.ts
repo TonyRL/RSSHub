@@ -1,13 +1,15 @@
-import { Route } from '@/types';
+import path from 'node:path';
 
+import { load } from 'cheerio';
+
+import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import got from '@/utils/got';
-import { load } from 'cheerio';
-import path from 'node:path';
-import { art } from '@/utils/render';
 import ofetch from '@/utils/ofetch';
-import timezone from '@/utils/timezone';
 import { parseDate } from '@/utils/parse-date';
+import { art } from '@/utils/render';
+import timezone from '@/utils/timezone';
+
 const renderDescription = (desc) => art(path.join(__dirname, 'templates/description.art'), desc);
 
 export const route: Route = {
@@ -95,7 +97,7 @@ async function handler(ctx) {
                     const detailResp = await got(item.link);
                     const $ = load(detailResp.data);
 
-                    const content = $('div.p-page__detail.p-article');
+                    const content = $('.p-article__content');
                     for (const v of content.find('img')) {
                         v.attribs.src = 'https://www.lovelive-anime.jp' + v.attribs.src;
                     }
