@@ -5,20 +5,22 @@ import got from '@/utils/got';
 import { getCategories, parseItem, parseList } from './utils';
 
 export const route: Route = {
-    path: ['/', '/category/:category'],
+    name: '分类',
+    categories: ['game'],
+    maintainers: ['TonyRL'],
+    path: '/category/:category',
+    example: '/4gamers/category/352',
+    parameters: { category: '分类 ID，可从分类 URL 中找到' },
     radar: [
         {
-            source: ['www.4gamers.com.tw/news', 'www.4gamers.com.tw/'],
-            target: '',
+            source: ['www.4gamers.com.tw/news'],
         },
     ],
-    name: 'Unknown',
-    maintainers: ['TonyRL'],
     handler,
     url: 'www.4gamers.com.tw/news',
 };
 
-async function handler(ctx) {
+export async function handler(ctx) {
     const category = ctx.req.param('category');
     const limit = ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit')) : 25;
     const isLatest = !category;
