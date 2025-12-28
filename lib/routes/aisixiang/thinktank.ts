@@ -25,6 +25,12 @@ export const route: Route = {
     handler,
     description: `| 论文 | 时评 | 随笔 | 演讲 | 访谈 | 著作 | 读书 | 史论 | 译作 | 诗歌 | 书信 | 科学 |
 | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |`,
+    radar: [
+        {
+            source: ['www.aisixiang.com/thinktank', 'www.aisixiang.com/'],
+            target: (_, url) => `/aisixiang/thinktank/${new URL(url).href.match(/thinktank\/(.*)\.html/)?.[1]}`,
+        },
+    ],
 };
 
 async function handler(ctx) {

@@ -27,6 +27,12 @@ export const route: Route = {
     description: `::: tip
   更多专题请见 [关键词](http://www.aisixiang.com/zhuanti/)
 :::`,
+    radar: [
+        {
+            source: ['www.aisixiang.com/zhuanti', 'www.aisixiang.com/'],
+            target: (params, url) => `/aisixiang/zhuanti/${new URL(url).href.match(/\/zhuanti\/(.*?)\.html/)?.[1]}`,
+        },
+    ],
 };
 
 async function handler(ctx) {

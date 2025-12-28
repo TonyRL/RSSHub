@@ -24,6 +24,12 @@ export const route: Route = {
     name: '栏目',
     maintainers: ['HenryQW', 'nczitzk'],
     handler,
+    radar: [
+        {
+            source: ['www.aisixiang.com/data/search', 'www.aisixiang.com/'],
+            target: (_, url) => `/aisixiang/column/${new URL(url).searchParams.get('column')}`,
+        },
+    ],
 };
 
 async function handler(ctx) {

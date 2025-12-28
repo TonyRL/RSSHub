@@ -8,13 +8,28 @@ import { parseDate } from '@/utils/parse-date';
 import { ossUrl, ProcessFeed, rootUrl } from './utils';
 
 export const route: Route = {
-    path: ['/ranking/:id?/:period?', '/toplist/:id?/:period?'],
-    name: 'Unknown',
+    path: '/toplist/:id?/:period?',
+    parameters: {
+        id: '类型',
+        period: '范围, 仅适用于点击排行榜, 可选一天(1)，一周(7)，一月(30)，所有(-1)，默认为一天',
+    },
+    example: '/aisixiang/toplist/1/7',
+    name: '排行',
     maintainers: ['HenryQW', 'nczitzk'],
     handler,
     description: `| 文章点击排行 | 最近更新文章 | 文章推荐排行 |
 | ------------ | ------------ | ------------ |
 | 1            | 10           | 11           |`,
+    radar: [
+        {
+            source: ['www.aisixiang.com/toplist', 'www.aisixiang.com/'],
+            target: (_, url) => {
+                const id = new URL(url).searchParams.get('id');
+                const period = new URL(url).searchParams.get('period');
+                return `/aisixiang/toplist${id ? `/${id}${(id === '1' || !id) && period ? `/${period}` : ''}` : ''}`;
+            },
+        },
+    ],
 };
 
 async function handler(ctx) {
