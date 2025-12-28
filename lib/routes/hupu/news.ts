@@ -7,7 +7,7 @@ import { NBA_TEAMS_ID_MAP } from './consts';
 import { getEntryDetails } from './utils';
 
 export const route: Route = {
-    path: ['/news/:team'],
+    path: '/news/:team',
     name: '队伍新闻',
     url: 'm.hupu.com',
     maintainers: ['hyoban'],
