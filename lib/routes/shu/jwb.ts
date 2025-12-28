@@ -13,11 +13,12 @@ const alias = new Map([
 ]);
 
 export const route: Route = {
-    path: ['/jwb/:type?'],
+    path: '/jwb/:type?',
+    example: '/shu/jwb/notice',
     radar: [
         {
-            source: ['www.shu.edu.cn/index'],
-            target: '/:type?',
+            source: ['www.shu.edu.cn/index/:type'],
+            target: '/jwb/:type?',
         },
     ],
     name: '教务部',
