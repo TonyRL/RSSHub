@@ -8,7 +8,7 @@ import { parseDate } from '@/utils/parse-date';
 import { art } from '@/utils/render';
 
 export const route: Route = {
-    path: ['/:language?'],
+    path: '/:language?',
     name: '每日环球视野',
     example: '/idaily',
     maintainers: ['zphw', 'nczitzk'],
