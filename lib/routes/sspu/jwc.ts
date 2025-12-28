@@ -8,14 +8,22 @@ import timezone from '@/utils/timezone';
 
 export const route: Route = {
     path: '/jwc/:listId',
+    parameters: {
+        listId: '专栏 ID，见下表',
+    },
+    example: '/sspu/jwc/897',
     radar: [
         {
             source: ['jwc.sspu.edu.cn/jwc/:listId/list.htm'],
         },
     ],
-    name: 'Unknown',
+    name: '教务处',
     maintainers: ['TonyRL'],
     handler,
+    description: `
+| 学生专栏 | 教师专栏 |
+| -------- | -------- |
+| 897      | 898      |`,
 };
 
 async function handler(ctx) {
