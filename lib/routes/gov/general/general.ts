@@ -1,5 +1,7 @@
-import { getSubPath } from '@/utils/common-utils';
+import { load } from 'cheerio';
+
 import cache from '@/utils/cache';
+import { getSubPath } from '@/utils/common-utils';
 // 来人拯救一下啊( >﹏<。)
 // 待做功能：
 // 1. 传入和处理
@@ -10,7 +12,6 @@ import cache from '@/utils/cache';
 //         [] 示例1: http://www.dianbai.gov.cn/ywdt/dbyw/content/post_1091433.html
 // 4. 处理网站功能
 //        [] hdjlpt 互动交流
-
 // 使用方法
 // import { gdgov } from '../general/general';
 //
@@ -36,13 +37,12 @@ import cache from '@/utils/cache';
 //     };
 //     await gdgov(info, ctx);
 // };
-
 import got from '@/utils/got';
-import { load } from 'cheerio';
 import { parseDate } from '@/utils/parse-date';
 import timezone from '@/utils/timezone';
-import { art } from '@/utils/render';
 import { finishArticleItem } from '@/utils/wechat-mp';
+
+import { renderZcjdpt } from './templates/zcjdpt';
 
 const gdgov = async (info, ctx) => {
     const path = getSubPath(ctx)
@@ -184,7 +184,7 @@ const gdgov = async (info, ctx) => {
                     return {
                         link,
                         title: data.art_title,
-                        description: art(path.join(__dirname, 'templates/zcjdpt.art'), data),
+                        description: renderZcjdpt(data),
                         pubDate: timezone(parseDate(data.pub_time), +8),
                         author: /(本|本网|本站)/.test(data.pub_unite) ? authorisme : data.pub_unite,
                     };

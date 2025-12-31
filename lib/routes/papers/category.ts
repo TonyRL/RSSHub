@@ -1,14 +1,15 @@
-import { type Data, type DataItem, type Route, ViewType } from '@/types';
+import type { Cheerio, CheerioAPI } from 'cheerio';
+import { load } from 'cheerio';
+import type { Element } from 'domhandler';
+import type { Context } from 'hono';
 
-import { art } from '@/utils/render';
+import type { Data, DataItem, Route } from '@/types';
+import { ViewType } from '@/types';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
 import timezone from '@/utils/timezone';
 
-import { type CheerioAPI, type Cheerio, load } from 'cheerio';
-import type { Element } from 'domhandler';
-import { type Context } from 'hono';
-import path from 'node:path';
+import { renderDescription } from './templates/description';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { id } = ctx.req.param();
@@ -78,7 +79,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 };
             }
 
-            const description: string = art(path.join(__dirname, 'templates/description.art'), {
+            const description: string = renderDescription({
                 pdfUrl: enclosureUrl,
                 kimiUrl: `${targetUrl.replace(/[a-zA-Z0-9.]+$/, 'kimi')}?paper=${doi}`,
                 authors,

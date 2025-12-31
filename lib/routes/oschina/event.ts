@@ -1,14 +1,15 @@
-import { type Data, type DataItem, type Route, ViewType } from '@/types';
+import type { Cheerio, CheerioAPI } from 'cheerio';
+import { load } from 'cheerio';
+import type { Element } from 'domhandler';
+import type { Context } from 'hono';
 
-import { art } from '@/utils/render';
+import type { Data, DataItem, Route } from '@/types';
+import { ViewType } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
 
-import { type CheerioAPI, type Cheerio, load } from 'cheerio';
-import type { Element } from 'domhandler';
-import { type Context } from 'hono';
-import path from 'node:path';
+import { renderDescription } from './templates/description';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { category = 'latest' } = ctx.req.param();
@@ -40,7 +41,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
 
             const title: string = $el.find('a.summary').text();
             const image: string | undefined = $el.find('header.item-banner img').attr('data-delay');
-            const description: string = art(path.join(__dirname, 'templates/description.art'), {
+            const description: string = renderDescription({
                 images: image
                     ? [
                           {
@@ -98,7 +99,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
 
                     const title: string = $$('h1').text();
                     const image: string | undefined = $$('div.event-img img').attr('src');
-                    const description: string = art(path.join(__dirname, 'templates/description.art'), {
+                    const description: string = renderDescription({
                         images: image
                             ? [
                                   {

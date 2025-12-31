@@ -1,14 +1,15 @@
-import { type Data, type DataItem, type Route, ViewType } from '@/types';
+import type { Cheerio, CheerioAPI } from 'cheerio';
+import { load } from 'cheerio';
+import type { Element } from 'domhandler';
+import type { Context } from 'hono';
 
-import { art } from '@/utils/render';
+import type { Data, DataItem, Route } from '@/types';
+import { ViewType } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
 
-import { type CheerioAPI, type Cheerio, load } from 'cheerio';
-import type { Element } from 'domhandler';
-import { type Context } from 'hono';
-import path from 'node:path';
+import { renderDescription } from './templates/description';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { id = 'tzgg' } = ctx.req.param();
@@ -30,7 +31,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
             const $el: Cheerio<Element> = $(el);
 
             const title: string = $el.find('div.news_title, span.div.news_title, div.bttb2').text();
-            const description: string | undefined = art(path.join(__dirname, 'templates/description.art'), {
+            const description: string | undefined = renderDescription({
                 intro: $el.find('div.news_text, div.jj5').text(),
             });
             const pubDateStr: string | undefined = $('span.news_meta').text() || ($('span.news_days').text() ? `${$('span.news_days').text()}-${$('span.news_year').text()}` : `${$('div.tm-3').text()}-${$('div.tm-1').text()}`);
@@ -64,7 +65,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 const $$: CheerioAPI = load(detailResponse);
 
                 const title: string = $$('h1.arti_title').text() + $$('h2.arti_title').text();
-                const description: string | undefined = art(path.join(__dirname, 'templates/description.art'), {
+                const description: string | undefined = renderDescription({
                     description: $$('div.wp_articlecontent').html(),
                 });
                 const pubDateStr: string | undefined = $$('span.arti_update').text().split(/：/).pop()?.trim();

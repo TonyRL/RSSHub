@@ -1,13 +1,14 @@
-import cache from '@/utils/cache';
-import got from '@/utils/got';
 import { load } from 'cheerio';
-import { parseDate } from '@/utils/parse-date';
-import { art } from '@/utils/render';
-import path from 'node:path';
+import CryptoJS from 'crypto-js';
+
 import { config } from '@/config';
 import ConfigNotFoundError from '@/errors/types/config-not-found';
+import cache from '@/utils/cache';
+import got from '@/utils/got';
 import md5 from '@/utils/md5';
-import CryptoJS from 'crypto-js';
+import { parseDate } from '@/utils/parse-date';
+
+import { renderDescription } from './templates/description';
 
 const defaultDomain = 'jmcomic1.me';
 // list of address: https://jmcomic2.bet
@@ -128,7 +129,7 @@ const ProcessItems = async (ctx, currentUrl, rootUrl) => {
                     .toArray()
                     .map((a) => $(a).text())
                     .join(', ');
-                item.description = art(path.join(__dirname, 'templates/description.art'), {
+                item.description = renderDescription({
                     introduction: content('#intro-block .p-t-5').text(),
                     images: content('.img_zoom_img img')
                         .toArray()
@@ -151,4 +152,4 @@ const ProcessItems = async (ctx, currentUrl, rootUrl) => {
     };
 };
 
-export { defaultDomain, getRootUrl, ProcessItems, getApiUrl, processApiItems, apiMapCategory };
+export { apiMapCategory, defaultDomain, getApiUrl, getRootUrl, processApiItems, ProcessItems };

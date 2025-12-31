@@ -1,11 +1,11 @@
-import { Route } from '@/types';
+import { load } from 'cheerio';
 
+import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import got from '@/utils/got';
-import { load } from 'cheerio';
 import { parseDate } from '@/utils/parse-date';
-import { art } from '@/utils/render';
-import path from 'node:path';
+
+import { renderDescription } from './templates/description';
 
 export const route: Route = {
     path: ['/main', '/'],
@@ -42,7 +42,7 @@ async function handler(ctx) {
         link: item.url.split('?')[0],
         author: item.source,
         pubDate: parseDate(item.timestamp * 1000),
-        description: art(path.join(__dirname, 'templates/description.art'), {
+        description: renderDescription({
             abs: item.abstract,
             pic: item.pic,
         }),

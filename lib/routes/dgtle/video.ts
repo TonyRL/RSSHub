@@ -1,15 +1,16 @@
-import { type Data, type DataItem, type Route, ViewType } from '@/types';
+import type { Cheerio, CheerioAPI } from 'cheerio';
+import { load } from 'cheerio';
+import type { Element } from 'domhandler';
+import type { Context } from 'hono';
 
-import { art } from '@/utils/render';
+import type { Data, DataItem, Route } from '@/types';
+import { ViewType } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 import { parseRelativeDate } from '@/utils/parse-date';
 import timezone from '@/utils/timezone';
 
-import { type CheerioAPI, type Cheerio, load } from 'cheerio';
-import type { Element } from 'domhandler';
-import { type Context } from 'hono';
-import path from 'node:path';
+import { renderDescription } from './templates/description';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const limit: number = Number.parseInt(ctx.req.query('limit') ?? '18', 10);
@@ -29,7 +30,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
     items = response.data.list.slice(0, limit).map((item): DataItem => {
         const title: string = item.title;
         const image: string | undefined = item.cover?.split(/\?/)?.[0];
-        const description: string | undefined = art(path.join(__dirname, 'templates/description.art'), {
+        const description: string | undefined = renderDescription({
             images: image
                 ? [
                       {
@@ -86,7 +87,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 const enclosureUrl: string | undefined = $$enclosureEl.attr('src');
 
                 const image: string | undefined = $$('div.video-play').attr('data-url');
-                const description: string | undefined = art(path.join(__dirname, 'templates/description.art'), {
+                const description: string | undefined = renderDescription({
                     videos: enclosureUrl
                         ? [
                               {

@@ -1,15 +1,15 @@
-import path from 'node:path';
+import type { CheerioAPI } from 'cheerio';
+import { load } from 'cheerio';
+import type { Context } from 'hono';
 
-import { type CheerioAPI, load } from 'cheerio';
-import { type Context } from 'hono';
-
-import { type DataItem, type Route, type Data, ViewType } from '@/types';
-
-import { art } from '@/utils/render';
+import type { Data, DataItem, Route } from '@/types';
+import { ViewType } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
 import timezone from '@/utils/timezone';
+
+import { renderDescription } from './templates/description';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { id } = ctx.req.param();
@@ -30,7 +30,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
         ? parsedData.initialData.props.results.slice(0, limit).map((item): DataItem => {
               const title: string = item.title;
               const image: string | undefined = item.image_url;
-              const description: string = art(path.join(__dirname, 'templates/description.art'), {
+              const description: string = renderDescription({
                   images: image
                       ? [
                             {
@@ -113,7 +113,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
 
                     const title: string = articleData.title;
                     const image: string | undefined = articleData.image_url;
-                    const description: string = art(path.join(__dirname, 'templates/description.art'), {
+                    const description: string = renderDescription({
                         images: image
                             ? [
                                   {
