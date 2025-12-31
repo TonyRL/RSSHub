@@ -1,7 +1,9 @@
-import { Route } from '@/types';
-
-import ofetch from '@/utils/ofetch';
 import { load } from 'cheerio';
+
+import type { Route } from '@/types';
+import logger from '@/utils/logger';
+import { parseDate } from '@/utils/parse-date';
+import puppeteer from '@/utils/puppeteer';
 
 export const route: Route = {
     path: '/journal/:id',
@@ -73,28 +75,29 @@ async function handler(ctx) {
 
     const currentUrl = cfg.link;
 
-    const firstResponse = await ofetch.raw(rootUrl);
-
-    const headers = {
-        cookie: `JSESSIONID=${firstResponse.headers['set-cookie'].join(' ').match(/JSESSIONID=(\S+);/)[1]}`,
-    };
-
-    const response = await ofetch(currentUrl, {
-        headers,
+    const browser = await puppeteer();
+    const page = await browser.newPage();
+    await page.setRequestInterception(true);
+    page.on('request', (request) => {
+        request.resourceType() === 'document' || request.resourceType() === 'script' ? request.continue() : request.abort();
     });
-    const $ = load(response);
+    logger.http(`Requesting ${currentUrl}`);
+    await page.goto(currentUrl, {
+        waitUntil: 'domcontentloaded',
+    });
 
-    $('div[data-widget-def="topContentActionWidget"]').eq(2).remove();
-    $('div[data-widget-def="topContentActionWidget"]').eq(1).remove();
+    const html = await page.content();
+    await page.close();
+    const $ = load(html);
 
-    const list = $('h5')
-        .not('.border-top')
+    const list = $('.article-meta')
         .toArray()
         .map((item) => {
-            item = $(item);
-            const a = item.parent().get(0).tagName === 'a' ? item.parent() : item.find('a');
+            const $item = $(item);
+            const a = $item.find('.issue-item__title a');
             return {
-                title: a.attr('title'),
+                title: a.text(),
+                description: $item.find('.toc-item__abstract').text(),
                 link: `${rootUrl}${a.attr('href')}`,
             };
         });
@@ -102,9 +105,16 @@ async function handler(ctx) {
     const items = await Promise.all(
         list.map((item) =>
             ctx.cache.tryGet(item.link, async () => {
-                const detailResponse = await ofetch(item.link, {
-                    headers,
+                const page = await browser.newPage();
+                await page.setRequestInterception(true);
+                page.on('request', (request) => {
+                    request.resourceType() === 'document' || request.resourceType() === 'script' ? request.continue() : request.abort();
                 });
+                logger.http(`Requesting ${currentUrl}`);
+                await page.goto(item.link, {
+                    waitUntil: 'domcontentloaded',
+                });
+                const detailResponse = await page.content();
                 const content = load(detailResponse);
 
                 content('.author-info').remove();
@@ -112,13 +122,14 @@ async function handler(ctx) {
                 item.author = content('.loa-accordion').text();
                 item.doi = content('meta[name="dc.Identifier"]').attr('content');
                 item.description = content('.abstractInFull').html();
-                item.pubDate = new Date(content('meta[name="dc.Date"]').attr('content')).toUTCString();
+                item.pubDate = parseDate(content('meta[name="dc.Date"]').attr('content'));
 
                 return item;
             })
         )
     );
 
+    await browser.close();
     return {
         title: cfg.title,
         link: currentUrl,
