@@ -1,5 +1,3 @@
-import path from 'node:path';
-
 import type { Cheerio, CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';
 import type { Element } from 'domhandler';
@@ -10,13 +8,14 @@ import { ViewType } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
-import { art } from '@/utils/render';
+
+import { renderDescription } from './templates/description';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { category = 'news-events/latest-news' } = ctx.req.param();
     const limit: number = Number.parseInt(ctx.req.query('limit') ?? '12', 10);
 
-    const baseUrl: string = 'https://www.semiconductors.org';
+    const baseUrl = 'https://www.semiconductors.org';
     const targetUrl: string = new URL(category.endsWith('/') ? category : `${category}/`, baseUrl).href;
 
     const response = await ofetch(targetUrl);
@@ -38,7 +37,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 .find('img')
                 .attr('src')
                 ?.replace(/-\d+x\d+\./, '.');
-            const description: string | undefined = art(path.join(__dirname, 'templates/description.art'), {
+            const description: string | undefined = renderDescription({
                 images: image
                     ? [
                           {
@@ -94,7 +93,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 const image: string | undefined = $$('meta[property="og:image"]')
                     .attr('content')
                     ?.replace(/-scaled\./, '.');
-                const description: string | undefined = art(path.join(__dirname, 'templates/description.art'), {
+                const description: string | undefined = renderDescription({
                     images: image
                         ? [
                               {
@@ -103,7 +102,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                               },
                           ]
                         : undefined,
-                    description: $$('main#main').html(),
+                    description: $$('main#main').html() || undefined,
                 });
                 const pubDateStr: string | undefined = $$('meta[property="article:published_time"]').attr('content');
                 const authorEls: Element[] = $$('meta[name="author"]').toArray();

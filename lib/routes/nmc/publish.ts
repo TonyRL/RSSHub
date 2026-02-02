@@ -1,5 +1,3 @@
-import path from 'node:path';
-
 import type { Cheerio, CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';
 import type { Element } from 'domhandler';
@@ -9,14 +7,15 @@ import type { Data, DataItem, Route } from '@/types';
 import { ViewType } from '@/types';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
-import { art } from '@/utils/render';
 import timezone from '@/utils/timezone';
+
+import { renderDescription } from './templates/description';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { id = 'hourly-temperature/html' } = ctx.req.param();
     const limit: number = Number.parseInt(ctx.req.query('limit') ?? '50', 10);
 
-    const baseUrl: string = 'https://www.nmc.cn';
+    const baseUrl = 'https://www.nmc.cn';
     const pathSegment: string = id.split(/\//).pop() === 'htm' ? 'htm' : 'html';
     const targetUrl: string = new URL(`publish/${id.replace(new RegExp(String.raw`\/${pathSegment}$`), '')}.${pathSegment}`, baseUrl).href;
 
@@ -38,8 +37,8 @@ export const handler = async (ctx: Context): Promise<Data> => {
                           .map((el) => $(el).text().trim());
                       const pubDateStr: string | undefined = `${timeStrArray.pop()}:00 ${timeStrArray.join('/')}`;
 
-                      const title: string = `${pubDateStr} - ${$el.find('div.title').text().replaceAll(/\s/g, '')}`;
-                      const description: string | undefined = art(path.join(__dirname, 'templates/description.art'), {
+                      const title = `${pubDateStr} - ${$el.find('div.title').text().replaceAll(/\s/g, '')}`;
+                      const description: string | undefined = renderDescription({
                           description: $el.find('div.writing').html(),
                       });
 
@@ -56,7 +55,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                               url: undefined,
                               avatar: undefined,
                           }));
-                      const guid: string = `${linkUrl}#${pubDateStr}`;
+                      const guid = `${linkUrl}#${pubDateStr}`;
                       const upDatedStr: string | undefined = pubDateStr;
 
                       const processedItem: DataItem = {
@@ -85,11 +84,11 @@ export const handler = async (ctx: Context): Promise<Data> => {
 
                       const image: string | undefined = $el.attr('data-img');
 
-                      const title: string = `${$el.find('div').text().trim()} - ${$('div.nav1 a.actived, div#menuNavBar button.dropdown-toggle')
+                      const title = `${$el.find('div').text().trim()} - ${$('div.nav1 a.actived, div#menuNavBar button.dropdown-toggle')
                           .toArray()
                           .map((el) => $(el).text().trim())
                           .join(' - ')}`;
-                      const description: string | undefined = art(path.join(__dirname, 'templates/description.art'), {
+                      const description: string | undefined = renderDescription({
                           images: image
                               ? [
                                     {
@@ -102,7 +101,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                       const year: string | undefined = image?.match(/product\/(\d{4})\//)?.[1];
                       const pubDateStr: string | undefined = `${year ? `${year}/` : ''}${$el.attr('data-time')}`;
                       const linkUrl: string | undefined = targetUrl;
-                      const guid: string = `${linkUrl}#${pubDateStr}`;
+                      const guid = `${linkUrl}#${pubDateStr}`;
                       const upDatedStr: string | undefined = pubDateStr;
 
                       const processedItem: DataItem = {
