@@ -70,9 +70,9 @@ const parseDynamic = async (item) => {
     let description, title;
     const type = Number.parseInt(item.type);
     switch (type) {
-        case 0:
+        case 0: // feedType: feed
         case 5:
-        case 7: // external share
+        case 7: // feedType: url
         case 8:
         case 9:
         case 10:
@@ -80,7 +80,9 @@ const parseDynamic = async (item) => {
         case 13: // feedType: video (external)
         case 15:
         case 17:
-        case 20: {
+        case 20:
+        case 21: {
+            // feedType: productAlbum
             // //////////////////////////////////////////// 基本内容 ////////////////////////////////////////////
             if (item.issummary) {
                 // 需要爬内容
@@ -109,13 +111,13 @@ const parseDynamic = async (item) => {
                         description += `<p>${i.title}√</p>`;
                     }
                 }
-            } else if (type === 10 || type === 11) {
+            } else if (type === 10 || type === 11 || type === 21) {
                 title = `${item.message_title} 更多:` + title;
             }
 
             break;
         }
-        case 12:
+        case 12: // feedType: feedArticle
             title = item.title;
             description = await cache.tryGet(itemUrl, async () => {
                 const result = await ofetch(itemUrl, {
