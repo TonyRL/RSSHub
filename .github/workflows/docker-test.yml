@@ -40,7 +40,7 @@ jobs:
                   flavor: latest=true
 
             - name: Build Docker image
-              uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+              uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
               with:
                   context: .
                   build-args: PUPPETEER_SKIP_DOWNLOAD=0 # also test bundling Chromium
@@ -55,7 +55,7 @@ jobs:
 
             - name: Pull Request Labeler
               if: ${{ failure() }}
-              uses: actions-cool/issues-helper@e2ff99831a4f13625d35064e2b3dfe65c07a0396 # v3.7.5
+              uses: actions-cool/issues-helper@71b62d7da76e59ff7b193904feb6e77d4dbb2777 # v3.7.6
               with:
                   actions: 'add-labels'
                   token: ${{ secrets.GITHUB_TOKEN }}
