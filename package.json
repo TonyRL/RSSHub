@@ -62,7 +62,7 @@
         "@hono/node-server": "1.19.11",
         "@hono/zod-openapi": "1.2.3",
         "@jocmp/mercury-parser": "3.0.7",
-        "@notionhq/client": "5.14.0",
+        "@notionhq/client": "5.15.0",
         "@opentelemetry/api": "1.9.0",
         "@opentelemetry/exporter-prometheus": "0.213.0",
         "@opentelemetry/exporter-trace-otlp-http": "0.213.0",
@@ -71,7 +71,7 @@
         "@opentelemetry/sdk-trace-base": "2.6.0",
         "@opentelemetry/semantic-conventions": "1.40.0",
         "@rss3/sdk": "0.0.25",
-        "@scalar/hono-api-reference": "0.10.4",
+        "@scalar/hono-api-reference": "0.10.5",
         "@sentry/node": "10.45.0",
         "aes-js": "3.1.2",
         "cheerio": "1.2.0",
@@ -196,7 +196,7 @@
         "oxlint": "1.57.0",
         "oxlint-tsgolint": "0.17.3",
         "remark-parse": "11.0.0",
-        "tsdown": "0.21.4",
+        "tsdown": "0.21.5",
         "typescript": "5.9.3",
         "unified": "11.0.5",
         "vite-tsconfig-paths": "6.1.1",
@@ -217,7 +217,7 @@
     "engines": {
         "node": "^22.20.0 || ^24"
     },
-    "packageManager": "pnpm@10.32.1+sha512.a706938f0e89ac1456b6563eab4edf1d1faf3368d1191fc5c59790e96dc918e4456ab2e67d613de1043d2e8c81f87303e6b40d4ffeca9df15ef1ad567348f2be",
+    "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
     "pnpm": {
         "onlyBuiltDependencies": [
             "bufferutil",
