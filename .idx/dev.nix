@@ -51,7 +51,7 @@
       # Runs when a workspace is first created
       onCreate = {
         # Example: install JS dependencies from NPM
-        pnpm-install = "pnpm i && pnpm rb && pnpx rebrowser-puppeteer browsers install chrome";
+        pnpm-install = "pnpm i && pnpm rb && node node_modules/cloakbrowser/dist/cli.js install";
       };
       # Runs when the workspace is (re)started
       onStart = {

@@ -1,6 +1,7 @@
+import { launch as cloakLaunch } from 'cloakbrowser/puppeteer';
 import { anonymizeProxy } from 'proxy-chain';
-import type { Browser, Page } from 'rebrowser-puppeteer';
-import puppeteer from 'rebrowser-puppeteer';
+import type { Browser, Page } from 'puppeteer-core';
+import puppeteerCore from 'puppeteer-core';
 
 import { config } from '@/config';
 
@@ -12,48 +13,43 @@ import proxy from './proxy';
  * @returns Puppeteer browser
  */
 const outPuppeteer = async () => {
-    const options = {
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-blink-features=AutomationControlled',
-            '--window-position=0,0',
-            '--ignore-certificate-errors',
-            '--ignore-certificate-errors-spki-list',
-            `--user-agent=${config.ua}`,
-        ],
-        headless: true,
-        ignoreHTTPSErrors: true,
-    };
-
-    const insidePuppeteer: typeof puppeteer = puppeteer;
+    const args = [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-blink-features=AutomationControlled',
+        '--window-position=0,0',
+        '--ignore-certificate-errors',
+        '--ignore-certificate-errors-spki-list',
+        `--user-agent=${config.ua}`,
+    ];
 
     const currentProxy = proxy.getCurrentProxy();
     if (currentProxy && proxy.proxyObj.url_regex === '.*') {
         if (currentProxy.urlHandler?.username || currentProxy.urlHandler?.password) {
             // only proxies with authentication need to be anonymized
             if (currentProxy.urlHandler.protocol === 'http:') {
-                options.args.push(`--proxy-server=${await anonymizeProxy(currentProxy.uri)}`);
+                args.push(`--proxy-server=${await anonymizeProxy(currentProxy.uri)}`);
             } else {
                 logger.warn('SOCKS/HTTPS proxy with authentication is not supported by puppeteer, continue without proxy');
             }
         } else {
             // Chromium cannot recognize socks5h and socks4a, so we need to trim their postfixes
-            options.args.push(`--proxy-server=${currentProxy.uri.replace('socks5h://', 'socks5://').replace('socks4a://', 'socks4://')}`);
+            args.push(`--proxy-server=${currentProxy.uri.replace('socks5h://', 'socks5://').replace('socks4a://', 'socks4://')}`);
         }
     }
+
     const browser = await (config.puppeteerWSEndpoint
-        ? insidePuppeteer.connect({
+        ? puppeteerCore.connect({
               browserWSEndpoint: config.puppeteerWSEndpoint,
           })
-        : insidePuppeteer.launch(
-              config.chromiumExecutablePath
-                  ? {
-                        executablePath: config.chromiumExecutablePath,
-                        ...options,
-                    }
-                  : options
-          ));
+        : cloakLaunch({
+              headless: true,
+              args,
+              launchOptions: {
+                  acceptInsecureCerts: true,
+                  ...(config.chromiumExecutablePath ? { executablePath: config.chromiumExecutablePath } : {}),
+              },
+          }));
     setTimeout(async () => {
         await browser.close();
     }, 30000);
@@ -80,21 +76,15 @@ export const getPuppeteerPage = async (
         noGoto?: boolean;
     } = {}
 ) => {
-    const options = {
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-blink-features=AutomationControlled',
-            '--window-position=0,0',
-            '--ignore-certificate-errors',
-            '--ignore-certificate-errors-spki-list',
-            `--user-agent=${config.ua}`,
-        ],
-        headless: true,
-        ignoreHTTPSErrors: true,
-    };
-
-    const insidePuppeteer: typeof puppeteer = puppeteer;
+    const args = [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-blink-features=AutomationControlled',
+        '--window-position=0,0',
+        '--ignore-certificate-errors',
+        '--ignore-certificate-errors-spki-list',
+        `--user-agent=${config.ua}`,
+    ];
 
     let allowProxy = false;
     const proxyRegex = new RegExp(proxy.proxyObj.url_regex);
@@ -120,35 +110,35 @@ export const getPuppeteerPage = async (
                 const urlObj = new URL(currentProxy.uri);
                 urlObj.username = '';
                 urlObj.password = '';
-                options.args.push(`--proxy-server=${urlObj.toString().replace(/\/$/, '')}`);
+                args.push(`--proxy-server=${urlObj.toString().replace(/\/$/, '')}`);
                 hasProxy = true;
             } else {
                 logger.warn('SOCKS/HTTPS proxy with authentication is not supported by puppeteer, continue without proxy');
             }
         } else {
             // Chromium cannot recognize socks5h and socks4a, so we need to trim their postfixes
-            options.args.push(`--proxy-server=${currentProxy.uri.replace('socks5h://', 'socks5://').replace('socks4a://', 'socks4://')}`);
+            args.push(`--proxy-server=${currentProxy.uri.replace('socks5h://', 'socks5://').replace('socks4a://', 'socks4://')}`);
             hasProxy = true;
         }
     }
     let browser: Browser;
     if (config.puppeteerWSEndpoint) {
         const endpointURL = new URL(config.puppeteerWSEndpoint);
-        endpointURL.searchParams.set('launch', JSON.stringify(options));
+        endpointURL.searchParams.set('launch', JSON.stringify({ args, headless: true, acceptInsecureCerts: true }));
         endpointURL.searchParams.set('stealth', 'true');
         const endpoint = endpointURL.toString();
-        browser = await insidePuppeteer.connect({
+        browser = await puppeteerCore.connect({
             browserWSEndpoint: endpoint,
         });
     } else {
-        browser = await insidePuppeteer.launch(
-            config.chromiumExecutablePath
-                ? {
-                      executablePath: config.chromiumExecutablePath,
-                      ...options,
-                  }
-                : options
-        );
+        browser = await cloakLaunch({
+            headless: true,
+            args,
+            launchOptions: {
+                acceptInsecureCerts: true,
+                ...(config.chromiumExecutablePath ? { executablePath: config.chromiumExecutablePath } : {}),
+            },
+        });
     }
 
     setTimeout(async () => {

@@ -40,7 +40,7 @@ WORKDIR /ver
 COPY ./package.json /app/
 RUN \
     set -ex && \
-    grep -Po '(?<="rebrowser-puppeteer": ")[^\s"]*(?=")' /app/package.json | tee /ver/.puppeteer_version && \
+    grep -Po '(?<="cloakbrowser": ")[^\s"]*(?=")' /app/package.json | tee /ver/.cloakbrowser_version && \
     grep -Po '(?<="@vercel/nft": ")[^\s"]*(?=")' /app/package.json | tee /ver/.nft_version && \
     grep -Po '(?<="fs-extra": ")[^\s"]*(?=")' /app/package.json | tee /ver/.fs_extra_version
 
@@ -88,14 +88,15 @@ FROM node:24-bookworm-slim AS chromium-downloader
 # Yeah, downloading Chromium never needs those dependencies below.
 
 WORKDIR /app
-COPY ./.puppeteerrc.cjs /app/
-COPY --from=dep-version-parser /ver/.puppeteer_version /app/.puppeteer_version
+COPY --from=dep-version-parser /ver/.cloakbrowser_version /app/.cloakbrowser_version
 
 ARG TARGETPLATFORM
 ARG USE_CHINA_NPM_REGISTRY=0
 ARG PUPPETEER_SKIP_DOWNLOAD=1
-# The official recommended way to use Puppeteer on x86(_64) is to use the bundled Chromium from Puppeteer:
-# https://pptr.dev/faq#q-why-doesnt-puppeteer-vxxx-workwith-chromium-vyyy
+# CloakBrowser ships its own patched Chromium binary. On first launch it downloads
+# it to $CLOAKBROWSER_CACHE_DIR (default ~/.cloakbrowser). We pre-download here so
+# the final image starts immediately.
+ENV CLOAKBROWSER_CACHE_DIR=/app/.cloakbrowser
 RUN \
     set -ex ; \
     if [ "$PUPPETEER_SKIP_DOWNLOAD" = 0 ] && [ "$TARGETPLATFORM" = 'linux/amd64' ]; then \
@@ -104,14 +105,12 @@ RUN \
             yarn config set registry https://registry.npmmirror.com && \
             pnpm config set registry https://registry.npmmirror.com ; \
         fi; \
-        echo 'Downloading Chromium...' && \
-        unset PUPPETEER_SKIP_DOWNLOAD && \
+        echo 'Downloading CloakBrowser Chromium...' && \
         corepack enable pnpm && \
-        pnpm --allow-build=rebrowser-puppeteer add rebrowser-puppeteer@$(cat /app/.puppeteer_version) --save-prod && \
-        pnpm rb && \
-        pnpx rebrowser-puppeteer browsers install chrome ; \
+        pnpm add cloakbrowser@$(cat /app/.cloakbrowser_version) --save-prod && \
+        node node_modules/cloakbrowser/dist/cli.js install ; \
     else \
-        mkdir -p /app/node_modules/.cache/puppeteer ; \
+        mkdir -p /app/.cloakbrowser ; \
     fi;
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -160,13 +159,14 @@ RUN \
     fi; \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=chromium-downloader /app/node_modules/.cache/puppeteer /app/node_modules/.cache/puppeteer
+COPY --from=chromium-downloader /app/.cloakbrowser /app/.cloakbrowser
 
+ENV CLOAKBROWSER_CACHE_DIR=/app/.cloakbrowser
 RUN \
     set -ex && \
     if [ "$PUPPETEER_SKIP_DOWNLOAD" = 0 ] && [ "$TARGETPLATFORM" = 'linux/amd64' ]; then \
         echo 'Verifying Chromium installation...' && \
-        _chrome_path=$(find /app/node_modules/.cache/puppeteer/chrome/ -name chrome -xtype f -executable | head -n1) && \
+        _chrome_path=$(find /app/.cloakbrowser/ -name chrome -xtype f -executable | head -n1) && \
         echo "CHROMIUM_EXECUTABLE_PATH=$_chrome_path" | tee /app/.env && \
         if ldd "$_chrome_path" | grep "not found"; then \
             echo "!!! Chromium has unmet shared libs !!!" && \
@@ -194,7 +194,7 @@ CMD ["npm", "run", "start"]
 #     apt-file \
 # && \
 # apt-file update && \
-# ldd $(find /app/node_modules/.cache/puppeteer/ -name chrome -type f) | grep -Po "\S+(?= => not found)" | \
+# ldd $(find /app/.cloakbrowser/ -name chrome -type f) | grep -Po "\S+(?= => not found)" | \
 # sed 's/\./\\./g' | awk '{print $1"$"}' | apt-file search -xlf - | grep ^lib | \
 # xargs -d '\n' -- \
 #     apt-get install -yq --no-install-recommends \

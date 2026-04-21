@@ -1,6 +1,6 @@
 import type { CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';
-import type { Browser, Page } from 'rebrowser-puppeteer';
+import type { Browser, Page } from 'puppeteer-core';
 
 import type { DataItem } from '@/types';
 import cache from '@/utils/cache';

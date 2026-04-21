@@ -120,7 +120,7 @@ jobs:
                   cache: 'pnpm'
 
             - name: Install dependencies (pnpm)
-              run: pnpm i && pnpm rb && pnpx rebrowser-puppeteer browsers install chrome
+              run: pnpm i && pnpm rb && node node_modules/cloakbrowser/dist/cli.js install
 
             - name: Fetch affected routes
               id: fetch-route

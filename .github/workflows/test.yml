@@ -39,7 +39,7 @@ jobs:
             - name: Install dependencies (pnpm)
               run: pnpm i
             - name: Run postinstall script for dependencies
-              run: pnpm rb && pnpx rebrowser-puppeteer browsers install chrome
+              run: pnpm rb && node node_modules/cloakbrowser/dist/cli.js install
             - name: Build routes
               run: pnpm build
             - name: Build worker routes
@@ -85,7 +85,7 @@ jobs:
               run: pnpm i
               env: ${{ fromJSON(matrix.chromium.environment) }}
             - name: Run postinstall script for dependencies
-              run: pnpm rb && pnpx rebrowser-puppeteer browsers install chrome
+              run: pnpm rb && node node_modules/cloakbrowser/dist/cli.js install
               env: ${{ fromJSON(matrix.chromium.environment) }}
             - name: Build routes
               run: pnpm build

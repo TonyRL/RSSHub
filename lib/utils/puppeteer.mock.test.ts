@@ -22,11 +22,14 @@ const proxyMock = {
     getDispatcherForProxy: vi.fn(),
 };
 
-vi.mock('rebrowser-puppeteer', () => ({
+vi.mock('puppeteer-core', () => ({
     default: {
         connect,
-        launch,
     },
+}));
+
+vi.mock('cloakbrowser/puppeteer', () => ({
+    launch,
 }));
 
 vi.mock('@/utils/proxy', () => ({
