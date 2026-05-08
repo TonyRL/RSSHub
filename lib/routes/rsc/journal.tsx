@@ -24,7 +24,7 @@ export const route: Route = {
     maintainers: ['nczitzk'],
     handler,
     description: `::: tip
-  All journals at [Current journals](https://pubs.rsc.org/en/journals)
+All journals at [Current journals](https://pubs.rsc.org/en/journals)
 :::
 
 | All Recent Articles | Advance Articles |

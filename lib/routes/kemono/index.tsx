@@ -61,12 +61,14 @@ export const route: Route = {
 | posts | patreon | fanbox       | gumroad | subscribestar | dlsite | discord | fantia |
 
 ::: tip
-  When \`posts\` is selected as the value of the parameter **source**, the parameter **id** does not take effect.
-  There is an optinal parameter **limit** which controls the number of posts to fetch, default value is 25.
+When \`posts\` is selected as the value of the parameter **source**, the parameter **id** does not take effect.
+There is an optinal parameter **limit** which controls the number of posts to fetch, default value is 25.
 
-  Support for announcements and fancards:
-  - Use \`/:source/:id/announcements\` to get announcements
-  - Use \`/:source/:id/fancards\` to get fancards
+Support for announcements and fancards:
+
+- Use \`/:source/:id/announcements\` to get announcements
+- Use \`/:source/:id/fancards\` to get fancards
+
 :::`,
 };
 

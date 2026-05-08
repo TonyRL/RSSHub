@@ -37,12 +37,12 @@ export const route: Route = {
     description: `Sources
 
 | Posts | OnlyFans | Fansly | CandFans |
-| ----- | -------- | ------- | -------- |
-| posts | onlyfans | fansly   | candfans |
+| ----- | -------- | ------ | -------- |
+| posts | onlyfans | fansly | candfans |
 
 ::: tip
-  When \`posts\` is selected as the value of the parameter **source**, the parameter **id** does not take effect.
-  There is an optinal parameter **limit** which controls the number of posts to fetch, default value is 25.
+When \`posts\` is selected as the value of the parameter **source**, the parameter **id** does not take effect.
+There is an optinal parameter **limit** which controls the number of posts to fetch, default value is 25.
 :::`,
 };
 

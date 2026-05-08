@@ -31,9 +31,9 @@ export const route: Route = {
     handler,
     description: `栏目类型
 
-| 主页 | 本科生 | 研究生 | 科研学术 | 采购招标 | 招聘就业 | 行政办公
-| --- | ----- | ----- | ------ | ------- | ------ | ------
-|  -  |  bks  |  yjs  |  kyxs  |   cgzb  |  zpjy  | xzbg  `,
+| 主页 | 本科生 | 研究生 | 科研学术 | 采购招标 | 招聘就业 | 行政办公 |
+| ---- | ------ | ------ | -------- | -------- | -------- | -------- |
+| -    | bks    | yjs    | kyxs     | cgzb     | zpjy     | xzbg     |`,
 };
 
 async function handler(ctx) {

@@ -31,7 +31,7 @@ export const route: Route = {
 | ----------- | -- | ----------- | -------- | ---- | ------ |
 | latest-news | pc | playstation | nintendo | xbox | moblie |
 
-  Or
+Or
 
 | GENERAL          | GENERAL EN         | MOBILE          | MOBILE EN         |
 | ---------------- | ------------------ | --------------- | ----------------- |
