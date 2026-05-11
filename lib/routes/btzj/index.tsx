@@ -129,13 +129,13 @@ async function handler(ctx) {
 
                 content('.attachlist')
                     .find('a')
-                    .each(function () {
-                        content(this)
+                    .each((_, el) => {
+                        content(el)
                             .children('img')
-                            .attr('src', `${rootUrl}${content(this).children('img').attr('src')}`);
-                        content(this).attr(
+                            .attr('src', `${rootUrl}${content(el).children('img').attr('src')}`);
+                        content(el).attr(
                             'href',
-                            `${rootUrl}/${content(this)
+                            `${rootUrl}/${content(el)
                                 .attr('href')
                                 .replace(/^attach-dialog/, 'attach-download')}`
                         );

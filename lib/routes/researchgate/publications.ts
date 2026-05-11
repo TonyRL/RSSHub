@@ -64,8 +64,8 @@ async function handler(ctx) {
 
                 const authors = [];
 
-                content('meta[property="citation_author"]').each(function () {
-                    authors.push(content(this).attr('content'));
+                content('meta[property="citation_author"]').each((_, el) => {
+                    authors.push(content(el).attr('content'));
                 });
 
                 item.author = authors.join(', ');

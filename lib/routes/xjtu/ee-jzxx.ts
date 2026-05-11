@@ -76,8 +76,8 @@ async function handler(ctx) {
                 const description = content('div.art-body.wow.fadeInUp')
                     .clone() // 创建副本防止修改原始内容
                     .find('ul li') // 定位到附件列表项
-                    .each(function () {
-                        const $li = $(this);
+                    .each((_, el) => {
+                        const $li = $(el);
                         const newText = $li.html()?.replaceAll(/已下载[\s\S]*?<\/span>次/g, '') ?? '';
                         $li.html(newText.replace(/<\/a>\s*$/, '</a>'));
                     })

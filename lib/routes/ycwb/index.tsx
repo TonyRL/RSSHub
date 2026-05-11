@@ -82,17 +82,15 @@ async function handler(ctx) {
 
                 const $comments = content('.main_article')
                     .contents()
-                    .filter(function () {
-                        return this.nodeType === 8;
-                    });
-                $comments.each(function () {
+                    .filter((_, el) => el.nodeType === 8);
+                $comments.each((_, el) => {
                     // Remove useless comments
-                    if (/audioPlayer|audio-box/.test(this.data)) {
-                        this.data = '';
+                    if (/audioPlayer|audio-box/.test(el.data)) {
+                        el.data = '';
                     }
                     // Filter author from comments
-                    if (/author/.test(this.data)) {
-                        item.author = this.data.split('<author>')[1].split('</author>')[0];
+                    if (/author/.test(el.data)) {
+                        item.author = el.data.split('<author>')[1].split('</author>')[0];
                     }
                 });
 

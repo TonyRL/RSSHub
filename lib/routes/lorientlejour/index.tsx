@@ -158,12 +158,12 @@ async function handler(ctx) {
         article.find('.inline-embeded-article').remove();
         article.find('.relatedArticles').remove();
         if (item.inline_attachments) {
-            article.find('.inlineImage').each(function () {
-                const inlineImageSrc = $(this).attr('src');
+            article.find('.inlineImage').each((_, el) => {
+                const inlineImageSrc = $(el).attr('src');
                 const inlineAttachment = item.inline_attachments.find((inlineAttachment) => inlineAttachment.url === inlineImageSrc);
                 if (inlineAttachment && inlineAttachment.description) {
-                    $(this).wrap('<figure></figure>');
-                    $(this).after(`<figcaption>${inlineAttachment.description}</figcaption>`);
+                    $(el).wrap('<figure></figure>');
+                    $(el).after(`<figcaption>${inlineAttachment.description}</figcaption>`);
                 }
             });
         }

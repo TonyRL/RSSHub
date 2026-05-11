@@ -360,6 +360,22 @@
             {
                 "selector": "CallExpression[callee.name=\"load\"] AwaitExpression > CallExpression",
                 "message": "Do not use await in call expressions. Extract the result into a variable first."
+            },
+            {
+                "selector": "Identifier[name=\"_ctx\"]",
+                "message": "Usage of `_ctx` is not allowed."
+            },
+            {
+                "selector": "CallExpression[callee.property.name=\"each\"] > FunctionExpression",
+                "message": "Use an arrow function instead."
+            },
+            {
+                "selector": "CallExpression[callee.property.name=\"filter\"] > FunctionExpression",
+                "message": "Use an arrow function instead."
+            },
+            {
+                "selector": "CallExpression[callee.property.name=\"map\"] > FunctionExpression",
+                "message": "Use an arrow function instead."
             }
         ],
 

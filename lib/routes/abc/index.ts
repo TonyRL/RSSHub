@@ -105,8 +105,8 @@ async function handler(ctx) {
 
                     content('#body *, div[data-component="FeatureMedia"]')
                         .children()
-                        .each(function () {
-                            const element = content(this);
+                        .each((_, el) => {
+                            const element = content(el);
                             if (element.prop('tagName').toLowerCase() === 'figure') {
                                 element.replaceWith(
                                     renderDescription({

@@ -170,8 +170,8 @@ function generateEnclosureInfo(htmlContent: string): { enclosure_url?: string; e
     const $ = load(htmlContent);
     let enclosureInfo = {};
 
-    $('audio source, video source').each(function () {
-        const src = $(this).attr('src');
+    $('audio source, video source').each((_, el) => {
+        const src = $(el).attr('src');
         if (!src) {
             return;
         }
@@ -345,10 +345,10 @@ function processPosts(posts: KemonoPost[], authorName: string, limit: number) {
 
             let replacementCount = 0;
             const fanboxRegex = /downloads\.fanbox\.cc/;
-            $('a').each(function () {
-                const link = $(this).attr('href');
+            $('a').each((_, el) => {
+                const link = $(el).attr('href');
                 if (link && fanboxRegex.test(link)) {
-                    $(this).replaceWith(kemonoFileElements[replacementCount] || '');
+                    $(el).replaceWith(kemonoFileElements[replacementCount] || '');
                     replacementCount++;
                 }
             });

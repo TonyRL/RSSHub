@@ -70,8 +70,8 @@ async function handler() {
                 const images = detailResponse.data.match(/"url":"[^{}]+","name":"articleLarge"/g).map((e) => JSON.parse(`{${e}}`).url);
 
                 let i = 0;
-                content('figure').each(function () {
-                    content(this).html(
+                content('figure').each((_, el) => {
+                    content(el).html(
                         renderToString(
                             <figure>
                                 <img src={images[i++]} />

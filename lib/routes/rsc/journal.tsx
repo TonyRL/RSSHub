@@ -51,9 +51,9 @@ async function handler(ctx) {
 
     let $ = load(response);
 
-    $('div.capsule__article-image').each(function () {
-        const image = $(this).find('img').prop('data-original');
-        $(this).replaceWith(
+    $('div.capsule__article-image').each((_, el) => {
+        const image = $(el).find('img').prop('data-original');
+        $(el).replaceWith(
             renderToString(
                 image ? (
                     <figure>

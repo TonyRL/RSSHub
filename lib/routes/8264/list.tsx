@@ -129,11 +129,11 @@ async function handler(ctx) {
 
                 const pubDate = content('span.pub-time').text() || content('span.fby span').first().prop('title') || content('span.fby').first().text().split('发表于').pop().trim();
 
-                content('img').each(function () {
-                    content(this).replaceWith(
+                content('img').each((_, el) => {
+                    content(el).replaceWith(
                         renderToString(
                             <figure>
-                                <img src={content(this).prop('file')} alt={content(this).prop('alt')} />
+                                <img src={content(el).prop('file')} alt={content(el).prop('alt')} />
                             </figure>
                         )
                     );

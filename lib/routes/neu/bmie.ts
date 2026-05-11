@@ -91,22 +91,22 @@ async function handler(ctx) {
                 const auhor = info.slice(au_start, au_end).trim();
                 $('.entry')
                     .find('span')
-                    .each(function () {
-                        const temp = $(this).text();
-                        $(this).replaceWith(temp);
+                    .each((_, el) => {
+                        const temp = $(el).text();
+                        $(el).replaceWith(temp);
                     });
                 $('.entry')
                     .find('div')
-                    .each(function () {
-                        const temp = $(this).html();
-                        $(this).replaceWith(temp);
+                    .each((_, el) => {
+                        const temp = $(el).html();
+                        $(el).replaceWith(temp);
                     });
                 $('.entry').find('a').remove();
                 $('.entry')
                     .find('p')
-                    .each(function () {
-                        $(this).removeAttr('style');
-                        $(this).removeAttr('class');
+                    .each((_, el) => {
+                        $(el).removeAttr('style');
+                        $(el).removeAttr('class');
                     });
                 $('.wp_art_adjoin').remove();
                 return { description: $('.entry').html(), date, author: auhor };

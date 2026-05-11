@@ -71,9 +71,7 @@ async function handler(ctx: Context): Promise<Data> {
             const code = vulData
                 .find('.code')
                 .contents()
-                .filter(function () {
-                    return this.nodeType === 3;
-                })
+                .filter((_, el) => el.nodeType === 3)
                 .text();
             const risk = vulData.find('.risk span').eq(1).text();
             const vender = vulData.find('.vender').find('.v-name-full').text();

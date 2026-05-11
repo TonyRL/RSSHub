@@ -658,13 +658,13 @@ async function handler(ctx) {
                 if (msgTypes.includes(UNSUPPORTED)) {
                     if (unsupportedNodes.length) {
                         unsupportedHtml += '<blockquote>';
-                        unsupportedNodes.find('.message_media_not_supported_label').each(function () {
-                            const $this = $(this);
+                        unsupportedNodes.find('.message_media_not_supported_label').each((_, el) => {
+                            const $this = $(el);
                             unsupportedTitle += $this.text();
                             unsupportedHtml += `<p>${$this.text()}</p>`;
                         });
-                        unsupportedNodes.find('.message_media_view_in_telegram').each(function () {
-                            const $this = $(this);
+                        unsupportedNodes.find('.message_media_view_in_telegram').each((_, el) => {
+                            const $this = $(el);
                             unsupportedHtml += $this.attr('href') ? `<p><a href="${$this.attr('href')}">${$this.text()}</a></p>` : `<p>${$this.text()}</p>`;
                         });
                         unsupportedHtml += '</blockquote>';

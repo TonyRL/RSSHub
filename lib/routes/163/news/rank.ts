@@ -167,8 +167,8 @@ async function handler(ctx) {
                     const content = load(detailResponse.data);
 
                     content('.bot_word, .js-open-app, .s-img').remove();
-                    content('video').each(function () {
-                        content(this).attr('src', content(this).attr('data-src'));
+                    content('video').each((_, el) => {
+                        content(el).attr('src', content(el).attr('data-src'));
                     });
                     content('.article-body .image-lazy').each((_, elem) => {
                         elem.attribs.src = elem.attribs['data-src'] ?? elem.attribs.src;
