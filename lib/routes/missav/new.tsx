@@ -1,5 +1,5 @@
 // import ofetch from '@/utils/ofetch';
-import * as cheerio from 'cheerio';
+import { load } from 'cheerio';
 import { renderToString } from 'hono/jsx/dom/server';
 
 import type { Route } from '@/types';
@@ -48,7 +48,7 @@ async function handler() {
     await page.goto(url, {
         waitUntil: 'domcontentloaded',
     });
-    const response = await page.evaluate(() => document.documentElement.innerHTML);
+    const response = await page.evaluate(() => document.documentElement.getHTML());
     await context.close();
 
     // const response = await ofetch(`${baseUrl}/dm397/new`, {
@@ -57,7 +57,7 @@ async function handler() {
     //     },
     // });
 
-    const $ = cheerio.load(response);
+    const $ = load(response);
 
     const items = $('.grid .group')
         .toArray()
