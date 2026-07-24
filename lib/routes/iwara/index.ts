@@ -3,9 +3,13 @@ import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
-import { getPlaywrightPage } from '@/utils/playwright';
 
 import { apiRootUrl, parseThumbnail, rootUrl, typeMap } from './utils';
+
+const apiUrlMap = {
+    video: `${apiRootUrl}/videos`,
+    image: `${apiRootUrl}/images`,
+};
 
 export const route: Route = {
     path: '/users/:username/:type?',
@@ -18,7 +22,6 @@ export const route: Route = {
     maintainers: ['Fatpandac'],
     handler,
     features: {
-        requirePuppeteer: true,
         nsfw: true,
     },
 };
@@ -36,38 +39,15 @@ async function handler(ctx) {
     });
 
     const id = profile.id;
-
-    const apiUrl = `${apiRootUrl}/${type === 'video' ? 'videos' : 'images'}?user=${id}`;
-
     const list = await cache.tryGet(
-        apiUrl,
+        `${apiUrlMap[type]}?user=${id}`,
         async () => {
-            const { page, destroy } = await getPlaywrightPage(rootUrl, {
-                closeTimeout: 90 * 1000,
-                onBeforeLoad: async (page) => {
-                    await page.route('**/*', (route) => {
-                        const type = route.request().resourceType();
-                        ['document', 'script', 'xhr', 'fetch'].includes(type) ? route.continue() : route.abort();
-                    });
-                },
-                gotoConfig: {
-                    waitUntil: 'domcontentloaded',
+            const response = await ofetch(`${apiUrlMap[type]}?user=${id}`, {
+                headers: {
+                    'user-agent': config.trueUA,
                 },
             });
-
-            try {
-                const response = await page.evaluate(async (url) => {
-                    const res = await fetch(url);
-                    if (!res.ok) {
-                        throw new Error(`HTTP error! status: ${res.status}`);
-                    }
-                    return res.json();
-                }, apiUrl);
-
-                return response.results;
-            } finally {
-                await destroy();
-            }
+            return response.results;
         },
         config.cache.routeExpire,
         false
