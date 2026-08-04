@@ -8,12 +8,20 @@ vi.mock('@/utils/logger', () => ({
     },
 }));
 
+vi.mock('@honeybadger-io/js', () => ({
+    default: {
+        configure: vi.fn(),
+        notify: vi.fn(),
+        setContext: vi.fn(),
+    },
+}));
+
 describe('app-bootstrap', () => {
     it('logs uncaught exceptions', async () => {
         const before = new Set(process.listeners('uncaughtException'));
         await import('@/app-bootstrap');
         const after = process.listeners('uncaughtException');
-        const listener = after.find((fn) => !before.has(fn));
+        const listener = after.find((fn) => !before.has(fn)) as ((error: Error) => void) | undefined;
 
         expect(listener).toBeDefined();
         listener?.(new Error('boom'));

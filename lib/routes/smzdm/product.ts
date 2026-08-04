@@ -70,8 +70,8 @@ async function handler(ctx) {
     // get detail info from each item
     const out = await Promise.all(
         items.map((item) =>
-            cache.tryGet(item.link, async () => {
-                const response = await ofetch(item.link, {
+            cache.tryGet(item.link!, async (): Promise<any> => {
+                const response = await ofetch(item.link!, {
                     headers: getHeaders(),
                 });
                 const $ = load(response);
@@ -79,16 +79,15 @@ async function handler(ctx) {
                 // filter outdated articles
                 if ($('span.old').length > 0) {
                     return null;
-                } else {
-                    const pubDate = $('meta[name="weibo:webpage:create_at"]').attr('content');
-                    item.pubDate = pubDate;
-
-                    if (item.description === '阅读全文') {
-                        item.description = $('p[itemprop="description"]').first().html() as string;
-                    }
-
-                    return item;
                 }
+                const pubDate = $('meta[name="weibo:webpage:create_at"]').attr('content');
+                item.pubDate = pubDate;
+
+                if (item.description === '阅读全文') {
+                    item.description = $('p[itemprop="description"]').first().html() as string;
+                }
+
+                return item;
             })
         )
     );
@@ -98,6 +97,6 @@ async function handler(ctx) {
     return {
         title,
         link,
-        item: filteredOut,
+        item: filteredOut as DataItem[],
     };
 }

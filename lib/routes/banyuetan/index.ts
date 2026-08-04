@@ -3,7 +3,7 @@ import { load } from 'cheerio';
 import type { Element } from 'domhandler';
 import type { Context } from 'hono';
 
-import type { Data, DataItem, Route } from '@/types';
+import type { Data, DataItem, Language, Route } from '@/types';
 import { ViewType } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
@@ -14,7 +14,7 @@ import { renderDescription } from './templates/description';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { id = 'jinritan' } = ctx.req.param();
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '30', 10);
+    const limit = Number(ctx.req.query('limit') ?? '30');
 
     const baseUrl = 'http://www.banyuetan.org';
     const targetUrl: string = new URL(`byt/${id}/index.html`, baseUrl).href;
@@ -23,12 +23,10 @@ export const handler = async (ctx: Context): Promise<Data> => {
     const $: CheerioAPI = load(response);
     const language = $('html').attr('lang') ?? 'zh';
 
-    let items: DataItem[] = [];
-
-    items = $('div.bty_tbtj_list ul.clearFix li')
+    let items: DataItem[] = $('div.bty_tbtj_list ul.clearFix li')
         .slice(0, limit)
         .toArray()
-        .map((el): Element => {
+        .map((el) => {
             const $el: Cheerio<Element> = $(el);
             const $aEl: Cheerio<Element> = $el.find('h3 a');
 
@@ -61,7 +59,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 image,
                 banner: image,
                 updated: upDatedStr ? parseDate(upDatedStr) : undefined,
-                language,
+                language: language as Language,
             };
 
             return processedItem;
@@ -74,7 +72,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
             }
 
             return cache.tryGet(item.link, async (): Promise<DataItem> => {
-                const detailResponse = await ofetch(item.link);
+                const detailResponse = await ofetch(item.link!);
                 const $$: CheerioAPI = load(detailResponse);
 
                 const title: string = $$('div.detail_tit h1').text();
@@ -90,7 +88,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                     const $$authorEl: Cheerio<Element> = $$(authorEl);
 
                     return {
-                        name: $$authorEl.attr('content'),
+                        name: $$authorEl.attr('content')!,
                         url: undefined,
                         avatar: undefined,
                     };
@@ -101,7 +99,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 const processedItem: DataItem = {
                     title,
                     description,
-                    pubDate: pubDateStr ? timezone(parseDate(pubDateStr), +8) : item.pubDate,
+                    pubDate: pubDateStr ? timezone(parseDate(pubDateStr), 8) : item.pubDate,
                     category: categories,
                     author: authors,
                     content: {
@@ -110,8 +108,8 @@ export const handler = async (ctx: Context): Promise<Data> => {
                     },
                     image,
                     banner: image,
-                    updated: upDatedStr ? timezone(parseDate(upDatedStr), +8) : item.updated,
-                    language,
+                    updated: upDatedStr ? timezone(parseDate(upDatedStr), 8) : item.updated,
+                    language: language as Language,
                 };
 
                 return {
@@ -132,7 +130,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
         allowEmpty: true,
         image: new URL('static/v1/image/logo.png', baseUrl).href,
         author: title.split(/—/).pop(),
-        language,
+        language: language as Language,
         id: targetUrl,
     };
 };
@@ -186,9 +184,7 @@ export const route: Route = {
 | [评论](http://www.banyuetan.org/byt/banyuetanpinglun/index.html)     | [banyuetanpinglun](https://rsshub.app/banyuetan/banyuetanpinglun) |
 | [基层治理](http://www.banyuetan.org/byt/jicengzhili/index.html)      | [jicengzhili](https://rsshub.app/banyuetan/jicengzhili)           |
 | [文化](http://www.banyuetan.org/byt/wenhua/index.html)               | [wenhua](https://rsshub.app/banyuetan/wenhua)                     |
-| [教育](http://www.banyuetan.org/byt/jiaoyu/index.html)               | [jiaoyu](https://rsshub.app/banyuetan/jiaoyu)                     |
-
-`,
+| [教育](http://www.banyuetan.org/byt/jiaoyu/index.html)               | [jiaoyu](https://rsshub.app/banyuetan/jiaoyu)                     |`,
     categories: ['traditional-media'],
     features: {
         requireConfig: false,

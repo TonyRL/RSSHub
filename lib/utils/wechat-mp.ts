@@ -68,7 +68,7 @@ const toggleWerror = (() => {
 const replaceReturnNewline = (() => {
     const returnRegExp = /\r|\\(r|x0d)/g;
     const newlineRegExp = /\n|\\(n|x0a)/g;
-    return (text: string, replaceReturnWith = '', replaceNewlineWith = '<br>') => text.replaceAll(returnRegExp, replaceReturnWith).replaceAll(newlineRegExp, replaceNewlineWith);
+    return (text: string, replaceReturnWith = '', replaceNewlineWith = '<br>') => text.replaceAll(returnRegExp, () => replaceReturnWith).replaceAll(newlineRegExp, () => replaceNewlineWith);
 })();
 const fixUrl = (() => {
     const ampRegExp = /(&|\\x26)amp;/g;
@@ -100,7 +100,8 @@ const forEachScript = ($: CheerioAPI | string, callback: (script) => void, defau
         } catch (error) {
             if (error instanceof LoopReturn) {
                 return error.to_return;
-            } else if (error instanceof LoopContinue) {
+            }
+            if (error instanceof LoopContinue) {
                 continue;
             }
             throw error;
@@ -130,7 +131,7 @@ const showTypeMap = {
 const showTypeMapReverse = Object.fromEntries(Object.entries(showTypeMap).map(([k, v]) => [v, k]));
 
 class ExtractMetadata {
-    private static genAssignmentRegExp = (varName: string, valuePattern: string, assignPattern: string) => new RegExp(String.raw`\b${varName}\s*${assignPattern}\s*(?<quote>["'])(?<value>${valuePattern})\k<quote>`, 'mg');
+    private static genAssignmentRegExp = (varName: string, valuePattern: string, assignPattern: string) => new RegExp(String.raw`\b${varName}\s*${assignPattern}\s*(?<quote>["'])(?<value>${valuePattern})\k<quote>`, 'gm');
 
     private static genExtractFunc = (
         varName: string,
@@ -173,40 +174,66 @@ class ExtractMetadata {
     };
 
     private static commonMetadataToBeExtracted = {
-        showType: this.genExtractFunc('item_show_type', { valuePattern: String.raw`\d+` }),
+        showType: this.genExtractFunc('item_show_type', { valuePattern: String.raw`\d+`, allowNotFound: true }),
         realShowType: this.genExtractFunc('real_item_show_type', { valuePattern: String.raw`\d+` }),
         createTime: this.genExtractFunc('ct', { valuePattern: String.raw`\d+`, allowNotFound: true }),
         sourceUrl: this.genExtractFunc('msg_source_url', { valuePattern: `https?://[^'"]*`, allowNotFound: true }),
     };
 
-    static common = ($: CheerioAPI) =>
-        forEachScript(
+    private static showTypeMetadataToBeExtracted = {
+        showType: this.genExtractFunc('item_show_type', { valuePattern: String.raw`\d+` }),
+    };
+
+    static common = ($: CheerioAPI) => {
+        const metadataExtracted = forEachScript(
             $,
             (script) => {
                 const scriptText = $(script).text();
                 const metadataExtracted = this.doExtract(this.commonMetadataToBeExtracted, scriptText) as Record<string, string>;
-                const showType = showTypeMapReverse[metadataExtracted.showType];
-                const realShowType = showTypeMapReverse[metadataExtracted.realShowType];
-                metadataExtracted.sourceUrl = metadataExtracted.sourceUrl && fixUrl(metadataExtracted.sourceUrl);
-                if (showType) {
-                    metadataExtracted.showType = showType;
-                } else {
-                    warn('showType not found', `item_show_type=${metadataExtracted.showType}`);
-                }
-                if (realShowType) {
-                    metadataExtracted.realShowType = realShowType;
-                } else {
-                    warn('realShowType not found', `real_item_show_type=${metadataExtracted.realShowType}`);
-                }
-                if (metadataExtracted.showType !== metadataExtracted.realShowType) {
-                    // never seen this happen, waiting for examples
-                    warn('showType mismatch', `item_show_type=${metadataExtracted.showType}, real_item_show_type=${metadataExtracted.realShowType}`);
-                }
                 throw new LoopReturn(metadataExtracted);
             },
             {},
             'script[nonce][type="text/javascript"]:contains("real_item_show_type")'
         );
+
+        // APP_MSG_PAGE has its item_show_type in a separate script
+        if (!metadataExtracted.showType) {
+            const showTypeExtracted = forEachScript(
+                $,
+                (script) => {
+                    const scriptText = $(script).text();
+                    const metadataExtracted = this.doExtract(this.showTypeMetadataToBeExtracted, scriptText) as Record<string, string>;
+                    throw new LoopReturn(metadataExtracted);
+                },
+                {},
+                'script[nonce][type="text/javascript"]:contains("item_show_type")'
+            );
+            if (showTypeExtracted.showType) {
+                metadataExtracted.showType = showTypeExtracted.showType;
+            }
+        }
+
+        const showType = showTypeMapReverse[metadataExtracted.showType];
+        const realShowType = showTypeMapReverse[metadataExtracted.realShowType];
+        if (metadataExtracted.sourceUrl) {
+            metadataExtracted.sourceUrl = fixUrl(metadataExtracted.sourceUrl);
+        }
+        if (showType) {
+            metadataExtracted.showType = showType;
+        } else {
+            warn('showType not found', `item_show_type=${metadataExtracted.showType}`);
+        }
+        if (realShowType) {
+            metadataExtracted.realShowType = realShowType;
+        } else {
+            warn('realShowType not found', `real_item_show_type=${metadataExtracted.realShowType}`);
+        }
+        if (metadataExtracted.showType !== metadataExtracted.realShowType) {
+            // never seen this happen, waiting for examples
+            warn('showType mismatch', `item_show_type=${metadataExtracted.showType}, real_item_show_type=${metadataExtracted.realShowType}`);
+        }
+        return metadataExtracted;
+    };
 
     private static audioMetadataToBeExtracted = {
         voiceId: this.genExtractFunc('voiceid', { assignPattern: ':' }),
@@ -364,7 +391,7 @@ const fixArticleContent = (html?: string | Cheerio<Element>, skipImg = false) =>
             if (width && ratio) {
                 const width_ = Math.min(Number.parseInt(width), 677);
                 $iframe.attr('width', width_.toString());
-                $iframe.attr('height', (width_ / Number.parseFloat(ratio)).toString());
+                $iframe.attr('height', (width_ / Number(ratio)).toString());
             }
         } // else {} FIXME: https://mp.weixin.qq.com/s?__biz=Mzg5Mjk3MzE4OQ==&mid=2247549515&idx=2&sn=a608fca597f0589c1aebd6d0b82ff6e9
     });
@@ -568,15 +595,17 @@ class PageParsers {
 }
 
 const redirectHelper = async (url: string, maxRedirects: number = 5) => {
-    maxRedirects--;
-    const raw = await ofetch.raw(url);
+    const raw = await ofetch.raw(url, {
+        redirect: 'manual',
+    });
     if ([301, 302, 303, 307, 308].includes(raw.status)) {
-        if (!raw.headers.has('location')) {
+        const location = raw.headers.get('location');
+        if (!location) {
             error('redirect without location', url);
-        } else if (maxRedirects <= 0) {
+        } else if (maxRedirects <= 1) {
             error('too many redirects', url);
         }
-        return await redirectHelper(raw.headers.get('location') as string, maxRedirects);
+        return await redirectHelper(new URL(location!, url).href, maxRedirects - 1);
     }
     return raw;
 };
@@ -627,21 +656,19 @@ const fetchArticle = (url: string, bypassHostCheck: boolean = false) => {
  * @return {Promise<object>} - The incoming `item` object, with the article and its metadata filled in.
  */
 const finishArticleItem = async (item, setMpNameAsAuthor = false, skipLink = false) => {
-    if (item.link) {
-        const fetchedItem = await fetchArticle(item.link);
-        for (const key in fetchedItem) {
-            switch (key) {
-                case 'author':
-                    item.author = setMpNameAsAuthor
-                        ? fetchedItem.mpName || item.author // the Official Account itself. if your route return articles from different accounts, you may want to use this
-                        : fetchedItem.author || item.author; // the real author of the article. if your route return articles from a certain account, use this
-                    break;
-                case 'link':
-                    item.link = skipLink ? item.link : fetchedItem.link || item.link;
-                    break;
-                default:
-                    item[key] = item[key] || fetchedItem[key];
-            }
+    const fetchedItem = await fetchArticle(item.link);
+    for (const key in fetchedItem) {
+        switch (key) {
+            case 'author':
+                item.author = setMpNameAsAuthor
+                    ? fetchedItem.mpName || item.author // the Official Account itself. if your route return articles from different accounts, you may want to use this
+                    : fetchedItem.author || item.author; // the real author of the article. if your route return articles from a certain account, use this
+                break;
+            case 'link':
+                item.link = skipLink ? item.link : fetchedItem.link || item.link;
+                break;
+            default:
+                item[key] ||= fetchedItem[key];
         }
     }
     return item;

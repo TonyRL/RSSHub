@@ -1,8 +1,7 @@
 import { load } from 'cheerio';
 
 import InvalidParameterError from '@/errors/types/invalid-parameter';
-import type { Route } from '@/types';
-import cache from '@/utils/cache';
+import type { Language, Route } from '@/types';
 import got from '@/utils/got';
 
 import { ossUrl, ProcessFeed, rootUrl } from './utils';
@@ -35,7 +34,7 @@ export const route: Route = {
 
 async function handler(ctx) {
     const { id, type = '' } = ctx.req.param();
-    const limit = ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit'), 10) : 30;
+    const limit = ctx.req.query('limit') ? Number(ctx.req.query('limit')) : 30;
 
     const currentUrl = new URL(`thinktank/${id}.html`, rootUrl).href;
 
@@ -43,9 +42,9 @@ async function handler(ctx) {
 
     const $ = load(response);
 
-    const title = `${$('h2').first().text().trim()}${type}`;
+    const title = `${$('h2').first().text()}${type}`;
 
-    let items = [];
+    let items: any[] = [];
 
     const targetList = $('h3')
         .toArray()
@@ -59,20 +58,20 @@ async function handler(ctx) {
     }
 
     items = items.slice(0, limit).map((item) => {
-        item = $(item);
+        const $item = $(item);
 
         return {
-            title: item.text().split('：').pop(),
-            link: new URL(item.prop('href'), rootUrl).href,
+            title: $item.text().split('：').pop(),
+            link: new URL($item.prop('href')!, rootUrl).href,
         };
     });
 
     return {
-        item: await ProcessFeed(limit, cache.tryGet, items),
+        item: await ProcessFeed(limit, items),
         title: `爱思想 - ${title}`,
         link: currentUrl,
         description: $('div.thinktank-author-description-box p').text(),
-        language: 'zh-cn',
+        language: 'zh-CN' as Language,
         image: new URL('images/logo_thinktank.jpg', ossUrl).href,
         subtitle: title,
     };

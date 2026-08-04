@@ -65,10 +65,10 @@ async function handler() {
     const initialState = JSON.parse(
         $('script')
             .text()
-            .match(/window\.__INITIAL_STATE__=(.*);\(function\(\){var/)[1]
+            .match(/window\.__INITIAL_STATE__=(.*);\(function\(\)\{var/)![1]
     );
 
-    const list = Object.values(initialState.courseindex.myModules).flatMap((mod) =>
+    const list = Object.values<Record<string, any>>(initialState.courseindex.myModules).flatMap((mod) =>
         mod.contents.map((item) => ({
             title: `${item.title} - ${item.subtitle}`,
             author: item.authorName,
@@ -93,7 +93,7 @@ async function handler() {
 
                 const $ = load(data.courseInfo.description, null, false);
                 $('img').each((_, img) => {
-                    img.attribs.src = img.attribs.src.split('?')[0];
+                    img.attribs.src = img.attribs.src.split('?', 1)[0];
                     delete img.attribs.width;
                 });
 

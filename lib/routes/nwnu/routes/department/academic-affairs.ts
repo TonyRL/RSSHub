@@ -23,7 +23,7 @@ const COLUMNS: Record<string, { title: string; description: string }> = {
 };
 
 const handler: Route['handler'] = async (ctx) => {
-    const columnParam = ctx.req.param('column');
+    const columnParam = ctx.req.param('column')!;
     if (COLUMNS[columnParam] === undefined) {
         throw new NotFoundError(`The column ${columnParam} does not exist`);
     }
@@ -102,15 +102,14 @@ export const route: Route = {
         supportPodcast: false,
         supportScihub: false,
     },
-    example: '/department/academic-affairs/tzgg',
+    example: '/nwnu/department/academic-affairs/tzgg',
     radar: [
         {
             source: ['jwc.nwnu.edu.cn/:column/list.htm'],
             target: '/department/academic-affairs/:column',
         },
     ],
-    description: `
-| column | 标题     | 描述                     |
+    description: `| column | 标题     | 描述                     |
 | ------ | -------- | ------------------------ |
 | tzgg   | 通知公告 | 西北师范大学教务通知公告 |
 | jwkx   | 教务快讯 | 西北师范大学教务快讯     |`,

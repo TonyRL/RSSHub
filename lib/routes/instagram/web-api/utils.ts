@@ -43,7 +43,7 @@ const checkLogin = async (cookieJar) => {
     //     cache.set('instagram:wwwClaimV2', wwwClaimV2);
     // }
 
-    return Boolean(response.status === 'ok');
+    return response.status === 'ok';
 };
 
 const getUserInfo = async (username, cookieJar) => {
@@ -72,10 +72,10 @@ const getUserInfo = async (username, cookieJar) => {
             webProfileInfo = response._data.data.user;
             id = webProfileInfo.id;
 
-            await cache.set(`instagram:getIdByUsername:${username}`, id, 31_536_000); // 1 year since it will never change
+            await cache.set(`instagram:getIdByUsername:${username}`, id ?? '', 31_536_000); // 1 year since it will never change
             await cache.set(`instagram:userInfo:${id}`, webProfileInfo);
         } catch (error) {
-            if (error.message.includes("Cookie not in this host's domain")) {
+            if ((error as Error).message.includes("Cookie not in this host's domain")) {
                 throw new ConfigNotFoundError('Invalid cookie');
             }
             throw error;
@@ -154,7 +154,7 @@ const renderGuestItems = (items) => {
         const type = node.__typename;
         const summary = node.edge_media_to_caption.edges[0]?.node.text ?? '';
 
-        let description = '';
+        let description: string;
         switch (type) {
             // carousel, can include GraphVideo and GraphImage
             case 'GraphSidecar':
@@ -172,7 +172,7 @@ const renderGuestItems = (items) => {
                               }
                           })
                           .join('')
-                    : renderImages(node, summary);
+                    : renderImagesItem(node, summary);
                 break;
             case 'GraphVideo':
                 description = renderVideoItem(node, summary);
@@ -185,7 +185,7 @@ const renderGuestItems = (items) => {
         }
 
         return {
-            title: summary.split('\n')[0],
+            title: summary.split('\n', 1)[0],
             id: node.id,
             pubDate: parseDate(node.taken_at_timestamp, 'X'),
             author: node.owner.username,

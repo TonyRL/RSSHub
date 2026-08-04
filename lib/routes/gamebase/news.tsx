@@ -5,7 +5,7 @@ import { raw } from 'hono/html';
 import { renderToString } from 'hono/jsx/dom/server';
 
 import InvalidParameterError from '@/errors/types/invalid-parameter';
-import type { Data, DataItem, Route } from '@/types';
+import type { Data, DataItem, Language, Route } from '@/types';
 import { ViewType } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
@@ -41,7 +41,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
         throw new InvalidParameterError(`Invalid type: ${type}`);
     }
 
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '30', 10);
+    const limit = Number(ctx.req.query('limit') ?? '30');
 
     const baseUrl = 'https://news.gamebase.com.tw';
     const targetUrl: string = new URL(`news${category === 'all' ? '' : `/newslist?type=${category}`}`, baseUrl).href;
@@ -98,7 +98,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 const processedItem: DataItem = {
                     title,
                     description,
-                    pubDate: pubDate ? timezone(parseDate(pubDate), +8) : undefined,
+                    pubDate: pubDate ? timezone(parseDate(pubDate), 8) : undefined,
                     link: linkUrl ? new URL(linkUrl, baseUrl).href : undefined,
                     category: categories,
                     author: authors,
@@ -110,8 +110,8 @@ export const handler = async (ctx: Context): Promise<Data> => {
                     },
                     image,
                     banner: image,
-                    updated: updated ? timezone(parseDate(updated), +8) : undefined,
-                    language,
+                    updated: updated ? timezone(parseDate(updated), 8) : undefined,
+                    language: language as Language,
                 };
 
                 return processedItem;
@@ -127,7 +127,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
         allowEmpty: true,
         image: $('meta[property="og:image"]').attr('content'),
         author: $('meta[property="og:title"]').attr('content')?.split(/\|/).pop()?.trim(),
-        language,
+        language: language as Language,
         id: $('meta[property="og:url"]').attr('content'),
     };
 };
@@ -148,8 +148,7 @@ export const route: Route = {
 :::
 
 | newslist | r18list |
-| -------- | ------- |
-`,
+| -------- | ------- |`,
     categories: ['game'],
     features: {
         requireConfig: false,
@@ -190,7 +189,6 @@ export const route: Route = {
 :::
 
 | newslist | r18list |
-| -------- | ------- |
-`,
+| -------- | ------- |`,
     },
 };

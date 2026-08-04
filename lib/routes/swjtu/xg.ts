@@ -37,16 +37,15 @@ const getItem = (item, cache) => {
                 description: newsText,
             };
         } catch (error) {
-            if (error.response && error.response.status === 404) {
+            if ((error as { response?: { status: number } }).response?.status === 404) {
                 return {
                     title: newsTitle,
                     pubDate: parseDate(String(newsTime)),
                     link,
                     description: '',
                 };
-            } else {
-                throw error;
             }
+            throw error;
         }
     });
 };

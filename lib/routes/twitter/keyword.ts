@@ -12,14 +12,14 @@ export const route: Route = {
     parameters: { keyword: 'keyword', routeParams: 'extra parameters, see the table above' },
     features: {
         requireConfig: [
-            {
-                name: 'TWITTER_USERNAME',
-                description: 'Please see above for details.',
-            },
-            {
-                name: 'TWITTER_PASSWORD',
-                description: 'Please see above for details.',
-            },
+            // {
+            //     name: 'TWITTER_USERNAME',
+            //     description: 'Please see above for details.',
+            // },
+            // {
+            //     name: 'TWITTER_PASSWORD',
+            //     description: 'Please see above for details.',
+            // },
             {
                 name: 'TWITTER_AUTH_TOKEN',
                 description: 'Please see above for details.',
@@ -54,7 +54,7 @@ async function handler(ctx) {
         title: `Twitter Keyword - ${keyword}`,
         link: `https://x.com/search?q=${encodeURIComponent(keyword)}`,
         item: utils.ProcessFeed(ctx, {
-            data,
+            data: data as any,
         }),
         allowEmpty: true,
     };

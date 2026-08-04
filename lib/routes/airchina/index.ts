@@ -36,8 +36,8 @@ async function handler() {
     const data = await buildData({
         link,
         url: link,
-        title: `%title%`,
-        description: `%description%`,
+        title: '%title%',
+        description: '%description%',
         params: {
             title: '国航服务公告',
             description: '中国国际航空公司服务公告',
@@ -57,7 +57,7 @@ async function handler() {
             item.description = await cache.tryGet(detailLink, async () => {
                 const result = await got(detailLink);
                 const $ = load(result.data);
-                return $('.serviceMsg').html();
+                return $('.serviceMsg').html() ?? '';
             });
         })
     );

@@ -28,7 +28,7 @@ export const route: Route = {
 | ------------ | ------ | ------ | ------- | ----- |
 | na           | eu     | fr     | de      | jp    |
 
-  Category
+Category
 
 | all | topics | notices | maintenance | updates | status | developers |
 | --- | ------ | ------- | ----------- | ------- | ------ | ---------- |`,
@@ -50,7 +50,7 @@ async function handler(ctx) {
     let data;
     if (type === 'all') {
         data = [];
-        for (const arr of Object.values(response.data)) {
+        for (const arr of Object.values(response.data) as unknown[][]) {
             data = [...data, ...arr];
         }
     } else {

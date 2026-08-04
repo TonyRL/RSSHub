@@ -13,6 +13,7 @@ vi.mock('@/utils/logger', () => ({
 class RedisMock extends EventTarget {
     mget = vi.fn();
     expire = vi.fn();
+    exists = vi.fn();
     set = vi.fn();
 
     on(event: string, listener: (...args: any[]) => void) {
@@ -47,6 +48,7 @@ describe('redis cache module', () => {
         const redisCache = (await import('@/utils/cache/redis')).default;
         const client = new RedisMock() as any;
         client.mget.mockResolvedValue(['value', '30']);
+        client.exists.mockResolvedValue(true);
         redisCache.status.available = true;
         redisCache.clients.redisClient = client;
 
@@ -54,12 +56,16 @@ describe('redis cache module', () => {
         expect(value).toBe('value');
         expect(client.expire).toHaveBeenCalledWith('rsshub:cacheTtl:mock', '30');
         expect(client.expire).toHaveBeenCalledWith('mock', '30');
+
+        await expect(redisCache.has('mock')).resolves.toBe(true);
+        client.exists.mockResolvedValue(false);
+        await expect(redisCache.has('missing')).resolves.toBe(false);
     });
 
     it('marks redis unavailable on error', async () => {
         const redisCache = (await import('@/utils/cache/redis')).default;
         redisCache.init();
-        const client = redisCache.clients.redisClient as RedisMock;
+        const client = redisCache.clients.redisClient as unknown as RedisMock;
 
         client.emit('error', new Error('boom'));
 

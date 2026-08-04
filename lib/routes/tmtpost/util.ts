@@ -1,7 +1,7 @@
 import type { CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';
 
-import type { Data, DataItem } from '@/types';
+import type { Data, DataItem, Language } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
@@ -29,9 +29,7 @@ const processItems = async (limit: number, query: Record<string, any>, apiUrl: s
     const $: CheerioAPI = load(targetResponse);
     const language = $('html').attr('lang') ?? 'zh-CN';
 
-    let items: DataItem[] = [];
-
-    items = response.data.slice(0, limit).map((item): DataItem => {
+    let items: DataItem[] = response.data.slice(0, limit).map((item): DataItem => {
         const title: string = item.title;
         const description: string = renderDescription({
             intro: item.summary,
@@ -56,7 +54,7 @@ const processItems = async (limit: number, query: Record<string, any>, apiUrl: s
             image,
             banner: image,
             updated: updated ? parseDate(updated, 'X') : undefined,
-            language,
+            language: language as Language,
         };
 
         return processedItem;
@@ -125,7 +123,7 @@ const processItems = async (limit: number, query: Record<string, any>, apiUrl: s
                         image,
                         banner: image,
                         updated: updated ? parseDate(updated, 'X') : undefined,
-                        language,
+                        language: language as Language,
                     };
 
                     const enclosureUrl: string | undefined = data.audio;
@@ -194,7 +192,7 @@ const processItems = async (limit: number, query: Record<string, any>, apiUrl: s
         allowEmpty: true,
         image: $('meta[property="og:image"]').attr('content'),
         author: title.split(/-/).pop(),
-        language,
+        language: language as Language,
         itunes_author: author,
         itunes_category: 'Technology',
         id: targetUrl,

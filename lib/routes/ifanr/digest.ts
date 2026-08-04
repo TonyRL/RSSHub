@@ -2,13 +2,13 @@ import type { CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';
 import type { Context } from 'hono';
 
-import type { Data, DataItem, Route } from '@/types';
+import type { Data, DataItem, Language, Route } from '@/types';
 import { ViewType } from '@/types';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
 
 export const handler = async (ctx: Context): Promise<Data> => {
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '20', 10);
+    const limit = Number(ctx.req.query('limit') ?? '20');
 
     const baseUrl = 'https://www.ifanr.com';
     const apiBaseUrl = 'https://sso.ifanr.com';
@@ -46,7 +46,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 text: item.post_content ?? description,
             },
             updated: updated ? parseDate(updated) : undefined,
-            language,
+            language: language as Language,
             _extra: {
                 links: [
                     {
@@ -71,7 +71,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
         allowEmpty: true,
         image: $('img.c-header-navbar__logo').attr('src'),
         author: $('meta[property="og:site_name"]').attr('content'),
-        language,
+        language: language as Language,
         id: $('meta[property="og:url"]').attr('content'),
     };
 };

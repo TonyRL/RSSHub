@@ -52,38 +52,30 @@ export const parseList = async (
                     return {
                         title: isSingapore ? $item.text().trim() : ($item.attr('title')?.trim() as string),
                         link: $item.attr('href') as string,
-                        pubDate: timezone($item.next().text().trim().includes(':') ? parseDate($item.next().text().trim(), 'HH:mm') : parseDate($item.next().text().trim(), 'MM月DD日'), +8),
+                        pubDate: timezone($item.next().text().trim().includes(':') ? parseDate($item.next().text().trim(), 'HH:mm') : parseDate($item.next().text().trim(), 'MM月DD日'), 8),
                     };
                 }
                 const response = await ofetch.raw(new URL($item.attr('href') as string, origin).href);
                 let $1 = load(response._data);
 
-                let title, pubDate, category, images;
-                const jsonText = $1('head script[type="application/ld+json"]')
+                let category, images;
+                const jsonText = $1('script[type="application/ld+json"]:contains("NewsArticle")')
                     .text()
-                    .replaceAll(/[\u0000-\u001F\u007F-\u009F]/g, '');
+                    .replaceAll(/\p{Cc}/gu, '');
                 const ldJson = JSON.parse(jsonText);
+
+                const title = ldJson.headline;
+                const pubDate = parseDate(ldJson.datePublished);
 
                 const isSingapore = response.url.startsWith('https://www.zaobao.com.sg/');
                 if (isSingapore) {
-                    const hydrationData = JSON.parse(
-                        JSON.parse(
-                            `"${
-                                $1('script:contains("__staticRouterHydrationData")')
-                                    .text()
-                                    .match(/__staticRouterHydrationData = JSON.parse\("(.*)"\);/)?.[1]
-                            }"`
-                        )
-                    );
-                    const article = hydrationData.loaderData['0-0'].context.payload.article;
-                    title = article.headline;
-                    pubDate = parseDate(article.create_time, 'X');
-                    category = article.tags.map((t) => t.name);
-                    $1 = load(article.body_cn, null, false);
-                    images = article.images;
+                    category = $1('meta[name="keywords"]')
+                        .attr('content')
+                        ?.split(',')
+                        .map((s) => s.trim());
+                    $1 = load($1('.articleBody').html()!, null, false);
+                    images = [{ url: ldJson.image[0].url }];
                 } else {
-                    title = ldJson.headline;
-                    pubDate = parseDate(ldJson.datePublished);
                     category = ldJson.keywords?.split(',');
                 }
 
@@ -127,7 +119,7 @@ export const parseList = async (
 };
 
 export const orderContent = (parent) => {
-    for (const [i, e] of parent
+    const sortedChildren = parent
         .children()
         .toArray()
         .toSorted((a, b) => {
@@ -149,8 +141,8 @@ export const orderContent = (parent) => {
                 )
             ).toString();
             return a - b;
-        })
-        .entries()) {
+        });
+    for (const [i, e] of sortedChildren.entries()) {
         parent.find((element) => e(element)).attr('s', i);
         parent.append(e);
     }
@@ -171,7 +163,7 @@ const processImageData = (isSg, images, $1) => {
             src: img.url
                 .replaceAll(/\/\/.*\.com\/s3fs-public/g, '//static.zaobao.com/s3fs-public')
                 .replaceAll('s3/files', 's3fs-public')
-                .split('?')[0],
+                .split('?', 1)[0],
             title: img.caption,
         })) as ImageData[];
     }
@@ -186,7 +178,7 @@ const processImageData = (isSg, images, $1) => {
                     .attr('src')
                     .replaceAll(/\/\/.*\.com\/s3fs-public/g, '//static.zaobao.com/s3fs-public')
                     .replaceAll('s3/files', 's3fs-public')
-                    .split('?')[0],
+                    .split('?', 1)[0],
                 title: hkImg.attr('title'),
             },
         ] as ImageData[];

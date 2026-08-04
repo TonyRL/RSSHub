@@ -2,7 +2,7 @@ import type { Context } from 'hono';
 import { raw } from 'hono/html';
 import { renderToString } from 'hono/jsx/dom/server';
 
-import type { Data, DataItem, Route } from '@/types';
+import type { Data, DataItem, Language, Route } from '@/types';
 import cache from '@/utils/cache';
 import got from '@/utils/got';
 import { parseDate } from '@/utils/parse-date';
@@ -72,6 +72,7 @@ export const route: Route = {
     example: '/buaa/lib/space/newbook/',
     handler,
     description: `可通过参数进行筛选：\`/buaa/lib/space/newbook/key1=value1&key2=value2...\`
+
 - \`dcpCode\`：学科分类代码
   - 例：
     - 工学：\`08\`
@@ -92,14 +93,14 @@ export const route: Route = {
   - 注意事项：只有本馆一个可选值。
 - \`locaCode\`：馆藏地代码
   - 例：
-    - 五层西-中文新书借阅室(A-Z类)：\`02503\`
+    - 五层西 - 中文新书借阅室 (A-Z 类)：\`02503\`
   - 默认值：无
   - 注意事项：必须与 \`libCode\` 同时使用。
 
 示例：
+
 - \`buaa/lib/space/newbook\` 为所有新书
-- \`buaa/lib/space/newbook/clsNo=U&libCode=00000&locaCode=60001\` 为沙河教2图书馆所有中图分类号为 U（交通运输）的书籍
-`,
+- \`buaa/lib/space/newbook/clsNo=U&libCode=00000&locaCode=60001\` 为沙河教 2 图书馆所有中图分类号为 U（交通运输）的书籍`,
     categories: ['university'],
 
     features: {
@@ -115,8 +116,8 @@ export const route: Route = {
 
 async function handler(ctx: Context): Promise<Data> {
     const path = ctx.req.param('path');
-    const i = path.indexOf('/');
-    const params = i === -1 ? '' : path.slice(i + 1);
+    const i = path!.indexOf('/');
+    const params = i === -1 ? '' : path!.slice(i + 1);
     const searchParams = new URLSearchParams(params);
     const dcpCode = searchParams.get('dcpCode'); // Filter by subject (discipline code)
     const clsNo = searchParams.get('clsNo'); // Filter by class (Chinese Library Classification)
@@ -134,7 +135,7 @@ async function handler(ctx: Context): Promise<Data> {
         title: '北航图书馆 - 新书速递',
         item,
         description: '北京航空航天大学图书馆新书速递',
-        language: 'zh-CN',
+        language: 'zh-CN' as Language,
         link: 'https://space.lib.buaa.edu.cn/space/newBook',
         author: '北京航空航天大学图书馆',
         allowEmpty: true,
@@ -233,7 +234,7 @@ async function getItem(item: Book): Promise<DataItem> {
         return {
             language: item.language === 'eng' ? 'en' : 'zh-CN',
             title: item.title,
-            pubDate: item.onSelfDate ? timezone(parseDate(item.onSelfDate), +8) : undefined,
+            pubDate: item.onSelfDate ? timezone(parseDate(item.onSelfDate), 8) : undefined,
             description: content,
             link,
         };

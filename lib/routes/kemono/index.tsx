@@ -61,12 +61,14 @@ export const route: Route = {
 | posts | patreon | fanbox       | gumroad | subscribestar | dlsite | discord | fantia |
 
 ::: tip
-  When \`posts\` is selected as the value of the parameter **source**, the parameter **id** does not take effect.
-  There is an optinal parameter **limit** which controls the number of posts to fetch, default value is 25.
+When \`posts\` is selected as the value of the parameter **source**, the parameter **id** does not take effect.
+There is an optinal parameter **limit** which controls the number of posts to fetch, default value is 25.
 
-  Support for announcements and fancards:
-  - Use \`/:source/:id/announcements\` to get announcements
-  - Use \`/:source/:id/fancards\` to get fancards
+Support for announcements and fancards:
+
+- Use \`/:source/:id/announcements\` to get announcements
+- Use \`/:source/:id/fancards\` to get fancards
+
 :::`,
 };
 
@@ -168,8 +170,8 @@ function generateEnclosureInfo(htmlContent: string): { enclosure_url?: string; e
     const $ = load(htmlContent);
     let enclosureInfo = {};
 
-    $('audio source, video source').each(function () {
-        const src = $(this).attr('src');
+    $('audio source, video source').each((_, el) => {
+        const src = $(el).attr('src');
         if (!src) {
             return;
         }
@@ -179,7 +181,7 @@ function generateEnclosureInfo(htmlContent: string): { enclosure_url?: string; e
 
         if (mimeType) {
             enclosureInfo = {
-                enclosure_url: new URL(src, KEMONO_ROOT_URL).toString(),
+                enclosure_url: new URL(src, KEMONO_ROOT_URL).href,
                 enclosure_type: mimeType,
             };
             return false;
@@ -223,7 +225,7 @@ const renderPostFiles = (post: KemonoPost & { files?: KemonoFile[] }) =>
         <>
             {post.files?.map((file) => {
                 const extension = file.extension;
-                const typeSuffix = file.extention ?? '';
+                const typeSuffix = file.extension ?? '';
 
                 if (['jpg', 'png', 'webp', 'jpeg', 'jfif'].includes(extension)) {
                     return <img src={file.path} />;
@@ -343,16 +345,17 @@ function processPosts(posts: KemonoPost[], authorName: string, limit: number) {
 
             let replacementCount = 0;
             const fanboxRegex = /downloads\.fanbox\.cc/;
-            $('a').each(function () {
-                const link = $(this).attr('href');
+            $('a').each((_, el) => {
+                const link = $(el).attr('href');
                 if (link && fanboxRegex.test(link)) {
-                    $(this).replaceWith(kemonoFileElements[replacementCount] || '');
+                    $(el).replaceWith(kemonoFileElements[replacementCount] || '');
                     replacementCount++;
                 }
             });
 
             description = (kemonoFileElements[0] || '') + $.html();
-            for (const fileElement of kemonoFileElements.slice(replacementCount + 1)) {
+            const remainingFileElements = kemonoFileElements.slice(replacementCount + 1);
+            for (const fileElement of remainingFileElements) {
                 description += fileElement;
             }
 
@@ -412,6 +415,6 @@ async function handler(ctx) {
             item: items,
         };
     } catch (error) {
-        throw new Error(`Failed to fetch data from Kemono: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        throw new Error(`Failed to fetch data from Kemono: ${error instanceof Error ? error.message : 'Unknown error'}`, { cause: error });
     }
 }

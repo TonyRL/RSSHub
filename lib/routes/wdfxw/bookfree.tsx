@@ -4,7 +4,7 @@ import type { Element } from 'domhandler';
 import type { Context } from 'hono';
 import { renderToString } from 'hono/jsx/dom/server';
 
-import type { Data, DataItem, Route } from '@/types';
+import type { Data, DataItem, Language, Route } from '@/types';
 import { ViewType } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
@@ -12,7 +12,7 @@ import { parseDate } from '@/utils/parse-date';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { id } = ctx.req.param();
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '30', 10);
+    const limit = Number(ctx.req.query('limit') ?? '30');
 
     const baseUrl = 'https://www.wdfxw.net';
     const targetUrl: string = new URL(`bookfree${id ? `-${id}` : ''}.html`, baseUrl).href;
@@ -21,12 +21,10 @@ export const handler = async (ctx: Context): Promise<Data> => {
     const $: CheerioAPI = load(response);
     const language = $('meta[http-equiv="Content-Language"]').attr('content') ?? 'zh-cn';
 
-    let items: DataItem[] = [];
-
-    items = $('ul.camWholeBoxUl li')
+    let items: DataItem[] = $('ul.camWholeBoxUl li')
         .slice(0, limit)
         .toArray()
-        .map((el): Element => {
+        .map((el) => {
             const $el: Cheerio<Element> = $(el);
             const $aEl: Cheerio<Element> = $el.find('div.camLiTitleC a');
 
@@ -58,7 +56,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 },
                 image,
                 banner: image,
-                language,
+                language: language as Language,
             };
 
             return processedItem;
@@ -71,7 +69,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
             }
 
             return cache.tryGet(item.link, async (): Promise<DataItem> => {
-                const detailResponse = await ofetch(item.link);
+                const detailResponse = await ofetch(item.link!);
                 const $$: CheerioAPI = load(detailResponse);
 
                 const title: string = $$('h1').text();
@@ -102,7 +100,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                     category: categories,
                     author: authors,
                     updated: upDatedStr ? parseDate(upDatedStr) : item.updated,
-                    language,
+                    language: language as Language,
                 };
 
                 return {
@@ -121,7 +119,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
         allowEmpty: true,
         image: $('div.xxxk_top img').attr('src'),
         author: $('div.xxxk_top img').attr('alt'),
-        language,
+        language: language as Language,
         id: targetUrl,
     };
 };
@@ -325,13 +323,12 @@ export const route: Route = {
 | [标准汇编](https://www.wdfxw.net/bookfree-00029.html)                     | [00029](https://rsshub.app/wdfxw/bookfree/00029)     |
 | [其他](https://www.wdfxw.net/bookfree-00030.html)                         | [00030](https://rsshub.app/wdfxw/bookfree/00030)     |
 | [职业资格考试](https://www.wdfxw.net/bookfree-00031.html)                 | [00031](https://rsshub.app/wdfxw/bookfree/00031)     |
-| [股票证券行业研究报告(研报）](https://www.wdfxw.net/bookfree-00032.html)  | [00032](https://rsshub.app/wdfxw/bookfree/00032)     |
+| [股票证券行业研究报告 (研报）](https://www.wdfxw.net/bookfree-00032.html) | [00032](https://rsshub.app/wdfxw/bookfree/00032)     |
 | [基金申请](https://www.wdfxw.net/bookfree-00033.html)                     | [00033](https://rsshub.app/wdfxw/bookfree/00033)     |
 | [教师资格证考试资料](https://www.wdfxw.net/bookfree-00034.html)           | [00034](https://rsshub.app/wdfxw/bookfree/00034)     |
 | [专利说明书](https://www.wdfxw.net/bookfree-00035.html)                   | [00035](https://rsshub.app/wdfxw/bookfree/00035)     |
 
-</details>
-`,
+</details>`,
     categories: ['reading'],
     features: {
         requireConfig: false,

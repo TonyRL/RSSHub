@@ -5,14 +5,14 @@ import type { Context } from 'hono';
 import { raw } from 'hono/html';
 import { renderToString } from 'hono/jsx/dom/server';
 
-import type { Data, DataItem, Route } from '@/types';
+import type { Data, DataItem, Language, Route } from '@/types';
 import { ViewType } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
 
 export const handler = async (ctx: Context): Promise<Data> => {
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '30', 10);
+    const limit = Number(ctx.req.query('limit') ?? '30');
 
     const baseUrl = 'https://www.thebrain.com';
     const targetUrl: string = new URL('blog', baseUrl).href;
@@ -21,17 +21,15 @@ export const handler = async (ctx: Context): Promise<Data> => {
     const $: CheerioAPI = load(response);
     const language = $('html').attr('lang') ?? 'en';
 
-    let items: DataItem[] = [];
-
-    items = $('div.blog-row')
+    let items: DataItem[] = $('div.blog-row')
         .slice(0, limit)
         .toArray()
-        .map((el): Element => {
+        .map((el) => {
             const $el: Cheerio<Element> = $(el);
             const $aEl: Cheerio<Element> = $el.find('h4 a');
 
             const title: string = $aEl.text();
-            const image: string | undefined = $el.find('div.round-corner-images img').attr('src') ? `https:${$el.find('div.round-corner-images img').attr('src')?.split(/\?/)[0]}` : undefined;
+            const image: string | undefined = $el.find('div.round-corner-images img').attr('src') ? `https:${$el.find('div.round-corner-images img').attr('src')?.split(/\?/, 1)[0]}` : undefined;
             const description: string | undefined = renderToString(
                 <>
                     {image ? (
@@ -58,7 +56,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 image,
                 banner: image,
                 updated: upDatedStr ? parseDate(upDatedStr) : undefined,
-                language,
+                language: language as Language,
             };
 
             return processedItem;
@@ -71,7 +69,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
             }
 
             return cache.tryGet(item.link, async (): Promise<DataItem> => {
-                const detailResponse = await ofetch(item.link);
+                const detailResponse = await ofetch(item.link!);
                 const $$: CheerioAPI = load(detailResponse);
 
                 const title: string = $$('h2.gradient-heading').text() || $$('h1.gradient-heading').text();
@@ -79,7 +77,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 $$('h2.gradient-heading').remove();
                 $$('div#shareDiv').remove();
 
-                const description: string | undefined = $$('div.blog-content').html() || $$('div.docs-section').html() || undefined;
+                const description: string | undefined = ($$('div.blog-content').html() || $$('div.docs-section').html()) ?? undefined;
                 const pubDateStr: string | undefined = $$('div.blog-meta').text();
                 const categoryEls: Element[] = $$('a.under-category').toArray();
                 const categories: string[] = [...new Set(categoryEls.map((el) => $$(el).text()).filter(Boolean))];
@@ -90,7 +88,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                     return {
                         name: $$authorEl.text(),
                         url: $$authorEl.attr('href') ? new URL($$authorEl.attr('href') as string, baseUrl).href : undefined,
-                        avatar: `https:${$$(authorEl).attr('src')?.split(/\?/)[0]}`,
+                        avatar: `https:${$$(authorEl).attr('src')?.split(/\?/, 1)[0]}`,
                     };
                 });
                 const upDatedStr: string | undefined = pubDateStr;
@@ -106,7 +104,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                         text: description,
                     },
                     updated: upDatedStr ? parseDate(upDatedStr) : item.updated,
-                    language,
+                    language: language as Language,
                 };
 
                 return {
@@ -123,7 +121,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
         item: items,
         allowEmpty: true,
         image: $('img.navbar-logo').attr('src') ? new URL($('img.navbar-logo').attr('src') as string, baseUrl).href : undefined,
-        language,
+        language: language as Language,
         id: targetUrl,
     };
 };

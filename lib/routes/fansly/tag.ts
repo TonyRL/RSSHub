@@ -1,4 +1,4 @@
-import type { Route } from '@/types';
+import type { Language, Route } from '@/types';
 import { parseDate } from '@/utils/parse-date';
 
 import { baseUrl, findAccountById, getTagId, getTagSuggestion, icon, parseDescription } from './utils';
@@ -36,7 +36,7 @@ async function handler(ctx) {
     const items = suggestion.aggregationData?.posts.map((post) => {
         const account = findAccountById(post.accountId, suggestion.aggregationData.accounts);
         return {
-            title: post.content.split('\n')[0],
+            title: post.content.split('\n', 1)[0],
             description: parseDescription(post, suggestion.aggregationData),
             pubDate: parseDate(post.createdAt, 'X'),
             link: `${baseUrl}/post/${post.id}`,
@@ -50,7 +50,7 @@ async function handler(ctx) {
         image: icon,
         icon,
         logo: icon,
-        language: 'en',
+        language: 'en' as Language,
         item: items,
     };
 }

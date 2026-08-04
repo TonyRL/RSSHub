@@ -2,9 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { config } from '../../lib/config';
-import { namespaces } from '../../lib/registry';
+import { ensureAllLoaded, namespaces } from '../../lib/registry';
 import { getCurrentPath } from '../../lib/utils/helpers';
 import { categories } from './data';
+
+await ensureAllLoaded();
 
 const fullTests = await (await fetch('https://cdn.jsdelivr.net/gh/DIYgod/RSSHub@gh-pages/build/test-full-routes.json')).json();
 const testResult = fullTests.testResults[0].assertionResults;
@@ -18,7 +20,7 @@ const foloAnalysis = await (
 ).json();
 const foloAnalysisResult = foloAnalysis.data as Record<string, { subscriptionCount: number; topFeeds: any[] }>;
 const foloAnalysisTop100 = Object.entries(foloAnalysisResult)
-    .sort((a, b) => b[1].subscriptionCount - a[1].subscriptionCount)
+    .toSorted((a, b) => b[1].subscriptionCount - a[1].subscriptionCount)
     .slice(0, 150);
 
 const __dirname = getCurrentPath(import.meta.url);
@@ -73,10 +75,12 @@ for (const namespace in namespaces) {
     let defaultCategory = nsData.categories?.[0];
     if (!defaultCategory) {
         for (const routePath in nsData.routes) {
-            if (nsData.routes[routePath].categories) {
-                defaultCategory = nsData.routes[routePath].categories[0];
-                break;
+            if (!nsData.routes[routePath].categories) {
+                continue;
             }
+
+            defaultCategory = nsData.routes[routePath].categories[0];
+            break;
         }
     }
     if (!defaultCategory) {

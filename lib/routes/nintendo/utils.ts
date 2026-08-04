@@ -13,7 +13,7 @@ import { renderEshopCnDescription } from './templates/eshop-cn';
 dayjs.extend(localizedFormat);
 
 function nuxtReader(data) {
-    let nuxt = {};
+    let nuxt: Record<string, unknown>;
     try {
         const dom = new JSDOM(data, {
             runScripts: 'dangerously',
@@ -51,7 +51,7 @@ async function loadNews(link) {
     const $ = load(data);
     let description = $('.detail-body-container').html();
     const date = $('.topics-articleHead__date').text();
-    description = description.replaceAll('src="/topics/', 'src="https://www.nintendo.com.hk/topics/');
+    description = description!.replaceAll('src="/topics/', 'src="https://www.nintendo.com.hk/topics/');
     return {
         content: description,
         pubDate: parseDate(date, 'YYYY.M.D'),

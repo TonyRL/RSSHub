@@ -1,16 +1,15 @@
 import { load } from 'cheerio';
 
-import type { Route } from '@/types';
+import type { DataItem, Language, Route } from '@/types';
 import cache from '@/utils/cache';
 import got from '@/utils/got';
 import { parseDate } from '@/utils/parse-date';
 
 export const route: Route = {
     path: '/pe/:id?',
-    parameters: {
-        id: '栏目 id，见下表，默认为通知公告',
-    },
+    categories: ['university'],
     example: '/sspu/pe',
+    parameters: { id: '栏目 id，见下表，默认为通知公告' },
     radar: [
         {
             source: ['pe2016.sspu.edu.cn/:id/list.htm'],
@@ -20,13 +19,12 @@ export const route: Route = {
     name: '体育部',
     maintainers: ['nczitzk'],
     handler,
-    description: `
-| 通知公告 | 体育新闻 | 场馆管理 | 相关下载 |
+    description: `| 通知公告 | 体育新闻 | 场馆管理 | 相关下载 |
 | -------- | -------- | -------- | -------- |
 | 342      | 343      | 324      | 325      |
 
 <details>
-<summary>更多栏目</summary>
+  <summary>更多栏目</summary>
 
 #### [部门概况](https://pe2016.sspu.edu.cn/318/list.htm)
 
@@ -69,7 +67,7 @@ export const route: Route = {
 
 async function handler(ctx) {
     const { id = '342' } = ctx.req.param();
-    const limit = ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit'), 10) : 30;
+    const limit = ctx.req.query('limit') ? Number(ctx.req.query('limit')) : 30;
 
     const rootUrl = 'https://pe2016.sspu.edu.cn';
     const currentUrl = new URL(`${id}/list.htm`, rootUrl).href;
@@ -81,20 +79,20 @@ async function handler(ctx) {
     let items = $('table.wp_article_list_table a[title]')
         .slice(0, limit)
         .toArray()
-        .map((item) => {
-            item = $(item);
+        .map((item): DataItem => {
+            const $item = $(item);
 
             return {
-                title: item.text(),
-                link: new URL(item.prop('href'), rootUrl).href,
-                pubDate: parseDate(item.prev().text()),
+                title: $item.text(),
+                link: new URL($item.prop('href')!, rootUrl).href,
+                pubDate: parseDate($item.prev().text()),
             };
         });
 
     items = await Promise.all(
         items.map((item) =>
-            cache.tryGet(item.link, async () => {
-                if (item.link.endsWith('htm')) {
+            cache.tryGet(item.link!, async () => {
+                if (item.link!.endsWith('htm')) {
                     const { data: detailResponse } = await got(item.link);
 
                     const content = load(detailResponse);
@@ -114,14 +112,14 @@ async function handler(ctx) {
 
     const author = '上海第二工业大学';
     const subtitle = $('title').text();
-    const icon = new URL($('link[rel="shortcut icon"]').prop('href'), rootUrl).href;
+    const icon = new URL($('link[rel="shortcut icon"]').prop('href')!, rootUrl).href;
 
     return {
         item: items,
         title: `${author} - ${subtitle}`,
         link: currentUrl,
         description: $('div.tyb_headtitle1').text(),
-        language: $('html').prop('lang'),
+        language: $('html').prop('lang') as Language,
         icon,
         logo: icon,
         subtitle,

@@ -41,7 +41,7 @@ async function handler(): Promise<Data> {
             .filter((item) => item.link && /\/news|\/explained|\/innovation-circle/.test(item.link))
             .map((item) => ({
                 ...item,
-                link: item.link?.split('?')[0],
+                link: item.link?.split('?', 1)[0],
             }))
             .map((item) =>
                 cache.tryGet(item.link!, async () => {
@@ -61,7 +61,7 @@ async function handler(): Promise<Data> {
                         pubDate: item.pubDate ? parseDate(item.pubDate) : undefined,
                         link,
                         author: item.creator || 'CoinTelegraph',
-                        category: item.categories?.map((c) => c.trim()) || [],
+                        category: item.categories || [],
                         image: item.enclosure?.url,
                     } as DataItem;
                 })

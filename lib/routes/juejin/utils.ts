@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 
-import * as cheerio from 'cheerio';
+import { load } from 'cheerio';
 
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
@@ -17,7 +17,12 @@ const s256 = (s1: Uint8Array, s2: string) => {
     return sha.digest('hex');
 };
 
-const solveWafChallenge = (cs) => {
+/**
+ * Solve _wafchallengeid
+ * @param cs - base64 encoded challenge string {"v":{"a":"...", "b":"timestamp", "c":"..."}, "s":"..."}
+ * @returns base64 encoded solved challenge string {"v":{"a":"...", "b":"timestamp", "c":"..."}, "s":"...", "d":"solution"}
+ */
+export const solveWafChallenge = (cs: string) => {
     const c = JSON.parse(Buffer.from(cs, 'base64').toString());
     const prefix = b64tou8a(c.v.a);
     const expect = b64tohex(c.v.c);
@@ -33,18 +38,18 @@ const solveWafChallenge = (cs) => {
 };
 
 export const generateUuid = () => {
-    const e = (t) => (t ? (t ^ ((16 * 0.5) >> (t / 4))).toString(10) : '10000000-1000-4000-8000-100000000000'.replaceAll(/[018]/g, e));
+    const e = (t?) => (t ? (t ^ ((16 * 0.5) >> (t / 4))).toString(10) : '10000000-1000-4000-8000-100000000000'.replaceAll(/[018]/g, (c) => e(c)));
     return e().replaceAll('-', '').slice(0, 19);
 };
 
 export const getArticle = async (link) => {
     let response = await ofetch(link);
-    let $ = cheerio.load(response);
+    let $ = load(response);
     if ($('script').text().includes('_wafchallengeid')) {
         const cs = $('script:contains("_wafchallengeid")')
             .text()
             .match(/cs="(.*?)",c/)?.[1];
-        const cookie = solveWafChallenge(cs);
+        const cookie = solveWafChallenge(cs!);
 
         response = await ofetch(link, {
             headers: {
@@ -52,7 +57,7 @@ export const getArticle = async (link) => {
             },
         });
 
-        $ = cheerio.load(response);
+        $ = load(response);
     }
 
     return $('.article-viewer').html();

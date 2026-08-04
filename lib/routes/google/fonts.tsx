@@ -40,7 +40,7 @@ export const route: Route = {
 |  date  | trending |  popularity  | alpha |       style      |
 
 ::: warning
-  This route requires API key, therefore it's only available when self-hosting, refer to the [Deploy Guide](https://docs.rsshub.app/deploy/config#route-specific-configurations) for route-specific configurations.
+This route requires API key, therefore it's only available when self-hosting, refer to the [Deploy Guide](https://docs.rsshub.app/deploy/config#route-specific-configurations) for route-specific configurations.
 :::`,
 };
 
@@ -85,11 +85,11 @@ const renderDescription = (item): string =>
             <br />
             <text>Last modified: {item.lastModified}</text>
             <br />
-            <Strong>File:</Strong>
+            <strong>File:</strong>
             <br />
             {Object.entries(item.files ?? {}).map(([key, value]) => (
                 <>
-                    <a href={value}>{key}</a>&nbsp;&nbsp;
+                    <a href={value as string}>{key}</a>&nbsp;&nbsp;
                 </>
             ))}
         </>

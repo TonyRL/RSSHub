@@ -9,13 +9,15 @@ const postsAPIUrl = `${rootUrl}/wp-json/wp/v2/posts`;
 
 export const route: Route = {
     path: '/',
+    categories: ['anime'],
+    example: '/vcb-s',
     radar: [
         {
             source: ['vcb-s.com/'],
             target: '',
         },
     ],
-    name: 'Unknown',
+    name: '最新文章',
     maintainers: ['cxfksword'],
     handler,
     url: 'vcb-s.com/',
@@ -33,7 +35,7 @@ async function handler(ctx) {
 
     const items = data.map((item) => {
         const description = renderDescription({
-            post: item.content.rendered.replaceAll(/<pre class="js-medie-info-detail.*?>(.*?)<\/pre>/gs, '<pre><code>$1</code></pre>').replaceAll(/<div.+?dw-box-download.+?>(.*?)<\/div>/gs, '<pre>$1</pre>'),
+            post: item.content.rendered.replaceAll(/<pre class="js-medie-info-detail[^>]*>(.*?)<\/pre>/gs, '<pre><code>$1</code></pre>').replaceAll(/<div.+?dw-box-download[^>]+>(.*?)<\/div>/gs, '<pre>$1</pre>'),
             medias: item._embedded['wp:featuredmedia'],
         });
 

@@ -24,7 +24,11 @@ export const route: Route = {
     },
     radar: [
         {
-            source: ['www.jumeili.cn/', 'jumeili.cn/'],
+            source: ['www.jumeili.cn/'],
+            target: '/home/:column?',
+        },
+        {
+            source: ['jumeili.cn/'],
             target: '/home/:column?',
         },
     ],
@@ -45,10 +49,9 @@ async function handler(ctx) {
     const cookie = config.jumeili.cookie;
     const response = await ofetch(link, {
         headers: {
-            referer: baseUrl,
             'user-agent': config.trueUA,
             accept: 'application/json, text/javascript, */*; q=0.01',
-            cookie,
+            cookie: cookie!,
         },
     });
 
@@ -73,7 +76,6 @@ async function handler(ctx) {
                 cache.tryGet(item.link, async () => {
                     const article = await ofetch(item.link, {
                         headers: {
-                            referer: baseUrl,
                             'user-agent': config.trueUA,
                             accept: 'application/json, text/javascript, */*; q=0.01',
                             cookie,

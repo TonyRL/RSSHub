@@ -13,14 +13,12 @@ export const route: Route = {
     parameters: {
         category: '栏目分类，见下表',
     },
-    description: `
-  | \`category\` | 栏目分类 |
-  | ------------ | ------- |
-  | \`daily\`    | 每日聚焦 |
-  | \`pcz\`      | 最好玩   |
-  | \`night\`    | 触乐夜话 |
-  | \`news\`     | 动态资讯 |
-    `,
+    description: `| \`category\` | 栏目分类 |
+| ---------- | -------- |
+| \`daily\`    | 每日聚焦 |
+| \`pcz\`      | 最好玩   |
+| \`night\`    | 触乐夜话 |
+| \`news\`     | 动态资讯 |`,
     features: {
         requireConfig: false,
         requirePuppeteer: false,
@@ -129,9 +127,9 @@ async function handler(ctx: Context): Promise<Data | null> {
                 const item: DataItem = {
                     title: article.title,
                     link: article.link,
-                    description: s('.content .the-content').html() || '',
+                    description: s('.content .the-content').html(),
                     pubDate: parseDate(toJavaScriptTimestamp(s('.friendly_time').attr('data-time'))),
-                    author: s('.author-time .fn-left').text() || '',
+                    author: s('.author-time .fn-left').text(),
                 };
 
                 return item;

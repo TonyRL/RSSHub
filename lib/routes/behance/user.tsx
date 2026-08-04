@@ -38,7 +38,7 @@ export const route: Route = {
     name: 'User Works',
     maintainers: ['MisteryMonster'],
     handler,
-    description: `Behance user's profile URL, like [https://www.behance.net/mishapetrick](https://www.behance.net/mishapetrick) the username will be \`mishapetrick\`。`,
+    description: `Behance user's profile URL, like <https://www.behance.net/mishapetrick> the username will be \`mishapetrick\`。`,
 };
 
 const getUserProfile = async (nodes, user) =>
@@ -164,7 +164,7 @@ async function handler(ctx) {
 
                 item.description = renderDescription(project.description, project.allModules);
                 item.category = [...new Set([...(item.category || []), ...(project.tags?.map((tag) => tag.title.toLowerCase()) || [])])];
-                item.pubDate = item.pubDate || (project.publishedOn ? parseDate(project.publishedOn, 'X') : undefined);
+                item.pubDate ||= project.publishedOn ? parseDate(project.publishedOn, 'X') : undefined;
 
                 return item;
             })

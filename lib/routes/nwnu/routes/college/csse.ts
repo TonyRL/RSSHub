@@ -35,7 +35,7 @@ const COLUMNS: Record<string, { title: string; description: string }> = {
 };
 
 const handler: Route['handler'] = async (ctx) => {
-    const columnParam = ctx.req.param('column');
+    const columnParam = ctx.req.param('column')!;
     if (COLUMNS[columnParam] === undefined) {
         throw new NotFoundError(`The column ${columnParam} does not exist`);
     }
@@ -117,15 +117,14 @@ export const route: Route = {
         supportPodcast: false,
         supportScihub: false,
     },
-    example: '/college/csse/2435',
+    example: '/nwnu/college/csse/2435',
     radar: [
         {
             source: ['jsj.nwnu.edu.cn/:column/list'],
             target: '/college/csse/:column',
         },
     ],
-    description: `
-| column | 标题       | 描述                                          |
+    description: `| column | 标题       | 描述                                          |
 | ------ | ---------- | --------------------------------------------- |
 | 2435   | 学院新闻   | 计算机科学与工程 学院新闻                     |
 | 2436   | 通知公告   | 计算机科学与工程 通知公告                     |

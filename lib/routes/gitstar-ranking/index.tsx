@@ -4,7 +4,7 @@ import type { Element } from 'domhandler';
 import type { Context } from 'hono';
 import { renderToString } from 'hono/jsx/dom/server';
 
-import type { Data, DataItem, Route } from '@/types';
+import type { Data, DataItem, Language, Route } from '@/types';
 import { ViewType } from '@/types';
 import ofetch from '@/utils/ofetch';
 
@@ -49,7 +49,7 @@ const renderDescription = ({ images, stargazersCount, language, description }) =
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { category = 'repositories' } = ctx.req.param();
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '100', 10);
+    const limit = Number(ctx.req.query('limit') ?? '100');
 
     const baseUrl = 'https://gitstar-ranking.com';
     const targetUrl: string = new URL(category, baseUrl).href;
@@ -61,7 +61,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
     const items: DataItem[] = $('a.list-group-item')
         .slice(0, limit)
         .toArray()
-        .map((el): Element => {
+        .map((el) => {
             const $el: Cheerio<Element> = $(el);
 
             const stargazersCount = Number($el.find('span.stargazers_count').text()?.trim());
@@ -98,7 +98,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
                 },
                 image,
                 banner: image,
-                language,
+                language: language as Language,
             };
 
             return processedItem;
@@ -108,12 +108,12 @@ export const handler = async (ctx: Context): Promise<Data> => {
 
     return {
         title,
-        description: title.split(/-/)[0],
+        description: title.split(/-/, 1)[0],
         link: targetUrl,
         item: items,
         allowEmpty: true,
         author: title.split(/-/).pop()?.trim(),
-        language,
+        language: language as Language,
         id: $('meta[property="og:url"]').attr('content'),
     };
 };
@@ -152,8 +152,7 @@ To subscribe to [Repositories](https://gitstar-ranking.com/repositories), where 
 | ---------------------------------------------------------- | ----------------------------------------------------------------- |
 | [Users](https://gitstar-ranking.com/users)                 | [users](https://rsshub.app/gitstar-ranking/users)                 |
 | [Organizations](https://gitstar-ranking.com/organizations) | [organizations](https://rsshub.app/gitstar-ranking/organizations) |
-| [Repositories](https://gitstar-ranking.com/repositories)   | [repositories](https://rsshub.app/gitstar-ranking/repositories)   |
-`,
+| [Repositories](https://gitstar-ranking.com/repositories)   | [repositories](https://rsshub.app/gitstar-ranking/repositories)   |`,
     categories: ['programming'],
     features: {
         requireConfig: false,

@@ -2,6 +2,7 @@ import { load } from 'cheerio';
 import { raw } from 'hono/html';
 import { renderToString } from 'hono/jsx/dom/server';
 
+import type { Language } from '@/types';
 import got from '@/utils/got';
 
 import utils from './utils';
@@ -28,8 +29,6 @@ export async function track(ctx) {
     });
 
     const $ = load(response.data);
-    utils.expandEven($);
-    utils.expandOdd($);
 
     const list = $('.tableType01').eq(1).find('tr').slice(2);
     const officeList = $('.tableType03').eq(0).find('tr').slice(1);
@@ -40,8 +39,8 @@ export async function track(ctx) {
             const eTd = $(e).find('td');
             return {
                 officeType: eTd.eq(0).text().trim(),
-                officeName: eTd.eq(1).html().trim(),
-                officeTel: eTd.eq(2).html().trim(),
+                officeName: eTd.eq(1).html()!.trim(),
+                officeTel: eTd.eq(2).html()!.trim(),
             };
         });
     }
@@ -51,21 +50,21 @@ export async function track(ctx) {
         throw new Error(resErrorText);
     }
 
-    const listEven = list.even();
-    const listOdd = list.odd();
+    const listEven = utils.even(list);
+    const listOdd = utils.odd(list);
 
     const packageType = $('.tableType01').eq(0).find('tr').eq(1).find('td').eq(1).text().trim();
     const packageService = $('.tableType01').eq(0).find('tr').eq(1).find('td').eq(2).text().trim();
     const serviceText = locale === 'ja' ? '付加サービス：' : 'Additional services: ';
 
-    let lastItemTimeStamp;
+    let lastItemTimestamp;
     let tz;
 
     return {
         title: `${baseTitle} ${reqCode} ${packageType}`,
         link,
         description: `${baseTitle} ${reqCode} ${packageType}`,
-        language: locale,
+        language: locale as Language,
         icon: 'https://www.post.japanpost.jp/favicon.ico',
         logo: 'https://www.post.japanpost.jp/favicon.ico',
         item: listEven.toArray().map((item, index) => {
@@ -117,17 +116,17 @@ export async function track(ctx) {
             const itemPubDateText = itemTd.eq(0).text().trim();
             const itemGuid = utils.generateGuid(reqCode + itemTitle + itemDescription + itemPubDateText);
 
-            let thisItemTimeStamp;
-            [thisItemTimeStamp, tz] = utils.parseDatetime(itemPubDateText, packageOffice, packageRegion, tz, locale);
-            if (lastItemTimeStamp && thisItemTimeStamp <= lastItemTimeStamp) {
-                thisItemTimeStamp = lastItemTimeStamp + 1000;
+            let thisItemTimestamp;
+            [thisItemTimestamp, tz] = utils.parseDatetime(itemPubDateText, packageOffice, packageRegion, tz, locale);
+            if (lastItemTimestamp && thisItemTimestamp <= lastItemTimestamp) {
+                thisItemTimestamp = lastItemTimestamp + 1000;
             }
-            lastItemTimeStamp = thisItemTimeStamp;
+            lastItemTimestamp = thisItemTimestamp;
 
             return {
                 title: itemTitle,
                 description: itemDescription,
-                pubDate: new Date(thisItemTimeStamp),
+                pubDate: new Date(thisItemTimestamp),
                 link,
                 guid: itemGuid.slice(0, 32),
             };

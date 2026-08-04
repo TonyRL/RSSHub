@@ -59,7 +59,7 @@ export const route: Route = {
 
 async function handler(ctx: Context): Promise<Data> {
     const type = ctx.req.param('type') || 'important';
-    if (type in typeUrlMap === false) {
+    if (!Object.hasOwn(typeUrlMap, type)) {
         throw new InvalidParameterError('type not supported');
     }
     const typeName = typeNameMap[type];
@@ -71,7 +71,7 @@ async function handler(ctx: Context): Promise<Data> {
 
     const items = entries.map(async (entry) => {
         const element = $(entry);
-        const newsTitle = element.find('a').text() ?? '';
+        const newsTitle = element.find('a').text();
         const newsLink = detailUrl + element.find('a').attr('href');
 
         const newsDetail = await cache.tryGet(newsLink, async () => {
@@ -84,7 +84,7 @@ async function handler(ctx: Context): Promise<Data> {
             return {
                 title: newsTitle,
                 link: newsLink,
-                pubDate: match ? timezone(parseDate(match[1]), +8) : null,
+                pubDate: match ? timezone(parseDate(match[1]), 8) : null,
                 description: content('div.content').html(),
             };
         });

@@ -1,4 +1,4 @@
-import type { Route } from '@/types';
+import type { DataItem, Route } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
@@ -40,7 +40,7 @@ async function handler() {
     const list = response.data.articles.map((item) => ({
         title: item.title,
         description: item.summary,
-        link: `${baseUrl}/#/cn/Details_${item.addDate.split(' ')[0].replaceAll('-', '')}${item.id}.html`,
+        link: `${baseUrl}/#/cn/Details_${item.addDate.split(' ', 1)[0].replaceAll('-', '')}${item.id}.html`,
         pubDate: timezone(parseDate(item.addDate, 'YYYY-MM-DD HH:mm:ss'), 8),
         author: item.author,
         id: item.id,
@@ -72,6 +72,6 @@ async function handler() {
     return {
         title: '精真估 > 资讯',
         link: `${baseUrl}/#/index/boot`,
-        item: items,
+        item: items as unknown as DataItem[],
     };
 }

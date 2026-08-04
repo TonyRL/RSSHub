@@ -2,14 +2,14 @@ import type { CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';
 import type { Context } from 'hono';
 
-import type { Data, Route } from '@/types';
+import type { Data, DataItem, Language, Route } from '@/types';
 import { ViewType } from '@/types';
 import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/parse-date';
 
 export const handler = async (ctx: Context): Promise<Data> => {
     const { filter } = ctx.req.param();
-    const limit: number = Number.parseInt(ctx.req.query('limit') ?? '50', 10);
+    const limit = Number(ctx.req.query('limit') ?? '50');
 
     const apiSlug = 'wp-json/wp/v2';
 
@@ -74,13 +74,15 @@ export const handler = async (ctx: Context): Promise<Data> => {
         });
 
         for (const media of mediaResponse) {
-            if (media.parent) {
-                const existing = mediaMap.get(media.parent);
-                if (existing) {
-                    existing.push(media);
-                } else {
-                    mediaMap.set(media.parent, [media]);
-                }
+            if (!media.parent) {
+                continue;
+            }
+
+            const existing = mediaMap.get(media.parent);
+            if (existing) {
+                existing.push(media);
+            } else {
+                mediaMap.set(media.parent, [media]);
             }
         }
     }
@@ -132,7 +134,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
             linkUrl = new URL(`report/${item.slug}`, baseUrl).href;
         }
 
-        let processedItem = {
+        let processedItem: DataItem = {
             title,
             description,
             pubDate: pubDate ? parseDate(pubDate) : undefined,
@@ -148,7 +150,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
             image,
             banner: image,
             updated: updated ? parseDate(updated) : undefined,
-            language,
+            language: language as Language,
         };
 
         if (enclosureUrl) {
@@ -172,7 +174,7 @@ export const handler = async (ctx: Context): Promise<Data> => {
         allowEmpty: true,
         image: $('meta[property="og:image"]').attr('content'),
         author: $('meta[property="og:site_name"]').attr('content'),
-        language,
+        language: language as Language,
         id: targetUrl,
     };
 };
@@ -332,7 +334,7 @@ To subscribe to [Metals Forcus](https://jbma.net/cat_report/metals-forcus/), whe
                 const type: string = params.type;
                 const name: string = params.name;
 
-                if (type === 'report' || type === 'cat_report' || type === 'tag_report') {
+                if (['report', 'cat_report', 'tag_report'].includes(type)) {
                     return `/${type}${name ? `/${name}` : ''}`;
                 }
 

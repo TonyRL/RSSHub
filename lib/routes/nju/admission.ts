@@ -1,4 +1,5 @@
 import { load } from 'cheerio';
+import type { Text } from 'domhandler';
 
 import type { Route } from '@/types';
 import got from '@/utils/got';
@@ -35,12 +36,12 @@ async function handler() {
 
     const items = await Promise.all(
         Object.keys(category_dict).map(async () => {
-            const response = await got(`https://admission.nju.edu.cn/tzgg`);
+            const response = await got('https://admission.nju.edu.cn/tzgg');
 
             const data = response.data;
             const $ = load(data);
-            let script = $('ul').find('script');
-            script = script['1'].children[0].data;
+            const scripts = $('ul').find('script');
+            const script = (scripts['1'].children[0] as Text).data;
 
             const start = script.indexOf('[');
             const end = script.lastIndexOf(']');

@@ -1,7 +1,7 @@
 import { load } from 'cheerio';
 import { renderToString } from 'hono/jsx/dom/server';
 
-import type { Route } from '@/types';
+import type { Language, Route } from '@/types';
 import got from '@/utils/got';
 import md5 from '@/utils/md5';
 import { parseDate } from '@/utils/parse-date';
@@ -36,7 +36,8 @@ async function handler(ctx) {
     const limit = Number.parseInt(ctx.req.query('limit')) || 12;
 
     const link = getLink(category);
-    const $ = load(await get(link));
+    const html = await get(link);
+    const $ = load(html);
     const title = $('head>title').text();
     const description = $('head>meta[name="description"]').attr('content');
     const image = $('head>link[rel="apple-touch-icon"]').attr('href');
@@ -61,7 +62,7 @@ async function handler(ctx) {
         const link = `https://www.gcores.com/radios/${id}`;
         const itunes_item_image = `https://image.gcores.com/${attributes.cover}`;
         const media_id = relationships.media.data.id;
-        const enclosure_url = new URL(audios[media_id], 'https://alioss.gcores.com/uploads/audio/').toString();
+        const enclosure_url = new URL(audios[media_id], 'https://alioss.gcores.com/uploads/audio/').href;
         const description = renderContentDescription(JSON.parse(attributes.content));
 
         return {
@@ -82,7 +83,7 @@ async function handler(ctx) {
         title,
         link,
         description,
-        language: 'zh-cn',
+        language: 'zh-CN' as Language,
         itunes_author: '机核 GCORES',
         image: `https://www.gcores.com/${image}`,
         item,

@@ -1,7 +1,7 @@
 import { load } from 'cheerio';
 import type { Context } from 'hono';
 
-import type { Data, Route } from '@/types';
+import type { Data, Language, Route } from '@/types';
 import cache from '@/utils/cache';
 import got from '@/utils/got';
 import { parseDate } from '@/utils/parse-date';
@@ -26,6 +26,7 @@ export const route: Route = {
 
 1. 新闻快讯页面的链接中 \`onclick="javascript:onNewsList('03');return false;"\`，对应的路径参数为 \`03\`，完整路由为 \`/buaa/jiaowu/03\`；
 2. 通知公告 > 公示专区页面的链接中 \`onclick="javascript:onNewsList2('0203','2');return false;"\`，对应的路径参数为 \`0203\`，完整路由为 \`/buaa/jiaowu/0203\`。
+
 :::`,
     categories: ['university'],
     features: {
@@ -68,7 +69,7 @@ async function handler(ctx: Context): Promise<Data> {
         item,
         link: BASE_URL,
         author: '北航教务部',
-        language: 'zh-CN',
+        language: 'zh-CN' as Language,
     };
 }
 
@@ -98,7 +99,7 @@ async function getList(url: string | URL, form: Record<string, string> = {}) {
             return {
                 title: $('a').text(),
                 link,
-                pubDate: timezone(parseDate($('span.Floatright').text()), +8),
+                pubDate: timezone(parseDate($('span.Floatright').text()), 8),
             };
         })
         .filter((item) => item !== null);

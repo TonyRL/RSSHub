@@ -23,10 +23,10 @@ const handler: Route['handler'] = async () => {
                     const $ = load(data);
 
                     return {
-                        title: $('h1').first().text().trim(),
+                        title: $('h1').first().text(),
                         link,
-                        description: $('article div:nth-child(2)').html() ?? '',
-                        pubDate: parseDate($('p.whitespace-pre-wrap').first().text().split(/\s+by/)[0]),
+                        description: $('article div:nth-child(2)').html(),
+                        pubDate: parseDate($('p.whitespace-pre-wrap').first().text().split(/\s+by/, 1)[0]),
                     };
                 });
             })
@@ -35,7 +35,7 @@ const handler: Route['handler'] = async () => {
     return {
         title: 'React Blog',
         link: 'https://react.dev/blog',
-        language: 'en-US',
+        language: 'en-us',
         item,
     };
 };

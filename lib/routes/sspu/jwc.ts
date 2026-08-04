@@ -1,6 +1,6 @@
 import { load } from 'cheerio';
 
-import type { Route } from '@/types';
+import type { DataItem, Route } from '@/types';
 import cache from '@/utils/cache';
 import got from '@/utils/got';
 import { parseDate } from '@/utils/parse-date';
@@ -8,10 +8,9 @@ import timezone from '@/utils/timezone';
 
 export const route: Route = {
     path: '/jwc/:listId',
-    parameters: {
-        listId: '专栏 ID，见下表',
-    },
+    categories: ['university'],
     example: '/sspu/jwc/897',
+    parameters: { listId: '专栏 ID，见下表' },
     radar: [
         {
             source: ['jwc.sspu.edu.cn/jwc/:listId/list.htm'],
@@ -20,8 +19,7 @@ export const route: Route = {
     name: '教务处',
     maintainers: ['TonyRL'],
     handler,
-    description: `
-| 学生专栏 | 教师专栏 |
+    description: `| 学生专栏 | 教师专栏 |
 | -------- | -------- |
 | 897      | 898      |`,
 };
@@ -36,23 +34,23 @@ async function handler(ctx) {
     const list = $('.news_list .news')
         .slice(0, ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit')) : 15)
         .toArray()
-        .map((item) => {
-            item = $(item);
-            const title = item.find('.news_title a');
+        .map((item): DataItem => {
+            const $item = $(item);
+            const title = $item.find('.news_title a');
             return {
-                title: title.attr('title'),
+                title: title.attr('title')!,
                 link: `${baseUrl}${title.attr('href')}`,
             };
         });
 
     const items = await Promise.all(
         list.map((item) =>
-            cache.tryGet(item.link, async () => {
+            cache.tryGet(item.link!, async () => {
                 const { data: response } = await got(item.link);
                 const $ = load(response);
 
                 item.description = $('.wp_articlecontent').html();
-                item.pubDate = timezone(parseDate($('.arti_update').text(), 'YYYY-MM-DD HH:mm:ss'), +8);
+                item.pubDate = timezone(parseDate($('.arti_update').text(), 'YYYY-MM-DD HH:mm:ss'), 8);
 
                 return item;
             })

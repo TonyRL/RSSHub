@@ -28,7 +28,7 @@ const handler = async (ctx: Context): Promise<Data | null> => {
             return {
                 title: a.prop('title'),
                 link,
-                pubDate: timezone(parseDate(pubDate), +8),
+                pubDate: timezone(parseDate(pubDate), 8),
             };
         });
 
@@ -37,7 +37,7 @@ const handler = async (ctx: Context): Promise<Data | null> => {
             cache.tryGet(item.link!, async () => {
                 const { data: detailResponse } = await got(item.link);
                 const content = load(detailResponse);
-                item.description = content('div.my_doccontent').html() ?? '';
+                item.description = content('div.my_doccontent').html();
                 item.author = author;
                 return item;
             })
@@ -54,7 +54,7 @@ const handler = async (ctx: Context): Promise<Data | null> => {
 };
 
 export const route: Route = {
-    path: '/mof/gss/:category?',
+    path: '/gss/:category?',
     categories: ['government'],
     example: '/gov/mof/gss',
     parameters: { category: '列表标签，默认为政策发布' },
@@ -71,13 +71,13 @@ export const route: Route = {
     handler,
     description: `#### 关税文件发布
 
-| 政策发布 | 政策解读 |
-| ------------- | -------------- |
-| zhengcefabu   | zhengcejiedu   |`,
+| 政策发布    | 政策解读     |
+| ----------- | ------------ |
+| zhengcefabu | zhengcejiedu |`,
     radar: [
         {
             source: ['gss.mof.gov.cn/gzdt/:category/'],
-            target: '/mof/gss/:category',
+            target: '/gss/:category',
         },
     ],
 };

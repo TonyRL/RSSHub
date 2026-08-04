@@ -1,7 +1,7 @@
 import { load } from 'cheerio';
 import { renderToString } from 'hono/jsx/dom/server';
 
-import type { Route } from '@/types';
+import type { Language, Route } from '@/types';
 import got from '@/utils/got';
 import { parseDate } from '@/utils/parse-date';
 
@@ -24,7 +24,7 @@ export const route: Route = {
 
 async function handler(ctx) {
     const { language = 'zh-hans' } = ctx.req.param();
-    const limit = ctx.req.query('limit') ? Number.parseInt(ctx.req.query('limit'), 10) : 100;
+    const limit = ctx.req.query('limit') ? Number(ctx.req.query('limit')) : 100;
 
     const rootUrl = 'https://idaily-cdn.idailycdn.com';
     const apiUrl = new URL(`api/list/v3/iphone/${language}`, rootUrl).href;
@@ -74,10 +74,10 @@ async function handler(ctx) {
         title,
         link: currentUrl,
         description: $('meta[name="description"]').prop('content'),
-        language: 'zh',
+        language: 'zh' as Language,
         image,
         subtitle: $('meta[name="keywords"]').prop('content'),
-        author: title.split(/\s/)[0],
+        author: title.split(/\s/, 1)[0],
         allowEmpty: true,
     };
 }
