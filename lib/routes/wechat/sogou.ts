@@ -30,7 +30,6 @@ async function fetchAndParsePage(wechatId: string): Promise<SogouItemInternal[]>
                 page: '1',
             },
             headers: {
-                Referer: host,
                 Cookie: hardcodedCookie,
             },
         });
@@ -150,7 +149,7 @@ export const route: Route = {
         supportScihub: false,
     },
     name: '公众号（搜狗来源）',
-    maintainers: ['EthanWng97', 'pseudoyu'],
+    maintainers: ['IvanWng97', 'pseudoyu'],
     handler,
 };
 

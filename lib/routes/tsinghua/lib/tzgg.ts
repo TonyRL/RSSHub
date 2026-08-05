@@ -1,6 +1,6 @@
 import { load } from 'cheerio';
 
-import type { Route } from '@/types';
+import type { DataItem, Route } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 
@@ -37,13 +37,13 @@ async function handler(ctx) {
 
     const list = $('ul.notice-list li')
         .toArray()
-        .map((item) => {
-            item = $(item);
-            const title = item.find('a').first().text();
-            const time = item.find('.notice-date').first().text();
-            const a = item.find('a').first().attr('href');
+        .map((item): DataItem & { link: string } => {
+            const $item = $(item);
+            const title = $item.find('a').text();
+            const time = $item.find('.notice-date').text();
+            const a = $item.find('a').attr('href');
 
-            const fullUrl = new URL(a, host).href;
+            const fullUrl = new URL(a!, host).href;
 
             return {
                 title,
@@ -58,7 +58,7 @@ async function handler(ctx) {
                 const response = await ofetch(item.link);
                 const $ = load(response);
 
-                item.description = $('.v_news_content').first().html();
+                item.description = $('.v_news_content').html();
 
                 return item;
             })
