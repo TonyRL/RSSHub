@@ -21,10 +21,11 @@ jobs:
               uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
             - name: Check for duplicate issues
-              uses: anthropics/claude-code-action@v1.0.183
+              uses: anthropics/claude-code-action@v1
               env:
                   GH_TOKEN: ${{ github.token }}
                   ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+                  CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: 0
               with:
                   claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
                   github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -33,7 +34,7 @@ jobs:
                   claude_args: |
                       --model ${{ vars.OPENCODE_MODEL }}
                       ${{ vars.CLAUDE_EFFORT && format('--effort {0}', vars.CLAUDE_EFFORT) || '' }}
-                      --allowedTools "Bash(gh issue:*)"
+                      --allowedTools "Bash(gh issue:*),Bash(gh search:*)"
                       --disallowedTools "WebFetch,WebSearch"
                   prompt: |
                       A new issue has been created:
