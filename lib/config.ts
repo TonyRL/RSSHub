@@ -110,6 +110,7 @@ type ConfigEnvKeys =
     | 'EH_STAR'
     | 'EH_IMG_PROXY'
     | `EMAIL_CONFIG_${string}`
+    | 'ETHERSCAN_API_KEY'
     | 'F95ZONE_COOKIE'
     | 'FANBOX_SESSION_ID'
     | 'FANFOU_CONSUMER_KEY'
@@ -420,6 +421,9 @@ export type Config = {
     email: {
         config: Record<string, string | undefined>;
     };
+    etherscan: {
+        apiKey?: string;
+    };
     f95zone: {
         cookie?: string;
     };
@@ -717,7 +721,7 @@ export type Config = {
     };
 };
 
-const value: Config | Record<string, any> = {};
+const value = {} as Config;
 
 const TRUE_UA = 'RSSHub/1.0 (+http://github.com/DIYgod/RSSHub; like FeedFetcher-Google)';
 
@@ -925,6 +929,9 @@ const calculateValue = () => {
         },
         email: {
             config: email_config,
+        },
+        etherscan: {
+            apiKey: envs.ETHERSCAN_API_KEY,
         },
         f95zone: {
             cookie: envs.F95ZONE_COOKIE,
@@ -1223,9 +1230,7 @@ const calculateValue = () => {
         },
     };
 
-    for (const name in _value) {
-        value[name] = _value[name];
-    }
+    Object.assign(value, _value);
 };
 calculateValue();
 (async () => {
@@ -1251,7 +1256,6 @@ calculateValue();
     }
 })();
 
-// @ts-expect-error value is set
 export const config: Config = value;
 
 export const setConfig = (env: ConfigEnv) => {
