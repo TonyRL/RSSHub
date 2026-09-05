@@ -34,6 +34,11 @@ updates:
               patterns:
                   - 'eslint'
                   - '@eslint/*'
+          hono:
+              patterns:
+                  - '@hono/*'
+                  - '@scalar/hono-api-reference'
+                  - 'hono'
           opentelemetry:
               patterns:
                   - '@opentelemetry/*'
@@ -66,6 +71,10 @@ updates:
       open-pull-requests-limit: 100
       labels:
           - dependencies
+      groups:
+          nix:
+              patterns:
+                  - '*'
 
     - package-ecosystem: 'github-actions'
       directory: '/'
