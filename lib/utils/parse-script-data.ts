@@ -1,4 +1,6 @@
-import { type AnyNode, parse } from 'acorn';
+import { type Node } from 'oxc-parser';
+
+import { parseScriptSource } from './parse-js';
 
 type DataValue = string | number | boolean | null | undefined | DataValue[] | DataObject | ScriptDataError;
 type DataObject = { [key: string]: DataValue };
@@ -25,7 +27,7 @@ const propertyKey = (value: unknown): string => {
     return key;
 };
 
-const staticPath = (node: AnyNode): string[] => {
+const staticPath = (node: Node): string[] => {
     if (node.type === 'Identifier') {
         return [propertyKey(node.name)];
     }
@@ -38,8 +40,16 @@ const staticPath = (node: AnyNode): string[] => {
 
 const normalizePath = (path: string[]) => (globalNames.has(path[0]) ? path.slice(1) : path);
 
-const targetPath = (target: string): string[] => {
-    const program = parse(target, { ecmaVersion: 'latest' });
+const parseProgram = async (source: string, errorMessage: string) => {
+    const { program, errors } = await parseScriptSource(source);
+    if (errors.length) {
+        throw new ScriptDataError(errorMessage);
+    }
+    return program;
+};
+
+const targetPath = async (target: string): Promise<string[]> => {
+    const program = await parseProgram(target, 'Script data targets must be a single static property path');
     if (program.body.length !== 1 || program.body[0].type !== 'ExpressionStatement') {
         throw new ScriptDataError('Script data targets must be a single static property path');
     }
@@ -66,7 +76,7 @@ const readProperty = (object: DataValue, key: string): DataValue => {
 class ScriptDataReader {
     private root: Scope = { values: Object.create(null) };
     private steps = 0;
-    private poisonedAssignments = new WeakSet<AnyNode>();
+    private poisonedAssignments = new WeakSet<Node>();
     private captured = false;
     private callbackValue: DataValue;
 
@@ -101,7 +111,7 @@ class ScriptDataReader {
         throw new ScriptDataError(`Unknown script data variable: ${name}`);
     }
 
-    private reference(node: AnyNode, scope: Scope, depth: number): Reference {
+    private reference(node: Node, scope: Scope, depth: number): Reference {
         if (node.type === 'Identifier') {
             const key = propertyKey(node.name);
             if (globalNames.has(key)) {
@@ -127,11 +137,11 @@ class ScriptDataReader {
         return { object, key };
     }
 
-    private evaluate(node: AnyNode, scope: Scope, depth: number): DataValue {
+    private evaluate(node: Node, scope: Scope, depth: number): DataValue {
         this.step(depth);
         switch (node.type) {
             case 'Literal':
-                if (node.regex || node.bigint) {
+                if ('regex' in node || 'bigint' in node) {
                     break;
                 }
                 return node.value as string | number | boolean | null;
@@ -223,6 +233,9 @@ class ScriptDataReader {
                     const key = propertyKey(parameter.name);
                     local.values[key] = args[index];
                 }
+                if (!fn.body) {
+                    break;
+                }
                 return fn.body.type === 'BlockStatement' ? this.statements(fn.body.body, local, depth + 1, true)?.value : this.evaluate(fn.body, local, depth + 1);
             }
             default:
@@ -231,7 +244,7 @@ class ScriptDataReader {
         throw new ScriptDataError(`Unsupported script data expression: ${node.type}`);
     }
 
-    private matchesCallback(node: AnyNode): boolean {
+    private matchesCallback(node: Node): boolean {
         try {
             const path = normalizePath(staticPath(node));
             return path.length === this.target.length && path.every((key, index) => key === this.target[index]);
@@ -243,7 +256,7 @@ class ScriptDataReader {
         }
     }
 
-    private isCallbackGuard(node: AnyNode): boolean {
+    private isCallbackGuard(node: Node): boolean {
         if (this.argumentIndex === undefined || node.type !== 'IfStatement' || node.alternate || node.test.type !== 'UnaryExpression' || node.test.operator !== '!') {
             return false;
         }
@@ -255,7 +268,7 @@ class ScriptDataReader {
         return path.length > 0 && path.length < this.target.length && path.every((key, index) => key === this.target[index]);
     }
 
-    private referencesKnownData(node: AnyNode, scope: Scope, depth: number): boolean {
+    private referencesKnownData(node: Node, scope: Scope, depth: number): boolean {
         this.step(depth);
         if (node.type === 'Identifier' || node.type === 'MemberExpression') {
             try {
@@ -277,13 +290,16 @@ class ScriptDataReader {
                 }
             }
         }
-        return Object.values(node).some((value) => {
+        return Object.entries(node).some(([key, value]) => {
+            if (key === 'parent') {
+                return false;
+            }
             const children = Array.isArray(value) ? value : [value];
             return children.some((child) => child && typeof child === 'object' && typeof child.type === 'string' && this.referencesKnownData(child, scope, depth + 1));
         });
     }
 
-    private statements(nodes: AnyNode[], scope: Scope, depth: number, strict: boolean): { value: DataValue } | undefined {
+    private statements(nodes: Node[], scope: Scope, depth: number, strict: boolean): { value: DataValue } | undefined {
         for (const node of nodes) {
             this.step(depth);
             try {
@@ -352,11 +368,11 @@ class ScriptDataReader {
         }
     }
 
-    read(source: string): DataValue {
+    async read(source: string): Promise<DataValue> {
         if (source.length > maxScriptLength) {
             throw new ScriptDataError('Script data source exceeds the size limit');
         }
-        this.statements(parse(source, { ecmaVersion: 'latest' }).body, this.root, 0, false);
+        this.statements((await parseProgram(source, 'Script data source could not be parsed')).body, this.root, 0, false);
         let value: DataValue = this.root.values;
         if (this.argumentIndex === undefined) {
             for (const key of this.target) {
@@ -379,12 +395,12 @@ class ScriptDataReader {
     }
 }
 
-export const parseScriptData = <T = unknown>(source: string, target: string): T => new ScriptDataReader(targetPath(target)).read(source) as T;
+export const parseScriptData = async <T = unknown>(source: string, target: string): Promise<T> => (await new ScriptDataReader(await targetPath(target)).read(source)) as T;
 
 /** Extracts a serialized callback argument without invoking the callback or any external function. */
-export const parseScriptCallback = <T = unknown>(source: string, callbackPath: string, argumentIndex = 2): T => {
+export const parseScriptCallback = async <T = unknown>(source: string, callbackPath: string, argumentIndex = 2): Promise<T> => {
     if (!Number.isSafeInteger(argumentIndex) || argumentIndex < 0) {
         throw new ScriptDataError('Script data callback argument index must be a non-negative integer');
     }
-    return new ScriptDataReader(targetPath(callbackPath), argumentIndex).read(source) as T;
+    return (await new ScriptDataReader(await targetPath(callbackPath), argumentIndex).read(source)) as T;
 };

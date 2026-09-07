@@ -36,7 +36,7 @@ async function handler(ctx) {
         .map((element) => $(element).text())
         .filter((source) => source.includes('__DATA__'))
         .join('\n');
-    const data = parseScriptData<{
+    const data = await parseScriptData<{
         data: {
             nickname: string;
             head_img_url: string;

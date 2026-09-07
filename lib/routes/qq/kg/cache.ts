@@ -16,7 +16,7 @@ export default {
                 .map((element) => $(element).text())
                 .filter((source) => source.includes('__DATA__'))
                 .join('\n');
-            const data = parseScriptData<{
+            const data = await parseScriptData<{
                 detail: {
                     song_name: string;
                     content: string;

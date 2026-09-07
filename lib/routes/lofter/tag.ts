@@ -83,7 +83,7 @@ async function handler(ctx) {
         },
     });
 
-    const data = parseScriptCallback<any[]>(response.data, 'dwr.engine._remoteHandleCallback');
+    const data = await parseScriptCallback<any[]>(response.data, 'dwr.engine._remoteHandleCallback');
 
     const title =
         {

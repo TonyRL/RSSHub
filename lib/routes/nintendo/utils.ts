@@ -12,7 +12,7 @@ import { renderEshopCnDescription } from './templates/eshop-cn';
 
 dayjs.extend(localizedFormat);
 
-function nuxtReader(data) {
+async function nuxtReader(data) {
     let nuxt;
     try {
         const $ = load(data);
@@ -20,7 +20,7 @@ function nuxtReader(data) {
             .toArray()
             .map((element) => $(element).text())
             .find((source) => /\b__NUXT__\s*=/.test(source));
-        nuxt = parseScriptData<{ data: any[] }>(script ?? '', '__NUXT__').data[0];
+        nuxt = (await parseScriptData<{ data: any[] }>(script ?? '', '__NUXT__')).data[0];
     } catch {
         throw new Error('Nuxt 框架信息提取失败，请报告这个问题');
     }

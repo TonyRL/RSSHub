@@ -50,7 +50,7 @@ async function handler(ctx) {
         .map((element) => $(element).text())
         .filter((source) => source.includes('SNOWMAN_TARGET'))
         .join('\n');
-    const snowmanTarget = parseScriptData<{ screen_name: string; description: string }>(script, 'SNOWMAN_TARGET');
+    const snowmanTarget = await parseScriptData<{ screen_name: string; description: string }>(script, 'SNOWMAN_TARGET');
 
     const { data } = await got(`${baseUrl}/statuses/original/timeline.json`, {
         cookieJar,

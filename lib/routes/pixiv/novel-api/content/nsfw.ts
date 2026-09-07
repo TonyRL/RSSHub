@@ -32,7 +32,7 @@ export async function getNSFWNovelContent(novelId: string, token: string): Promi
         if (!script) {
             throw new Error('No novel data found');
         }
-        const novelDetail = parseScriptData<NSFWNovelDetail | undefined>(script, 'window.pixiv.novel');
+        const novelDetail = await parseScriptData<NSFWNovelDetail | undefined>(script, 'window.pixiv.novel');
 
         if (!novelDetail) {
             throw new Error('No novel data found');

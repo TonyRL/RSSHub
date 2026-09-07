@@ -6,13 +6,13 @@ import { parseDate } from '@/utils/parse-date';
 import { parseScriptData } from '@/utils/parse-script-data';
 import timezone from '@/utils/timezone';
 
-const readNuxtData = (response: string) => {
+const readNuxtData = async (response: string) => {
     const $ = load(response);
     const script = $('script')
         .toArray()
         .map((element) => $(element).text())
         .find((source) => /\b__NUXT__\s*=/.test(source));
-    return script ? parseScriptData<{ data?: any[] } | undefined>(script, '__NUXT__')?.data?.[0] : undefined;
+    return script ? (await parseScriptData<{ data?: any[] } | undefined>(script, '__NUXT__'))?.data?.[0] : undefined;
 };
 
 const processVideo = (content) => {
@@ -78,7 +78,7 @@ export const processFeed = async (type, id) => {
     const apiUrl = 'https://api.dongqiudi.com/v3/archive/app/channel/feeds';
     const { data: response } = await got(link);
 
-    const nuxtData = readNuxtData(response);
+    const nuxtData = await readNuxtData(response);
     if (!nuxtData) {
         throw new Error('Unable to extract Dongqiudi page data');
     }
@@ -123,7 +123,7 @@ export const processFeed = async (type, id) => {
             cache.tryGet(item.link, async () => {
                 const { data: response } = await got(item.link);
 
-                processFeedType2(item, response);
+                await processFeedType2(item, response);
 
                 return item;
             })
@@ -138,8 +138,8 @@ export const processFeed = async (type, id) => {
     };
 };
 
-export const processFeedType2 = (item, response) => {
-    const data = readNuxtData(response)?.article;
+export const processFeedType2 = async (item, response) => {
+    const data = (await readNuxtData(response))?.article;
 
     // filter out undefined item
     if (!data) {

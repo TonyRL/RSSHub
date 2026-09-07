@@ -95,6 +95,7 @@ export default defineConfig({
         neverBundle: [
             // Let Wrangler select the package's static-WASM workerd export.
             'xxhash-wasm',
+            '@oxc-parser/binding-wasm32-wasip1/wasm.wasm',
             // Exclude non-code files that might be accidentally imported
             /\/_README$/,
             /\.node$/,

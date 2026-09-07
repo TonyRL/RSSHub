@@ -37,7 +37,7 @@ async function handler() {
         .map((element) => $(element).text())
         .filter((source) => source.includes('__INITIAL_STATE__'))
         .join('\n');
-    const { widgets } = parseScriptData<{
+    const { widgets } = await parseScriptData<{
         widgets: {
             hottestWidget: {
                 threads: Array<{ title: string; mainImage: { path: string; name: string }; temperature: number; displayPrice: string; url: string }>;
