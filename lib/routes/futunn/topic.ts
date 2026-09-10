@@ -1,11 +1,10 @@
-import { load } from 'cheerio';
-
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import got from '@/utils/got';
 import { parseDate } from '@/utils/parse-date';
 
 import { renderDescription } from './templates/description';
+import { getArticle } from './utils';
 
 export const route: Route = {
     path: '/topic/:id',
@@ -78,12 +77,7 @@ async function handler(ctx) {
         items.map((item) =>
             cache.tryGet(item.link, async () => {
                 if (/news\.futunn\.com/.test(item.link)) {
-                    const detailResponse = await got({
-                        method: 'get',
-                        url: item.link,
-                    });
-
-                    const content = load(detailResponse.data);
+                    const content = await getArticle(item.link);
 
                     content('.futu-news-time-stamp').remove();
                     content('.nnstock').each((_, el) => {
