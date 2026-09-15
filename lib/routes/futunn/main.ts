@@ -7,7 +7,7 @@ import { renderDescription } from './templates/description';
 import { getArticle } from './utils';
 
 export const route: Route = {
-    path: ['/main', '/'],
+    path: '/main',
     categories: ['finance'],
     example: '/futunn/main',
     features: {
