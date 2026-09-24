@@ -1,10 +1,10 @@
 import { load } from 'cheerio';
-import { JSDOM } from 'jsdom';
 import { RateLimiterMemory, RateLimiterQueue } from 'rate-limiter-flexible';
 
 import { config } from '@/config';
 import cache from '@/utils/cache';
 import got from '@/utils/got';
+import { isWorker } from '@/utils/is-worker';
 import logger from '@/utils/logger';
 import { getPlaywrightPage } from '@/utils/playwright';
 
@@ -28,10 +28,11 @@ const getConfiguredCookie = () => {
     // Update b_lsid in cookies
     for (const key of Object.keys(config.bilibili.cookies)) {
         const cookie = config.bilibili.cookies[key];
-        if (cookie) {
-            const updatedCookie = cookie.replace(/b_lsid=[0-9A-F]+_[0-9A-F]+/, () => `b_lsid=${utils.lsid()}`);
-            config.bilibili.cookies[key] = updatedCookie;
+        if (!cookie) {
+            continue;
         }
+        const updatedCookie = cookie.replace(/b_lsid=[0-9A-F]+_[0-9A-F]+/, () => `b_lsid=${utils.lsid()}`);
+        config.bilibili.cookies[key] = updatedCookie;
     }
 
     return config.bilibili.cookies[Object.keys(config.bilibili.cookies)[Math.floor(Math.random() * Object.keys(config.bilibili.cookies).length)]] || '';
@@ -80,10 +81,8 @@ const getRenderData = (uid) => {
                 Cookie: cookie,
             },
         });
-        const dom = new JSDOM(response);
-        const document = dom.window.document;
-        const scriptElement = document.querySelector('#__RENDER_DATA__');
-        const innerText = scriptElement ? scriptElement.textContent || '{}' : '{}';
+        const $ = load(response);
+        const innerText = $('#__RENDER_DATA__').first().text() || '{}';
         const renderData = JSON.parse(decodeURIComponent(innerText));
         const accessId = renderData.access_id;
         return accessId;
@@ -265,7 +264,8 @@ const getVideoSubtitle = async (
         lan_doc: string;
     }>
 > => {
-    if (!bvid) {
+    // Workers skip subtitle metadata and downloads, regardless of route configuration.
+    if (isWorker || !bvid) {
         return [];
     }
 

@@ -114,7 +114,7 @@ const KEYWORDS: KeywordDefinition[] = [
         calc: () => dayjs().subtract(2, 'days').startOf('day'),
     },
     {
-        regExp: /^(?:明[天日早晨晚]|t(?:omorrow)?)/i,
+        regExp: /^(?:明[天日早晨晚]|t(?:omorrow|(?![a-z])))/i,
         calc: () => dayjs().add(1, 'days').startOf('day'),
     },
     {
@@ -181,11 +181,12 @@ const parseDuration = (str: string): plugin.Duration => {
 
     for (const { unit, regExp } of UNIT_PATTERNS) {
         const match = regExp.exec(cleanStr);
-        if (match) {
-            const val = Number(match[1]);
-            if (!Number.isNaN(val)) {
-                totalDuration = totalDuration.add(val, unit);
-            }
+        if (!match) {
+            continue;
+        }
+        const val = Number(match[1]);
+        if (!Number.isNaN(val)) {
+            totalDuration = totalDuration.add(val, unit);
         }
     }
     return totalDuration;
