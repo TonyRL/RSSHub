@@ -5,8 +5,10 @@ import { HTMLParser } from 'teleproto/extensions/html.js';
 import { returnBigInt } from 'teleproto/Helpers.js';
 import { getDisplayName } from 'teleproto/Utils.js';
 
+import { config } from '@/config';
 import type { DataItem } from '@/types';
 import cache from '@/utils/cache';
+import md5 from '@/utils/md5';
 
 import { getClient, getDocument, getFilename, unwrapMedia } from './client';
 
@@ -47,11 +49,11 @@ export function withSearchParams(src: string, params: Record<string, string>) {
 export function getMessageMediaUrl(requestUrl: string, username: string, messageId: number) {
     const request = new URL(requestUrl);
     const url = new URL(`/telegram/media/${username}/${messageId}`, request.origin);
-    for (const key of ['key', 'code']) {
-        const value = request.searchParams.get(key);
-        if (value) {
-            url.searchParams.set(key, value);
-        }
+    const key = request.searchParams.get('key');
+    if (key) {
+        url.searchParams.set('key', key);
+    } else if (request.searchParams.has('code') && config.accessKey) {
+        url.searchParams.set('code', md5(url.pathname + config.accessKey));
     }
     return url.href;
 }
