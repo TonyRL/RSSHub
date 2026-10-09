@@ -1,7 +1,7 @@
 import { load } from 'cheerio';
 import iconv from 'iconv-lite';
 
-import type { Route } from '@/types';
+import type { DataItem, Route } from '@/types';
 import { ViewType } from '@/types';
 import cache from '@/utils/cache';
 import got from '@/utils/got';
@@ -51,7 +51,7 @@ async function handler(ctx) {
 
     let items = $('tr[itemprop="chapter"]')
         .toArray()
-        .map((item) => {
+        .map((item): DataItem & { link: string; isVip?: boolean; isLock: boolean } => {
             const $item = $(item);
 
             const chapterId = $item.find('td').first().text().trim();
@@ -86,32 +86,33 @@ async function handler(ctx) {
             };
         });
 
-    items.reverse();
-
     items = await Promise.all(
-        items.slice(0, limit).map((item) =>
-            item.isLock
-                ? Promise.resolve(item)
-                : cache.tryGet(item.link, async () => {
-                      if (!item.isVip) {
-                          const { data: detailResponse } = await got(item.link, {
-                              responseType: 'buffer',
-                          });
+        items
+            .toReversed()
+            .slice(0, limit)
+            .map((item) =>
+                item.isLock
+                    ? Promise.resolve(item)
+                    : cache.tryGet(item.link, async () => {
+                          if (!item.isVip) {
+                              const { data: detailResponse } = await got(item.link, {
+                                  responseType: 'buffer',
+                              });
 
-                          const content = load(iconv.decode(detailResponse, 'gbk'));
+                              const content = load(iconv.decode(detailResponse, 'gbk'));
 
-                          content('span.favorite_novel').parent().remove();
+                              content('span.favorite_novel').parent().remove();
 
-                          item.description += renderBookDescription({
-                              description: content('div.novelbody').html() || undefined,
-                          });
-                      }
+                              item.description += renderBookDescription({
+                                  description: content('div.novelbody').html() || undefined,
+                              });
+                          }
 
-                      delete (item as { isVip?: unknown }).isVip;
+                          delete item.isVip;
 
-                      return item;
-                  })
-        )
+                          return item;
+                      })
+            )
     );
 
     const logoEl = $('div.logo a img');

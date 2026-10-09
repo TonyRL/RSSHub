@@ -62,10 +62,12 @@ async function handler(ctx) {
                 if (highlightMarks) {
                     for (const mark of highlightMarks) {
                         const $mark = $(mark);
-                        const markInnerHtml = $mark.html() as string;
-                        $mark.replaceWith(markInnerHtml);
+                        $mark.replaceWith($mark.contents());
                     }
-                    $item = $($item.html() as string); // 删除关键字高亮后，相邻的裸文本节点不会被自动合并，重新生成 cheerio 对象以确保后续流程正常运行
+                    const itemHtml = $item.html();
+                    if (itemHtml !== null) {
+                        $item = $(itemHtml); // 删除关键字高亮后，相邻的裸文本节点不会被自动合并，重新生成 cheerio 对象以确保后续流程正常运行
+                    }
                 }
             }
 
@@ -177,11 +179,10 @@ async function handler(ctx) {
         })
     );
 
-    out.reverse();
     return {
         title: mpName || $('.tgme_channel_info_header_title').text(),
         link: `https://t.me/s/${id}`,
-        item: out.filter(Boolean),
+        item: out.toReversed().filter(Boolean),
         allowEmpty: !!mpName,
     };
 }

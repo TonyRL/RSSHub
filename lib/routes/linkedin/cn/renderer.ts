@@ -126,8 +126,7 @@ const renderSingle = (node) => {
 
 const parseAttr = (description) => {
     const { attributes, text } = description;
-    const attrs = [...attributes];
-    attrs.sort((b, d) => {
+    const attrs = attributes.toSorted((b, d) => {
         const f = b.start + b.length,
             e = d.start + d.length;
         return f === e ? text_tag[b.detailData.style] - text_tag[d.detailData.style] : f - e;
@@ -137,9 +136,8 @@ const parseAttr = (description) => {
         const p = new TreeNode(q);
         const w = q.start;
         while (0 < n.length && n.at(-1)!.attr.start >= w) {
-            p.children.push(n.pop());
+            p.children.unshift(n.pop());
         }
-        p.children.reverse();
         n.push(p);
     }
 
