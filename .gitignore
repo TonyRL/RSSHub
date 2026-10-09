@@ -29,6 +29,7 @@ dist
 dist-container
 dist-lib
 dist-worker
+.vitest
 .wrangler
 
 Session.vim
@@ -40,6 +41,3 @@ package-lock.json
 # pnpm-lock.yaml
 yarn.lock
 yarn-error.log
-
-!.env.project
-!.env.vault

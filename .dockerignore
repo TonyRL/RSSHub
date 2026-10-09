@@ -44,8 +44,4 @@ vercel.json
 .git/hooks
 
 # rsshub auxiliary files
-lib/v2/**/radar.js
-
-#dotenv-vault
-!.env.project
-!.env.vault
+lib/routes/**/radar.js
