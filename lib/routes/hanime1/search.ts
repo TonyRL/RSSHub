@@ -24,6 +24,7 @@ async function handler(ctx) {
     }
 
     const response = await ofetch(link, {
+        minVersion: 'TLSv1.3',
         headers: {
             referer: baseUrl,
             'user-agent': config.trueUA,
@@ -31,21 +32,15 @@ async function handler(ctx) {
     });
     const $ = load(response);
 
-    const target = '.content-padding-new .row.no-gutter';
-
-    const items = $(target)
-        .find('.search-doujin-videos.hidden-xs') // 过滤掉重复的元素
+    const items = $(`a[href^="${baseUrl}/watch"]`)
         .toArray()
         .map((item) => {
             const element = $(item);
-            const title = element.attr('title');
-            const videoLink = element.find('a.overlay').attr('href');
-            const imageSrc = element.find('img[style*="object-fit: cover"]').attr('src'); // 选择缩略图
 
             return {
-                title: title!,
-                link: videoLink,
-                description: `<img src="${imageSrc}">`,
+                title: element.find('.title, .home-rows-videos-title').text(),
+                link: element.attr('href'),
+                description: `<img src="${element.find('img').attr('src')}">`,
             };
         });
 

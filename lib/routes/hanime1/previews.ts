@@ -40,6 +40,7 @@ export const route: Route = {
         const link = `${baseUrl}/previews/${date}`;
 
         const response = await ofetch(link, {
+            minVersion: 'TLSv1.3',
             headers: {
                 referer: baseUrl,
                 'user-agent': config.trueUA,
