@@ -161,6 +161,7 @@ type ConfigEnvKeys =
     | 'LORIENTLEJOUR_TOKEN'
     | 'LORIENTLEJOUR_USERNAME'
     | 'LORIENTLEJOUR_PASSWORD'
+    | 'LOWENDTALK_COOKIE'
     | 'MALAYSIAKINI_EMAIL'
     | 'MALAYSIAKINI_PASSWORD'
     | 'MALAYSIAKINI_REFRESHTOKEN'
@@ -201,6 +202,7 @@ type ConfigEnvKeys =
     | 'PKUBBS_COOKIE'
     | 'QINGTING_ID'
     | 'READWISE_ACCESS_TOKEN'
+    | 'REUTERS_AUTH_TOKEN'
     | 'SARABA1ST_COOKIE'
     | 'SARABA1ST_HOST'
     | 'SEHUATANG_COOKIE'
@@ -551,6 +553,9 @@ export type Config = {
         username?: string;
         password?: string;
     };
+    lowendtalk: {
+        cookie?: string;
+    };
     malaysiakini: {
         email?: string;
         password?: string;
@@ -636,6 +641,9 @@ export type Config = {
     };
     readwise: {
         accessToken?: string;
+    };
+    reuters: {
+        authToken?: string;
     };
     saraba1st: {
         cookie?: string;
@@ -1105,6 +1113,9 @@ const calculateValue = () => {
             username: envs.LORIENTLEJOUR_USERNAME,
             password: envs.LORIENTLEJOUR_PASSWORD,
         },
+        lowendtalk: {
+            cookie: envs.LOWENDTALK_COOKIE,
+        },
         malaysiakini: {
             email: envs.MALAYSIAKINI_EMAIL,
             password: envs.MALAYSIAKINI_PASSWORD,
@@ -1190,6 +1201,9 @@ const calculateValue = () => {
         },
         readwise: {
             accessToken: envs.READWISE_ACCESS_TOKEN,
+        },
+        reuters: {
+            authToken: envs.REUTERS_AUTH_TOKEN,
         },
         saraba1st: {
             cookie: envs.SARABA1ST_COOKIE,
