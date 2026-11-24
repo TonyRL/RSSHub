@@ -1,28 +1,20 @@
 import type { CheerioAPI } from 'cheerio';
-import dayjs from 'dayjs';
 import { escapeAttribute, escapeText } from 'entities';
 
-import { parseDate } from '@/utils/parse-date';
 import { queryToBoolean } from '@/utils/readable-social';
+import { parseDate, toRFC822 } from '@/utils/time';
 
 export const profileUrl = (user: string) => `https://www.threads.com/@${user}`;
 export const threadUrl = (code: string) => `https://www.threads.com/t/${code}`;
-
-export const getPubDate = (takenAt?: number | string): Date | undefined => {
-    if ((typeof takenAt !== 'number' && typeof takenAt !== 'string') || (typeof takenAt === 'string' && !takenAt.trim()) || !Number.isFinite(Number(takenAt))) {
-        return undefined;
-    }
-    const date = parseDate(takenAt, 'X');
-    return Number.isFinite(date.getTime()) ? date : undefined;
-};
 
 export interface ThreadItem {
     post: {
         user?: {
             username: string;
+            full_name: string;
             profile_pic_url: string;
         };
-        taken_at?: number;
+        taken_at: number;
         code: string;
         caption?: {
             text: string;
@@ -51,6 +43,37 @@ export const extractThreadItems = ($: CheerioAPI): ThreadItem[] => {
     return threadsData;
 };
 
+interface Profile {
+    username: string;
+    full_name: string;
+    biography: string;
+    profile_pic_url: string;
+}
+
+const findProfile = (node): Profile | undefined => {
+    if (!(node instanceof Object)) {
+        return;
+    }
+    if ('biography' in node) {
+        return node;
+    }
+    for (const value of Object.values(node)) {
+        const profile = findProfile(value);
+        if (profile) {
+            return profile;
+        }
+    }
+};
+
+export const extractProfile = ($: CheerioAPI): Profile | undefined => {
+    let profile: Profile | undefined;
+    $('script[data-sjs]:contains("biography")').each((_, script) => {
+        profile = findProfile(JSON.parse($(script).text()));
+        return !profile;
+    });
+    return profile;
+};
+
 export const parseRouteOptions = (params: URLSearchParams) => ({
     showAuthorInTitle: queryToBoolean(params.get('showAuthorInTitle')) ?? true,
     showAuthorInDesc: queryToBoolean(params.get('showAuthorInDesc')) ?? true,
@@ -73,7 +96,7 @@ const buildMediaItem = (media) => {
     return image?.url ? `<img src="${escapeAttribute(image.url)}"/>` : '';
 };
 
-const buildMedia = (post) => (post.carousel_media ?? [post]).map(buildMediaItem).join('');
+const buildMedia = (post) => (post.carousel_media ?? [post]).map((media) => buildMediaItem(media)).join('');
 
 export const buildContent = (item, options) => {
     let title = '';
@@ -90,7 +113,7 @@ export const buildContent = (item, options) => {
     if (options.showAuthorInDesc) {
         description += '<p>';
         if (options.showAuthorAvatarInDesc) {
-            description += `<img src="${escapeAttribute(item.post.user?.profile_pic_url ?? '')}" width="48px" height="48px"> `;
+            description += `<img src="${escapeAttribute(item.post.user?.profile_pic_url)}" width="48px" height="48px"> `;
         }
         description += `<strong>@${escapeText(item.post.user?.username ?? '')}</strong>`;
         if (embededPost) {
@@ -123,13 +146,10 @@ export const buildContent = (item, options) => {
         }
         description += '— ';
         if (options.showQuotedAuthorAvatarInDesc) {
-            description += `<img src="${escapeAttribute(embededPost.user?.profile_pic_url ?? '')}" width="24px" height="24px"> `;
+            description += `<img src="${escapeAttribute(embededPost.user?.profile_pic_url)}" width="24px" height="24px"> `;
         }
-        description += `@${escapeText(embededPost.user?.username ?? '')}`;
-        const quotedDate = getPubDate(embededPost.taken_at);
-        if (quotedDate) {
-            description += ` — <a href="${escapeAttribute(threadUrl(embededPost.code))}">${escapeText(dayjs(quotedDate).toString())}</a>`;
-        }
+        description += `@${escapeText(embededPost.user?.username ?? '')} — `;
+        description += `<a href="${escapeAttribute(threadUrl(embededPost.code))}">${escapeText(toRFC822(parseDate(embededPost.taken_at, 'X')!))}</a>`;
         description += '</blockquote>';
     }
     return { title, description };

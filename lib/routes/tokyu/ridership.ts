@@ -31,7 +31,7 @@ const parsePage = (html: string, link: string) => {
                 .toArray()
                 .map((th) => cellText($(th).text()));
             const col = (re: RegExp): number => headers.findIndex((h) => re.test(h));
-            const [iCommuter, iOther, iTotal, iYoy, iPrev] = [/^定期\(/, /^定期外/, /^計/, /^前年比/, /年度$/].map(col);
+            const [iCommuter, iOther, iTotal, iYoy, iPrev] = [/^定期\(/, /^定期外/, /^計/, /^前年比/, /年度$/].map((re) => col(re));
             if (iTotal < 0) {
                 return [];
             }
@@ -83,20 +83,21 @@ const latestYear = async (): Promise<number> => {
     const $ = load(html);
     const years = $('a[href*="/passengers/"]')
         .toArray()
-        .map((a) => Number(($(a).attr('href') ?? '').match(/\/passengers\/(\d{4})\/?$/)?.[1]))
-        .filter((y) => Number.isSafeInteger(y));
+        .map((a) => ($(a).attr('href') ?? '').match(/\/passengers\/(\d{4})\/?$/)?.[1])
+        .filter((y) => y !== undefined)
+        .map(Number);
     if (years.length === 0) {
         throw new Error('tokyu: no fiscal-year pages linked from the index');
     }
     return Math.max(...years);
 };
 
-export const handler = async (ctx): Promise<Data> => {
+const handler = async (ctx): Promise<Data> => {
     const year: string | undefined = ctx.req.param('year');
-    const fy = year === undefined ? await cache.tryGet('tokyu/ridership:latest', latestYear) : Number(year);
-    if (!Number.isSafeInteger(fy)) {
+    if (year !== undefined && !/^\d{4}$/.test(year)) {
         throw new TypeError(`tokyu: invalid year "${year}"`);
     }
+    const fy = year ?? (await cache.tryGet('tokyu/ridership:latest', latestYear));
     const link = `${BASE}${fy}/`;
     const page = await cache.tryGet(link, async () => parsePage(await ofetch(link), link));
 

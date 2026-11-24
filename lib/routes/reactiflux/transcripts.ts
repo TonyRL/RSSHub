@@ -4,8 +4,8 @@ import pMap from 'p-map';
 import type { DataItem, Language, Route } from '@/types';
 import cache from '@/utils/cache';
 import got from '@/utils/got';
-import { parseDate } from '@/utils/parse-date';
 import { getRouteLimit } from '@/utils/route-limit';
+import { parseDate } from '@/utils/time';
 
 export const route: Route = {
     path: '/transcripts',
@@ -23,7 +23,7 @@ export const route: Route = {
     ],
 };
 
-export async function handler(ctx) {
+async function handler(ctx) {
     const limit = getRouteLimit(ctx, 30);
 
     const rootUrl = 'https://www.reactiflux.com';
@@ -62,12 +62,9 @@ export async function handler(ctx) {
             cache.tryGet(`reactiflux:transcript:v3:${item.link}`, async () => {
                 const { data: detailResponse } = await got(item.link);
 
-                const data = JSON.parse(detailResponse.match(/__NEXT_DATA__" type="application\/json">(.*)<\/script>/)?.[1] ?? '{}');
+                const data = JSON.parse(detailResponse.match(/__NEXT_DATA__" type="application\/json">(.*?)<\/script>/)?.[1] ?? '{}');
 
-                const props = data.props?.pageProps;
-                if (!props?.title || typeof props.html !== 'string' || !props.html || typeof data.query?.slug !== 'string' || !data.query.slug) {
-                    throw new Error('Reactiflux transcript content is missing');
-                }
+                const props = data.props.pageProps;
 
                 const title = props.title;
                 const description = props.html;
@@ -75,7 +72,7 @@ export async function handler(ctx) {
 
                 item.title = title;
                 item.description = description;
-                item.pubDate = props.date ? parseDate(`${props.date} +0000`, 'YYYY-MM-DD ZZ') : undefined;
+                item.pubDate = parseDate(`${props.date} +0000`, 'YYYY-MM-DD ZZ');
                 item.link = new URL(`transcripts/${data.query.slug}`, rootUrl).href;
                 item.author = author;
                 item.guid = guid;

@@ -6,7 +6,7 @@ import type { Route } from '@/types';
 import { ViewType } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
-import { parseDate } from '@/utils/parse-date';
+import { parseDate } from '@/utils/time';
 
 const baseUrl = 'https://www3.nhk.or.jp';
 const apiUrl = 'https://api.nhkworld.jp';
@@ -75,7 +75,8 @@ type NewsOutline = {
 
 async function handler(ctx) {
     const { lang = 'en' } = ctx.req.param();
-    const data = await ofetch<{ data: NewsOutline[] }>(`${apiUrl}/nwapi/rdnewsweb/v7b/${lang}/outline/list.json`);
+    // English moved to the news API, which the site's own API SDK now maps the outline and detail calls to; the English outline list stopped updating
+    const data = await ofetch<{ data: NewsOutline[] }>(lang === 'en' ? `${apiUrl}/nwapi/news/v1/en/articles?type=news&offset=0&limit=350` : `${apiUrl}/nwapi/rdnewsweb/v7b/${lang}/outline/list.json`);
     const meta = await ofetch(`${baseUrl}/nhkworld/common/assets/news/config/${lang}.json`);
 
     const list = data.data.map((item) => ({
@@ -83,7 +84,7 @@ async function handler(ctx) {
         description: item.description,
         link: `${baseUrl}${item.page_url}`,
         pubDate: item.public_at ? parseDate(item.public_at, 'x') : undefined,
-        updated: item.updated_at ? parseDate(item.updated_at, 'x') : undefined,
+        updated: parseDate(item.updated_at, 'x'),
         category: item.categories.name,
         id: item.id,
     }));
@@ -93,7 +94,7 @@ async function handler(ctx) {
         async ({ id, ...item }) => ({
             ...item,
             ...(await cache.tryGet(`nhk:news:details:v3:${item.link}`, async () => {
-                const { data } = await ofetch(`${apiUrl}/nwapi/rdnewsweb/v6b/${lang}/detail/${id}.json`);
+                const { data } = await ofetch(lang === 'en' ? `${apiUrl}/nwapi/news/v1/en/articles/${id}` : `${apiUrl}/nwapi/rdnewsweb/v6b/${lang}/detail/${id}.json`);
                 const img = data.thumbnails;
                 const imageSrc = img?.large || img?.middle || img?.small || img?.min;
                 const description = data.detail.replaceAll('\n', '<br>');
@@ -102,7 +103,7 @@ async function handler(ctx) {
                         <>
                             {imageSrc ? (
                                 <>
-                                    <img src={new URL(imageSrc, baseUrl).href} alt={img?.alt} />
+                                    <img src={imageSrc} alt={img?.alt} />
                                     <br />
                                 </>
                             ) : null}
@@ -116,7 +117,7 @@ async function handler(ctx) {
     );
 
     return {
-        title: `${Object.values<any>(meta.config.navigation.header).find((h) => h.keyname === 'topstories' || h.keyname === 'top')?.name ?? 'Top Stories'} | NHK WORLD-JAPAN News`,
+        title: `${Object.values<any>(meta.config.navigation.header).find((h) => h.keyname === 'topstories' || h.keyname === 'top')?.name} | NHK WORLD-JAPAN News`,
         link: `${baseUrl}/nhkworld/${lang}/news/list/`,
         item: items,
     };

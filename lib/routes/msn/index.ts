@@ -4,14 +4,14 @@ import pMap from 'p-map';
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
-import { parseDate } from '@/utils/parse-date';
+import { parseDate } from '@/utils/time';
 
 interface MsnCard {
     url: string;
     title: string;
     abstract: string;
-    publishedDateTime?: string;
-    category?: string;
+    publishedDateTime: string;
+    category: string;
 }
 
 const apiKey = '0QfOX3Vn51YCzitbLaRkTTBadtWpgTN8NZLW0C1SEM';
@@ -76,7 +76,7 @@ export const route: Route = {
                         const articleData = await ofetch<{ body: string }>(articleDetailUrl);
                         return articleData.body;
                     });
-                    articleContentHtml = fetchedArticleContentHtml.replace(fetchedArticleContentHtmlImgRegex, '<img src="https://img-s-msn-com.akamaized.net/tenant/amp/entityid/$1.img">');
+                    articleContentHtml = fetchedArticleContentHtml.replaceAll(fetchedArticleContentHtmlImgRegex, '<img src="https://img-s-msn-com.akamaized.net/tenant/amp/entityid/$1.img">');
                 }
 
                 return {
@@ -86,8 +86,8 @@ export const route: Route = {
                     content: {
                         html: articleContentHtml,
                     },
-                    pubDate: card.publishedDateTime ? parseDate(card.publishedDateTime) : undefined,
-                    category: card.category ? [card.category] : undefined,
+                    pubDate: parseDate(card.publishedDateTime),
+                    category: [card.category],
                 };
             },
             { concurrency: 3 }

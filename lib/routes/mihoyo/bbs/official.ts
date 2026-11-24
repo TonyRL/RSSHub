@@ -3,7 +3,7 @@ import type { Route } from '@/types';
 import cache from '@/utils/cache';
 import got from '@/utils/got';
 import logger from '@/utils/logger';
-import { parseDate } from '@/utils/parse-date';
+import { parseDate } from '@/utils/time';
 
 import { renderOfficialDescription } from '../templates/official';
 
@@ -123,7 +123,7 @@ const getPostContents = async (list, default_gid = '2') => {
 export const route: Route = {
     path: '/bbs/official/:gids/:type?/:page_size?/:last_id?',
     categories: ['game'],
-    example: '/mihoyo/bbs/official/2/3/20/',
+    example: '/mihoyo/bbs/official/2/3/20',
     parameters: { gids: '游戏id', type: '公告类型，默认为 2(即 活动)', page_size: '分页大小，默认为 20 ', last_id: '首屏游标，仅支持省略或 0' },
     features: {
         requireConfig: false,
@@ -153,9 +153,6 @@ async function handler(ctx) {
     const { gids, type = '2', page_size = '20', last_id = '' } = ctx.req.param();
     if (!Object.hasOwn(GITS_MAP, gids) || !Object.hasOwn(TYPE_MAP, type)) {
         throw new InvalidParameterError('Unknown game ID or notice type; use a documented combination.');
-    }
-    if (!Number.isSafeInteger(Number(page_size)) || Number(page_size) <= 0) {
-        throw new InvalidParameterError('page_size must be a positive safe integer.');
     }
     if (last_id && last_id !== '0') {
         throw new InvalidParameterError('Only the first page is supported; omit last_id or use 0.');

@@ -3,6 +3,7 @@ import querystring from 'node:querystring';
 import { load } from 'cheerio';
 import { FetchError } from 'ofetch';
 import pMap from 'p-map';
+import { errors } from 'teleproto';
 
 import { config } from '@/config';
 import type { DataItem, Route } from '@/types';
@@ -11,8 +12,8 @@ import cache from '@/utils/cache';
 import { isWorker } from '@/utils/is-worker';
 import logger from '@/utils/logger';
 import ofetch from '@/utils/ofetch';
-import { parseDate } from '@/utils/parse-date';
 import { fallback, queryToBoolean } from '@/utils/readable-social';
+import { parseDate, parseDuration, toRFC822 } from '@/utils/time';
 
 import { expandTelegraph } from './telegraph';
 import { renderVideo } from './templates/video';
@@ -153,17 +154,19 @@ For backward compatibility reasons, invalid \`routeParams\` will be treated as \
     description: `::: tip
 Due to Telegram restrictions, some channels involving pornography, copyright, and politics cannot be subscribed. You can confirm by visiting \`https://t.me/s/:username\`, it's recommended to deploy your own instance with telegram api configs (create your telegram application via \`https://core.telegram.org/api/obtaining_api_id\`, run this command \`node ./lib/routes/telegram/scripts/get-telegram-session.mjs\` to get \`TELEGRAM_SESSION\` and set it as Environment Variable).
 MTProto connections can use a SOCKS4/5 \`PROXY_URI\` (for example, \`socks5://127.0.0.1:1080\`) or the dedicated \`TELEGRAM_PROXY_HOST\`, \`TELEGRAM_PROXY_PORT\`, and \`TELEGRAM_PROXY_SECRET\` MTProxy settings, which take precedence. HTTP proxies only apply to the public web feed; use a SOCKS or MTProxy endpoint for authenticated MTProto feeds.
-When MTProto fails or gives no response within \`REQUEST_TIMEOUT\`, the route falls back to the public web feed. Cloudflare Workers deployments always use the public web feed.
+When MTProto hits a flood wait or gives no response within \`REQUEST_TIMEOUT\`, the route falls back to the public web feed. Other MTProto errors fail the feed. Cloudflare Workers deployments always use the public web feed.
 
-When a reverse proxy removes a public URL prefix (for example, \`/rss\`), set its \`X-Forwarded-Prefix\` request header to that prefix so Telegram media links include it. Access-control \`key\` and \`code\` parameters are preserved in these media links.
+When a reverse proxy removes a public URL prefix (for example, \`/rss\`), set its \`X-Forwarded-Prefix\` request header to that prefix so Telegram media links include it. When \`ACCESS_KEY\` is set, each media link carries the access \`code\` of its own path, never the requester's \`key\` or \`code\`.
 :::`,
 };
+
+class MTProtoTimeoutError extends Error {}
 
 // The MTProto client retries its connection forever, so an unreachable Telegram never fails the request on its own
 async function fetchWithMTProto(ctx) {
     let timer: ReturnType<typeof setTimeout> | undefined;
     const timeout = new Promise<never>((_, reject) => {
-        timer = setTimeout(() => reject(new Error(`no response within ${config.requestTimeout} ms`)), config.requestTimeout);
+        timer = setTimeout(() => reject(new MTProtoTimeoutError(`no response within ${config.requestTimeout} ms`)), config.requestTimeout);
     });
     try {
         return await Promise.race([tglibchannel(ctx), timeout]);
@@ -179,7 +182,9 @@ async function handler(ctx) {
         try {
             return await fetchWithMTProto(ctx);
         } catch (error) {
-            // Flood waits, revoked sessions and blocked connections all leave the public web preview working
+            if (!(error instanceof errors.FloodWaitError || error instanceof MTProtoTimeoutError)) {
+                throw error;
+            }
             logger.warn(`Telegram MTProto failed for ${ctx.req.param('username')}, falling back to the web preview: ${error instanceof Error ? error.message : error}`);
         }
     }
@@ -584,19 +589,6 @@ async function handler(ctx) {
                     voiceHtml += '</b></p>';
                     voiceHtml += `<audio src="${voiceUrl}"></audio>`;
                 }
-                const voiceDuration = () => {
-                    if (durationObj.length) {
-                        const p = durationInMmss.split(':');
-                        let second = 0,
-                            minute = 1;
-                        while (p.length > 0) {
-                            second += minute * Number(p.pop());
-                            minute *= 60;
-                        }
-                        return second.toString();
-                    }
-                    return '';
-                };
 
                 /* link preview */
                 const linkPreview = () => {
@@ -718,8 +710,7 @@ async function handler(ctx) {
                 }
 
                 /* pubDate */
-                const publishedAt = $item.find('.tgme_widget_message_date time').attr('datetime');
-                const pubDate = publishedAt ? parseDate(publishedAt) : undefined;
+                const pubDate = parseDate($item.find('.tgme_widget_message_date time').attr('datetime')!);
 
                 /* ----- finished parsing ----- */
 
@@ -727,7 +718,7 @@ async function handler(ctx) {
                 let mediaTag = '';
                 if (showMediaTagInTitle) {
                     for (const type of msgTypes) {
-                        if ((type !== REPLY && type !== FORWARDED && type !== VIA_BOT) || (type === REPLY && showReplyTo) || (type === FORWARDED && showFwdFrom) || (type === VIA_BOT && showViaBot)) {
+                        if (![REPLY, FORWARDED, VIA_BOT].includes(type) || (type === REPLY && showReplyTo) || (type === FORWARDED && showFwdFrom) || (type === VIA_BOT && showViaBot)) {
                             mediaTag += showMediaTagAsEmoji ? mediaTagDict[type][1] : mediaTagDict[type][0];
                         }
                     }
@@ -766,7 +757,7 @@ async function handler(ctx) {
                     messageTitle += (messageTitle && titleText ? ': ' : '') + titleText;
                 }
 
-                messageTitle = messageTitle === '' ? mediaTag || pubDate?.toUTCString() || '' : `${mediaTag}${mediaTag ? ' ' : ''}${messageTitle}`;
+                messageTitle = messageTitle === '' ? mediaTag || toRFC822(pubDate!) : `${mediaTag}${mediaTag ? ' ' : ''}${messageTitle}`;
 
                 let description = '';
                 if (showFwdFrom) {
@@ -792,7 +783,7 @@ async function handler(ctx) {
                     author: $item.find('.tgme_widget_message_from_author').text(),
 
                     enclosure_url: voiceUrl,
-                    itunes_duration: voiceDuration(),
+                    itunes_duration: parseDuration(durationInMmss),
                     enclosure_type: 'audio/ogg',
 
                     _extra: extra,

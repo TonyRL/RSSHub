@@ -3,7 +3,7 @@ import InvalidParameterError from '@/errors/types/invalid-parameter';
 import cache from '@/utils/cache';
 import ofetch from '@/utils/ofetch';
 
-import { getTwitterUserCacheKey } from '../../utils';
+import { getTwitterUserCacheKey, TWITTER_USER_CACHE_EXPIRE } from '../../utils';
 import { baseUrl, gqlFeatures, gqlMap, initGqlMap } from './constants';
 import type { ApiParams } from './utils';
 import { gatherLegacyFromData, paginationTweets, twitterGot } from './utils';
@@ -13,13 +13,13 @@ const isRestId = (value: unknown): value is string => typeof value === 'string' 
 const getUserResult = (response: any) => {
     const errors = response?.errors;
     if (errors !== undefined && errors !== null && (!Array.isArray(errors) || errors.length > 0)) {
-        const codes = Array.isArray(errors) ? [...new Set(errors.map((error) => error?.code).filter((code) => Number.isSafeInteger(code)))] : [];
+        const codes = Array.isArray(errors) ? [...new Set(errors.map((error) => error?.code))] : [];
         throw new Error(`Twitter API user lookup failed${codes.length ? ` (codes: ${codes.join(', ')})` : ''}`);
     }
 
     // Some third-party providers return errors with HTTP 200 outside GraphQL.
     const code = response?.code;
-    if (Number.isSafeInteger(code) && code >= 400) {
+    if (code >= 400) {
         if (code === 404 && response.message === 'User not found') {
             throw new InvalidParameterError('Twitter API could not find this user');
         }
@@ -42,39 +42,43 @@ const getUserResult = (response: any) => {
 
 const getUserData = async (id: string) => {
     // Other Twitter API adapters cache different schemas under the legacy key.
-    const data = await cache.tryGet(`twitter:web:userdata:v2:${id}`, async () => {
-        const params = {
-            variables: id.startsWith('+')
-                ? JSON.stringify({
-                      userId: id.slice(1),
-                      withSafetyModeUserFields: true,
+    const data = await cache.tryGet(
+        `twitter:web:userdata:v2:${id}`,
+        async () => {
+            const params = {
+                variables: id.startsWith('+')
+                    ? JSON.stringify({
+                          userId: id.slice(1),
+                          withSafetyModeUserFields: true,
+                      })
+                    : JSON.stringify({
+                          screen_name: id,
+                          withSafetyModeUserFields: true,
+                      }),
+                features: JSON.stringify(id.startsWith('+') ? gqlFeatures.UserByRestId : gqlFeatures.UserByScreenName),
+                fieldToggles: JSON.stringify({
+                    withAuxiliaryUserLabels: false,
+                }),
+            };
+
+            const response = config.twitter.thirdPartyApi
+                ? await ofetch(`${config.twitter.thirdPartyApi}${id.startsWith('+') ? gqlMap.UserByRestId : gqlMap.UserByScreenName}`, {
+                      method: 'GET',
+                      params,
+                      headers: {
+                          'accept-encoding': 'gzip',
+                      },
                   })
-                : JSON.stringify({
-                      screen_name: id,
-                      withSafetyModeUserFields: true,
-                  }),
-            features: JSON.stringify(id.startsWith('+') ? gqlFeatures.UserByRestId : gqlFeatures.UserByScreenName),
-            fieldToggles: JSON.stringify({
-                withAuxiliaryUserLabels: false,
-            }),
-        };
+                : await twitterGot(`${baseUrl}${id.startsWith('+') ? gqlMap.UserByRestId : gqlMap.UserByScreenName}`, params, {
+                      allowNoAuth: !id.startsWith('+'),
+                  });
 
-        const response = config.twitter.thirdPartyApi
-            ? await ofetch(`${config.twitter.thirdPartyApi}${id.startsWith('+') ? gqlMap.UserByRestId : gqlMap.UserByScreenName}`, {
-                  method: 'GET',
-                  params,
-                  headers: {
-                      'accept-encoding': 'gzip',
-                  },
-              })
-            : await twitterGot(`${baseUrl}${id.startsWith('+') ? gqlMap.UserByRestId : gqlMap.UserByScreenName}`, params, {
-                  allowNoAuth: !id.startsWith('+'),
-              });
-
-        // HTTP 200 can still contain GraphQL errors; never cache those responses.
-        getUserResult(response);
-        return response;
-    });
+            // HTTP 200 can still contain GraphQL errors; never cache those responses.
+            getUserResult(response);
+            return response;
+        },
+        TWITTER_USER_CACHE_EXPIRE
+    );
     return getUserResult(data);
 };
 

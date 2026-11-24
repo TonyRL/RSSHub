@@ -2,7 +2,7 @@ import { load } from 'cheerio';
 
 import type { Data, Route } from '@/types';
 import ofetch from '@/utils/ofetch';
-import { parseDate } from '@/utils/parse-date';
+import { parseDate } from '@/utils/time';
 
 export const route: Route = {
     path: '/developer/blog',
@@ -35,8 +35,8 @@ interface BlogCard {
     title: string;
     url: string;
     authors?: string;
-    description?: string;
-    publishedDate?: string;
+    description: string;
+    publishedDate: string;
 }
 
 type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
@@ -53,20 +53,12 @@ function findBlogCards(value: JsonValue): BlogCard[] {
         return [];
     }
     if (Array.isArray(value)) {
-        return value.flatMap(findBlogCards);
+        return value.flatMap((entry) => findBlogCards(entry));
     }
     if (Array.isArray(value.cards) && value.cards.every(isBlogCard)) {
         return value.cards;
     }
-    return Object.values(value).flatMap(findBlogCards);
-}
-
-function parsePublishedDate(value?: string) {
-    if (typeof value !== 'string' || !value) {
-        return;
-    }
-    const date = parseDate(value);
-    return Number.isNaN(date.getTime()) ? undefined : date;
+    return Object.values(value).flatMap((entry) => findBlogCards(entry));
 }
 
 async function handlerRoute(): Promise<Data> {
@@ -86,9 +78,9 @@ async function handlerRoute(): Promise<Data> {
             return {
                 title: card.title,
                 link,
-                author: typeof card.authors === 'string' && card.authors ? card.authors : undefined,
-                description: typeof card.description === 'string' ? card.description : undefined,
-                pubDate: parsePublishedDate(card.publishedDate),
+                author: card.authors,
+                description: card.description,
+                pubDate: parseDate(card.publishedDate, 'MMMM D, YYYY'),
             };
         });
 
