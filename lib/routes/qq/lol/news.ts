@@ -1,7 +1,6 @@
 import type { CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';
 import type { Context } from 'hono';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import type { Data, DataItem, Language, Route } from '@/types';
@@ -32,7 +31,7 @@ const handler = async (ctx: Context): Promise<Data> => {
         responseType: 'arrayBuffer',
     });
 
-    const $: CheerioAPI = load(iconv.decode(Buffer.from(targetResponse), 'gbk'));
+    const $: CheerioAPI = load(new TextDecoder('gbk').decode(Buffer.from(targetResponse)));
     const language = ($('html').attr('lang') ?? 'zh-CN') as Language;
 
     let items: DataItem[] = response.data.result.slice(0, limit).map((item): DataItem => {

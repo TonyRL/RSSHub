@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
@@ -24,7 +23,7 @@ const handler = async (ctx) => {
         responseType: 'buffer',
     });
 
-    const $ = load(iconv.decode(response, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response));
 
     const language = $('meta[http-equiv="Content-Language"]').prop('content');
 
@@ -37,7 +36,7 @@ const handler = async (ctx) => {
                     responseType: 'buffer',
                 });
 
-                const $$ = load(iconv.decode(detailResponse, 'gbk').replaceAll(/<\/?ignore_js_op>/g, ''));
+                const $$ = load(new TextDecoder('gbk').decode(detailResponse).replaceAll(/<\/?ignore_js_op>/g, ''));
 
                 item = $$('div.firstpost').length === 0 ? parseArticle($$, item) : parsePost($$, item);
 

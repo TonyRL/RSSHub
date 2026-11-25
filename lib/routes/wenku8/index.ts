@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import { config } from '@/config';
 import ConfigNotFoundError from '@/errors/types/config-not-found';
@@ -65,7 +64,7 @@ async function handler(ctx) {
         },
     });
 
-    const responseHtml = iconv.decode(response.data, 'gbk');
+    const responseHtml = new TextDecoder('gbk').decode(response.data);
 
     const $ = load(responseHtml);
     const items = $('td > div')

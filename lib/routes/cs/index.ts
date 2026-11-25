@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import type { DataItem, Language, Route } from '@/types';
 import cache from '@/utils/cache';
@@ -13,7 +12,7 @@ const decodeBufferByCharset = (buffer) => {
     const isGBK = /charset="?'?gb/i.test(buffer.toString());
     const encoding = isGBK ? 'gbk' : 'utf-8';
 
-    return iconv.decode(buffer, encoding);
+    return new TextDecoder(encoding).decode(buffer);
 };
 
 export const route: Route = {

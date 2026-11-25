@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import type { DataItem, Route } from '@/types';
@@ -58,7 +57,7 @@ async function handler(ctx) {
         responseType: 'buffer',
     });
 
-    const $ = load(iconv.decode(response.data, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response.data));
 
     let items = $('tr td a[title]')
         .slice(0, limit)
@@ -85,7 +84,7 @@ async function handler(ctx) {
                     responseType: 'buffer',
                 });
 
-                const content = load(iconv.decode(detailResponse.data, 'gbk'));
+                const content = load(new TextDecoder('gbk').decode(detailResponse.data));
 
                 return { author: content('.xs2').text(), description: content('#blog_article').html(), pubDate: parseDate(content('.xg1').eq(5).text(), 8) };
             })),

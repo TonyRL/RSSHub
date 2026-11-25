@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import type { DataItem, Route } from '@/types';
 import cache from '@/utils/cache';
@@ -17,7 +16,7 @@ const handler: Route['handler'] = async () => {
         url: BASE_URL,
         responseType: 'buffer',
     });
-    const $ = load(iconv.decode(response.data, 'gb2312'));
+    const $ = load(new TextDecoder('gb2312').decode(response.data));
 
     // Select all list items containing target information
     const ITEM_SELECTOR = 'ul[class*="ullbxwnew"] > li';
@@ -52,7 +51,7 @@ const handler: Route['handler'] = async () => {
                                 url: item.link,
                                 responseType: 'buffer',
                             });
-                            const targetPage = load(iconv.decode(response.data, 'gb2312'));
+                            const targetPage = load(new TextDecoder('gb2312').decode(response.data));
                             const content = targetPage(CONTENT_SELECTOR).html() || '';
                             const date = parseDate(targetPage(DATE_SELECTOR).text().trim().replaceAll('日', ''));
                             if (!date) {

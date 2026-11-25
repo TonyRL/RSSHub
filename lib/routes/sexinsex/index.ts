@@ -1,6 +1,5 @@
 import { load } from 'cheerio';
 import type { Context } from 'hono';
-import iconv from 'iconv-lite';
 
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
@@ -33,7 +32,7 @@ export const route: Route = {
 };
 
 function parseContent(buffer: ArrayBuffer) {
-    const htmlString = iconv.decode(Buffer.from(buffer), 'gbk');
+    const htmlString = new TextDecoder('gbk').decode(Buffer.from(buffer));
     let $ = load(htmlString);
     const author = $('#wrapper > div:nth-child(1) > form > div:nth-child(2) > table > tbody > tr:nth-child(1) > td.postauthor > cite > a').text();
     const regRes = /\d{4}(?:-\d{1,2}){2} \d{1,2}:\d{1,2}/.exec($('.postinfo').text());
@@ -56,7 +55,7 @@ async function handler(ctx: Context) {
     const pageUrl = new URL(`${section}${id}${typefilter}`, base).href;
 
     const res = await fetchGbk(pageUrl, base);
-    const data = iconv.decode(Buffer.from(res), 'gbk');
+    const data = new TextDecoder('gbk').decode(Buffer.from(res));
     const $ = load(data);
     if ($('.box.message form[action="logging.php?action=login"]').length) {
         throw new Error('The source requires a logged-in account with sufficient member permissions to view this section. Anonymous access is denied.');

@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import { config } from '@/config';
 import ConfigNotFoundError from '@/errors/types/config-not-found';
@@ -73,7 +72,7 @@ async function handler(ctx) {
     const isGBK = /charset="?'?gb/i.test(response.data.toString());
     const encoding = isGBK ? 'gbk' : 'utf-8';
 
-    const $ = load(iconv.decode(response.data, encoding));
+    const $ = load(new TextDecoder(encoding).decode(response.data));
     const author = $('meta[property="og:novel:author"]').attr('content');
     const latestChapterTitle = $('meta[property="og:novel:latest_chapter_name"]').attr('content');
     const updateTime = $('meta[property="og:novel:update_time"]').attr('content');
@@ -117,7 +116,7 @@ async function handler(ctx) {
                     responseType: 'buffer',
                 });
 
-                const content = load(iconv.decode(detailResponse.data, encoding));
+                const content = load(new TextDecoder(encoding).decode(detailResponse.data));
 
                 item.description = content('#content').html();
 

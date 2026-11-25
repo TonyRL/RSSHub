@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import InvalidParameterError from '@/errors/types/invalid-parameter';
 import type { DataItem, Route } from '@/types';
@@ -134,7 +133,7 @@ async function handler(ctx) {
         responseType: 'buffer',
     });
 
-    const $ = load(iconv.decode(response.data, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response.data));
 
     const list = $('div.tabContents')
         .eq(timeRange[time].index + (type === 'click' ? 0 : 2))

@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import cache from '@/utils/cache';
 import got from '@/utils/got';
@@ -9,7 +8,7 @@ async function loadDetailPage(link) {
     const response = await got.get(link, {
         responseType: 'buffer',
     });
-    response.data = iconv.decode(response.data, 'gb2312');
+    response.data = new TextDecoder('gb2312').decode(response.data);
 
     const $ = load(response.data);
 
@@ -32,7 +31,7 @@ export async function processItems(_context, baseURL, exclude) {
     const response = await got.get(baseURL, {
         responseType: 'buffer',
     });
-    response.data = iconv.decode(response.data, 'gb2312');
+    response.data = new TextDecoder('gb2312').decode(response.data);
 
     const $ = load(response.data);
     const list = $('ul.list li')

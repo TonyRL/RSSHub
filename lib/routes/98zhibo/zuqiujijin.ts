@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import type { Data, Route } from '@/types';
 import cache from '@/utils/cache';
@@ -38,7 +37,7 @@ async function handler(): Promise<Data> {
         responseType: 'buffer',
     });
 
-    const $ = load(iconv.decode(response.data, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response.data));
 
     const list = $('.list_body_bd li')
         .toArray()
@@ -62,7 +61,7 @@ async function handler(): Promise<Data> {
                     url: item.link,
                     responseType: 'buffer',
                 });
-                const $detail = load(iconv.decode(detailResponse.data, 'gbk'));
+                const $detail = load(new TextDecoder('gbk').decode(detailResponse.data));
 
                 const $body = $detail('.Content-body');
                 // The hidden block holds the raw match data, the kickoff time is in UTC+8, e.g. 比赛时间：2026-09-09 03:00:00

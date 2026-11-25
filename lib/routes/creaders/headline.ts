@@ -1,6 +1,5 @@
 import { load } from 'cheerio';
 import type { Context } from 'hono';
-import iconv from 'iconv-lite';
 
 import type { DataItem, Route } from '@/types';
 import cache from '@/utils/cache';
@@ -22,7 +21,7 @@ async function handler(ctx: Context) {
 
     const response = await ofetch(currentUrl, { responseType: 'arrayBuffer' });
 
-    const $ = load(iconv.decode(Buffer.from(response), 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(Buffer.from(response)));
     const list: DataItem[] = $('ul.newslist li')
         .slice(0, 10)
         .toArray()
@@ -43,7 +42,7 @@ async function handler(ctx: Context) {
         selected.slice(0, limit).map((item) =>
             cache.tryGet(item.link!, async () => {
                 const res = await ofetch(item.link!, { responseType: 'arrayBuffer' });
-                const content = load(iconv.decode(Buffer.from(res), 'gbk'));
+                const content = load(new TextDecoder('gbk').decode(Buffer.from(res)));
 
                 item.description = content('#newsContent').html();
 

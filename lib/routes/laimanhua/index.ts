@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import type { Route } from '@/types';
 import got from '@/utils/got';
@@ -37,12 +36,12 @@ async function handler(ctx) {
     const { data: response } = await got(link, {
         responseType: 'buffer',
     });
-    let $ = load(iconv.decode(response, 'utf-8'));
+    let $ = load(new TextDecoder('utf-8').decode(response));
     const charset = $('meta[http-equiv="Content-Type"]')
         .attr('content')
         ?.match(/charset=(.*)/)?.[1];
     if (charset && charset.toLowerCase() !== 'utf-8') {
-        $ = load(iconv.decode(response, charset));
+        $ = load(new TextDecoder(charset).decode(response));
     }
 
     const updateTime = $('head meta[property="og:novel:update_time"]').attr('content');

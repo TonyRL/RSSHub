@@ -1,6 +1,5 @@
 import { load } from 'cheerio';
 import { escapeText } from 'entities';
-import { decode } from 'iconv-lite';
 
 import InvalidParameterError from '@/errors/types/invalid-parameter';
 import type { Route } from '@/types';
@@ -69,5 +68,5 @@ async function handler(ctx) {
 
 const get = async (url: string) => {
     const { data } = await got(url, { responseType: 'buffer' });
-    return decode(data, 'gbk');
+    return new TextDecoder('gbk').decode(data);
 };

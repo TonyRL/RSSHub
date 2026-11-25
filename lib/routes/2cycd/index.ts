@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import type { DataItem, Route } from '@/types';
 import cache from '@/utils/cache';
@@ -40,7 +39,7 @@ async function handler(ctx) {
         responseType: 'buffer',
     });
 
-    const $ = load(iconv.decode(response.data, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response.data));
 
     const list = $('tbody[id^="normalthread_"]')
         .toArray()
@@ -62,7 +61,7 @@ async function handler(ctx) {
                     responseType: 'buffer',
                 });
 
-                const content = load(iconv.decode(detailResponse.data, 'gbk'));
+                const content = load(new TextDecoder('gbk').decode(detailResponse.data));
                 const first_post = content('td[id^="postmessage_"]').first();
                 const dateobj = content('em[id^="authorposton"]').first();
                 item.description = first_post.html();

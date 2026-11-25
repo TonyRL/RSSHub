@@ -1,6 +1,5 @@
 import { load } from 'cheerio';
 import { renderToString } from 'hono/jsx/dom/server';
-import iconv from 'iconv-lite';
 
 import InvalidParameterError from '@/errors/types/invalid-parameter';
 import NotFoundError from '@/errors/types/not-found';
@@ -39,7 +38,7 @@ async function handler(ctx) {
         responseType: 'buffer',
     });
 
-    const $ = load(iconv.decode(response, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response));
 
     const bookEl = $('font a').first();
     if (!bookEl.prop('href')) {

@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import InvalidParameterError from '@/errors/types/invalid-parameter';
 import type { DataItem, Route } from '@/types';
@@ -63,7 +62,7 @@ async function handler(ctx) {
         responseType: 'buffer',
     });
 
-    const $ = load(iconv.decode(response.data, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response.data));
 
     $('.title-more').remove();
 
@@ -92,7 +91,7 @@ async function handler(ctx) {
                     },
                 });
 
-                const content = load(iconv.decode(detailResponse.data, 'gbk'));
+                const content = load(new TextDecoder('gbk').decode(detailResponse.data));
 
                 content('.name-lz, .postView-pk-mod').remove();
 

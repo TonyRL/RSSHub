@@ -1,4 +1,3 @@
-import iconv from 'iconv-lite';
 import { http, HttpResponse } from 'msw';
 import { describe, expect, it } from 'vitest';
 
@@ -53,7 +52,15 @@ describe('common-config', () => {
 
     it('decodes non-UTF-8 responses before calling selectors', async () => {
         const { default: server } = await import('@/setup.test');
-        server.use(http.get('http://rsshub.test/buildData-gbk', () => new HttpResponse(iconv.encode('<h1>中文标题</h1><ul><li><a href="/1">中文条目</a></li></ul>', 'gbk'), { headers: { 'content-type': 'text/html; charset=gbk' } })));
+        server.use(
+            http.get(
+                'http://rsshub.test/buildData-gbk',
+                () =>
+                    new HttpResponse(Buffer.from('3c68313ed6d0cec4b1eacce23c2f68313e3c756c3e3c6c693e3c6120687265663d222f31223ed6d0cec4ccf5c4bf3c2f613e3c2f6c693e3c2f756c3e', 'hex'), {
+                        headers: { 'content-type': 'text/html; charset=gbk' },
+                    })
+            )
+        );
         const data = await buildData({ url: 'http://rsshub.test/buildData-gbk', title: ($) => $('h1').text(), item: { item: 'li', title: ($) => $('a').text(), link: ($) => $('a').attr('href') } });
         expect(data.title).toBe('中文标题');
         expect(data.item[0]).toMatchObject({ title: '中文条目', link: '/1' });

@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import InvalidParameterError from '@/errors/types/invalid-parameter';
@@ -124,10 +123,10 @@ async function fetchPage(url: string) {
     });
 
     // try to parse charset from meta tag
-    let html = iconv.decode(Buffer.from(response), 'utf-8');
+    let html = new TextDecoder('utf-8').decode(Buffer.from(response));
     const parsedCharset = html.match(/<meta.*?charset=["']?([^"'>]+)["']?/i);
     const encoding = parsedCharset ? parsedCharset[1].toLowerCase() : 'utf-8';
-    html = encoding === 'utf-8' ? html : iconv.decode(Buffer.from(response), encoding);
+    html = encoding === 'utf-8' ? html : new TextDecoder(encoding).decode(Buffer.from(response));
 
     return { $: load(html), html };
 }

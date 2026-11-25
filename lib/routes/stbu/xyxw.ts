@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import NotFoundError from '@/errors/types/not-found';
@@ -10,7 +9,7 @@ import ofetch from '@/utils/ofetch';
 import { parseDate } from '@/utils/time';
 import { fixArticleContent } from '@/utils/wechat-mp';
 
-const gbk2utf8 = (s) => iconv.decode(s, 'gbk');
+const gbk2utf8 = (s) => new TextDecoder('gbk').decode(s);
 export const route: Route = {
     path: '/xyxw',
     categories: ['university'],

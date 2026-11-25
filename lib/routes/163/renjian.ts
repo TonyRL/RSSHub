@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
@@ -54,7 +53,7 @@ async function handler(ctx) {
         responseType: 'buffer',
     });
 
-    const data = iconv.decode(response.data, 'gbk');
+    const data = new TextDecoder('gbk').decode(response.data);
 
     let list: Array<{ link?: string }>;
 

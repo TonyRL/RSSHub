@@ -1,7 +1,6 @@
 import type { Cheerio } from 'cheerio';
 import { load } from 'cheerio';
 import type { AnyNode } from 'domhandler';
-import iconv from 'iconv-lite';
 
 import type { Data, DataItem } from '@/types';
 import ofetch from '@/utils/ofetch';
@@ -35,7 +34,7 @@ export default async function buildData(data: BuildDataConfig) {
             charset = (attr.split('=').pop() || 'utf-8').toLowerCase();
         }
     }
-    const responseData = charset === 'utf-8' ? response._data : iconv.decode(Buffer.from(await ofetch(data.url, { responseType: 'arrayBuffer' })), charset);
+    const responseData = charset === 'utf-8' ? response._data : new TextDecoder(charset).decode(Buffer.from(await ofetch(data.url, { responseType: 'arrayBuffer' })));
     const $ = load(responseData);
     return {
         link: data.link,

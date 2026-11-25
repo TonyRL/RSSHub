@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import type { DataItem, Route } from '@/types';
@@ -23,7 +22,7 @@ export const route: Route = {
 async function getItem(item: DataItem) {
     const detail = await cache.tryGet(`poxiao:article:v2:${item.link}`, async () => {
         const { data: response } = await got(item.link!, { responseType: 'buffer' });
-        const $ = load(iconv.decode(response, 'gbk'));
+        const $ = load(new TextDecoder('gbk').decode(response));
         const content = $('.inner_content');
         content.find('style').remove();
         const downloads = $('.resourcesmain a[href]')
@@ -38,7 +37,7 @@ async function getItem(item: DataItem) {
 
 async function handler(ctx) {
     const { data: response } = await got(baseUrl, { responseType: 'buffer' });
-    const $ = load(iconv.decode(response, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response));
     const limit = getRouteLimit(ctx, 20);
     const items = $('li:has(.date)')
         .toArray()

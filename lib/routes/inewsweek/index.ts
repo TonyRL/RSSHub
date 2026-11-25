@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
@@ -46,7 +45,7 @@ async function handler(ctx) {
     const response = await got(url, {
         responseType: 'buffer',
     });
-    const $ = load(iconv.decode(response.data, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response.data));
     const items = await Promise.all(
         $('div.grid-item')
             .toArray()
@@ -59,7 +58,7 @@ async function handler(ctx) {
                         responseType: 'buffer',
                     });
 
-                    const $ = load(iconv.decode(response.data, 'gbk'));
+                    const $ = load(new TextDecoder('gbk').decode(response.data));
                     const fullText = $('div.contenttxt').html();
                     const editor = $('div.editor').text();
                     const published = editor.match(/\b\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\b/)?.[0];

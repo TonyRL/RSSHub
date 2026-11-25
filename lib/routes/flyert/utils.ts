@@ -1,11 +1,10 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import got from '@/utils/got';
 import wait from '@/utils/wait';
 
-const gbk2utf8 = (s) => iconv.decode(s, 'gbk');
+const gbk2utf8 = (s) => new TextDecoder('gbk').decode(s);
 
 async function loadContent(link) {
     // Wait for a random delay between 1 and 3 seconds.

@@ -1,12 +1,11 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import type { DataItem, Route } from '@/types';
 import cache from '@/utils/cache';
 import got from '@/utils/got';
 import { parseDate } from '@/utils/time';
 
-const gbk2utf8 = (s) => iconv.decode(s, 'gbk');
+const gbk2utf8 = (s) => new TextDecoder('gbk').decode(s);
 export const route: Route = {
     path: '/jsjxy',
     categories: ['university'],

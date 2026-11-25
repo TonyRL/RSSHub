@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import type { DataItem, Language, Route } from '@/types';
@@ -20,7 +19,7 @@ const handler = async (ctx) => {
         responseType: 'buffer',
     });
 
-    const $ = load(iconv.decode(response, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response));
 
     const language = $('html').prop('lang') as Language;
 
@@ -45,7 +44,7 @@ const handler = async (ctx) => {
                     responseType: 'buffer',
                 });
 
-                const $$ = load(iconv.decode(detailResponse, 'gbk'));
+                const $$ = load(new TextDecoder('gbk').decode(detailResponse));
 
                 const title = $$('div.news-details-title h4').text();
                 const description = $$('div.news-details-cont').html();

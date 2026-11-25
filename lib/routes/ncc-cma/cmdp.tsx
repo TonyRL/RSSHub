@@ -1,7 +1,6 @@
 import { load } from 'cheerio';
 import { renderToString } from 'hono/jsx/dom/server';
 import { getMimeType } from 'hono/utils/mime';
-import iconv from 'iconv-lite';
 
 import type { Language, Route } from '@/types';
 import got from '@/utils/got';
@@ -22,7 +21,7 @@ const handler = async (ctx) => {
         responseType: 'buffer',
     });
 
-    const $ = load(iconv.decode(response, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response));
 
     const author = '国家气候中心';
     const language: Language = 'zh';

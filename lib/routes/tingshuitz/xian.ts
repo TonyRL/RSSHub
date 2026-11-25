@@ -2,7 +2,6 @@ import type { Cheerio, CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';
 import type { AnyNode } from 'domhandler';
 import { cloneNode, Document } from 'domhandler';
-import iconv from 'iconv-lite';
 
 import type { Route } from '@/types';
 import got from '@/utils/got';
@@ -30,7 +29,7 @@ async function handler() {
         responseType: 'buffer',
     });
     const data = response.data;
-    const $ = load(iconv.decode(data, 'gb2312'));
+    const $ = load(new TextDecoder('gb2312').decode(data));
     const list = $('#body > div.M > div.AboutUsDetail > ul > li');
     return {
         title: $('title').text() || '停水通知 - 西安市自来水有限公司',

@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import type { Language, Route } from '@/types';
 import got from '@/utils/got';
@@ -18,7 +17,7 @@ const handler = async (ctx) => {
         responseType: 'buffer',
     });
 
-    const $ = load(iconv.decode(currentResponse, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(currentResponse));
 
     const language = $('html').prop('lang') as Language;
 

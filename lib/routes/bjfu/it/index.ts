@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
@@ -62,10 +61,10 @@ async function handler(ctx) {
     });
 
     const data = response.data;
-    let $ = load(iconv.decode(data, 'utf-8'));
+    let $ = load(new TextDecoder('utf-8').decode(data));
     const charset = $('meta[charset]').attr('charset');
     if (charset?.toLowerCase() !== 'utf-8') {
-        $ = load(iconv.decode(data, charset ?? 'utf-8'));
+        $ = load(new TextDecoder(charset ?? 'utf-8').decode(data));
     }
 
     const list = $('.item-content').toArray();

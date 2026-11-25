@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import type { DataItem, Route } from '@/types';
@@ -41,7 +40,7 @@ async function handler(ctx) {
         responseType: 'buffer',
     });
 
-    const $ = load(iconv.decode(response.data, 'gb2312'));
+    const $ = load(new TextDecoder('gb2312').decode(response.data));
     const list = $('.page-main-list .list-item a')
         .slice(0, ctx.req.query('sorted') === 'false' ? getRouteLimit(ctx, 50) : Math.max(50, getRouteLimit(ctx, 50)))
         .toArray()
@@ -64,7 +63,7 @@ async function handler(ctx) {
                     responseType: 'buffer',
                 });
 
-                const content = load(iconv.decode(detailResponse.data, 'gb2312'));
+                const content = load(new TextDecoder('gb2312').decode(detailResponse.data));
 
                 item.title = content('.main-article .title').text();
                 item.pubDate = parseDate(content('.time').eq(0).text(), 8);

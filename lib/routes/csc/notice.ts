@@ -1,6 +1,5 @@
 import { load } from 'cheerio';
 import type { Context } from 'hono';
-import iconv from 'iconv-lite';
 
 import InvalidParameterError from '@/errors/types/invalid-parameter';
 import type { Data, DataItem, Route } from '@/types';
@@ -110,7 +109,7 @@ async function handler(ctx: Context): Promise<Data> {
         list.map((item) =>
             cache.tryGet(item.link!, async () => {
                 const response = await ofetch(item.link!, { responseType: 'arrayBuffer', headers });
-                const $ = load(iconv.decode(Buffer.from(response), 'gbk'));
+                const $ = load(new TextDecoder('gbk').decode(Buffer.from(response)));
                 item.description = $('.contents').html();
                 return item;
             })

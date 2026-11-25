@@ -1,6 +1,5 @@
 import { load } from 'cheerio';
 import { renderToString } from 'hono/jsx/dom/server';
-import iconv from 'iconv-lite';
 
 import type { DataItem, Language, Route } from '@/types';
 import cache from '@/utils/cache';
@@ -95,7 +94,7 @@ async function handler(ctx) {
         responseType: 'buffer',
     });
 
-    const $ = load(iconv.decode(response, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response));
 
     $('div.newslist_info').remove();
 
@@ -121,7 +120,7 @@ async function handler(ctx) {
                     responseType: 'buffer',
                 });
 
-                const content = load(iconv.decode(detailResponse, 'gbk'));
+                const content = load(new TextDecoder('gbk').decode(detailResponse));
 
                 content('a.syq, a.xlsj, a.titleoverflow200, #fjump').remove();
                 content('i.pstatus').remove();

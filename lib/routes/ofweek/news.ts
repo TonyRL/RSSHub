@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import type { DataItem, Route } from '@/types';
@@ -20,7 +19,7 @@ async function handler() {
     const currentUrl = 'https://www.ofweek.com/CATList-8100-CHANGYIEXINWE.html';
     const response = await ofetch(currentUrl, { responseType: 'arrayBuffer' });
 
-    const $ = load(iconv.decode(Buffer.from(response), 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(Buffer.from(response)));
     const list = $('div.list-left div.con-details h3 > a')
         .slice(0, 20)
         .toArray()
@@ -38,7 +37,7 @@ async function handler() {
         (item) =>
             cache.tryGet(item.link!, async () => {
                 const res = await ofetch(item.link!, { responseType: 'arrayBuffer' });
-                const content = load(iconv.decode(Buffer.from(res), 'gbk'));
+                const content = load(new TextDecoder('gbk').decode(Buffer.from(res)));
                 const artical = content('div.artical');
 
                 item.description = artical.find('#articleC').html();

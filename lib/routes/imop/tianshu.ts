@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import type { DataItem, Route } from '@/types';
@@ -25,7 +24,7 @@ export const route: Route = {
 
 async function handler() {
     const { data: response } = await got(`${baseUrl}/list/0-1.htm`, { responseType: 'buffer' });
-    const $ = load(iconv.decode(response, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response));
     const list = $('.right .right_top .right_bot .list2 .ul1 ul')
         .toArray()
         .map((item): DataItem => {
@@ -41,7 +40,7 @@ async function handler() {
         (item) =>
             cache.tryGet(item.link!, async () => {
                 const { data: response } = await got(item.link, { responseType: 'buffer' });
-                const $ = load(iconv.decode(response, 'gbk'));
+                const $ = load(new TextDecoder('gbk').decode(response));
                 item.description = $('.right .right_top .right_bot .articlebox').html();
                 return item;
             }),

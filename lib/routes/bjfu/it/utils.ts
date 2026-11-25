@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import got from '@/utils/got';
 import { parseDate } from '@/utils/time';
@@ -18,10 +17,10 @@ async function loadContent(link) {
     const data = response.data; // 不用转码
 
     // 加载文章内容
-    let $ = load(iconv.decode(data, 'utf-8'));
+    let $ = load(new TextDecoder('utf-8').decode(data));
     const charset = $('meta[charset]').attr('charset');
     if (charset?.toLowerCase() !== 'utf-8') {
-        $ = load(iconv.decode(data, charset ?? 'utf-8'));
+        $ = load(new TextDecoder(charset ?? 'utf-8').decode(data));
     }
 
     // 提取内容

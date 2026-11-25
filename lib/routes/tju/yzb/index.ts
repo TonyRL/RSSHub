@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import type { DataItem, Route } from '@/types';
@@ -12,7 +11,7 @@ const yzb_base_url = 'http://yzb.tju.edu.cn/';
 const getArticle = async (link: string) => {
     try {
         const response = await got(link, { responseType: 'buffer' });
-        const $ = load(iconv.decode(response.data, 'gbk'));
+        const $ = load(new TextDecoder('gbk').decode(response.data));
         $('.font_18_b, .font_grey_en').remove();
         return { description: $('.nav_a10 > table > tbody').html() };
     } catch {
@@ -81,7 +80,7 @@ async function handler(ctx) {
     const response = await got(yzb_base_url + path, {
         responseType: 'buffer',
     });
-    const $ = load(iconv.decode(response.data, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response.data));
     const list = $('td.table_left_right > table > tbody > tr:nth-child(3) > td > table > tbody > tr:nth-child(1) > td > table > tbody > tr')
         .slice(1, -1)
         .toArray()

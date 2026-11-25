@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import InvalidParameterError from '@/errors/types/invalid-parameter';
 import type { Route } from '@/types';
@@ -36,7 +35,7 @@ async function handler(ctx) {
         responseType: 'buffer',
     });
 
-    const responseHtml = iconv.decode(response.data, 'gbk');
+    const responseHtml = new TextDecoder('gbk').decode(response.data);
 
     const $ = load(responseHtml);
 

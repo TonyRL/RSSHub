@@ -306,9 +306,6 @@ importers:
       https-proxy-agent:
         specifier: 9.1.0
         version: 9.1.0(supports-color@10.2.2)
-      iconv-lite:
-        specifier: 0.7.3
-        version: 0.7.3
       imapflow:
         specifier: 2.12.2
         version: 2.12.2

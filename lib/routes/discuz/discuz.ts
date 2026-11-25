@@ -1,6 +1,5 @@
 import { load } from 'cheerio';
 import type { Context } from 'hono';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import { config } from '@/config';
@@ -46,7 +45,7 @@ async function fetchWithAntiBot(url: string, header: Record<string, string>) {
     });
 
     let responseData = Buffer.from(response._data!);
-    const initialHtml = iconv.decode(responseData, 'utf-8');
+    const initialHtml = new TextDecoder('utf-8').decode(responseData);
 
     if (initialHtml.includes('document.location.reload()')) {
         const setCookies = response.headers.getSetCookie?.() ?? [];
@@ -67,7 +66,7 @@ async function fetchWithAntiBot(url: string, header: Record<string, string>) {
 // discuz 7.x 与 discuz x系列 通用文章内容抓取
 async function loadContent(itemLink, charset, header) {
     const { responseData: rawData } = await fetchWithAntiBot(itemLink, header);
-    const responseData = iconv.decode(rawData, charset ?? 'utf-8');
+    const responseData = new TextDecoder(charset ?? 'utf-8').decode(rawData);
     if (!responseData) {
         const description = '获取详细内容失败';
         return { description };
@@ -142,10 +141,10 @@ async function handler(ctx) {
 
     // 若没有指定编码，则默认utf-8
     const contentType = response.headers.get('content-type') || '';
-    let $ = load(iconv.decode(responseData, 'utf-8'));
+    let $ = load(new TextDecoder('utf-8').decode(responseData));
     const charset = contentType.match(/charset=([^;]*)/)?.[1] ?? $('meta[charset]').attr('charset') ?? $('meta[http-equiv="Content-Type"]').attr('content')?.split('charset=', 2)?.[1];
     if (charset?.toLowerCase() !== 'utf-8') {
-        $ = load(iconv.decode(responseData, charset ?? 'utf-8'));
+        $ = load(new TextDecoder(charset ?? 'utf-8').decode(responseData));
     }
 
     let version = ver ? `DISCUZ! ${ver}` : $('head > meta[name=generator]').attr('content');

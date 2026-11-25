@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import type { DataItem, Route } from '@/types';
@@ -7,7 +6,7 @@ import cache from '@/utils/cache';
 import got from '@/utils/got';
 import { parseDate } from '@/utils/time';
 
-const gbk2utf8 = (s) => iconv.decode(s, 'gbk');
+const gbk2utf8 = (s) => new TextDecoder('gbk').decode(s);
 const host = 'https://www.flyert.com.cn';
 const target = `${host}/forum.php?mod=forumdisplay&sum=all&fid=all&catid=322`;
 

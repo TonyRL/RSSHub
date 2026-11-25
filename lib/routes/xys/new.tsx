@@ -1,6 +1,5 @@
 import { load } from 'cheerio';
 import { escapeText } from 'entities';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import { renderYoutube } from '@/routes/youtube/utils';
@@ -48,7 +47,7 @@ async function fetchArticle(link: string) {
 
     const response = await ofetch.raw<ArrayBuffer, 'arrayBuffer'>(link, { responseType: 'arrayBuffer' });
     // Decode the source GB2312 text.
-    const data = iconv.decode(Buffer.from(response._data!), 'gb2312');
+    const data = new TextDecoder('gb2312').decode(Buffer.from(response._data!));
     return response.headers.get('content-type')?.startsWith('text/plain') ? parsePlaintextArticle(data) : { description: load(data).text().replaceAll('\n', '<br>\n'), author: undefined };
 }
 
@@ -87,7 +86,7 @@ async function handler(ctx) {
     });
 
     // Decode the source GB2312 text.
-    const data = iconv.decode(response.data, 'gb2312');
+    const data = new TextDecoder('gb2312').decode(response.data);
 
     const $ = load(data);
 

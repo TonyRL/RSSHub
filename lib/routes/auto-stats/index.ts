@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import InvalidParameterError from '@/errors/types/invalid-parameter';
 import type { DataItem, Route } from '@/types';
@@ -45,7 +44,7 @@ async function handler(ctx) {
         responseType: 'buffer',
     });
 
-    const $ = load(iconv.decode(response, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response));
 
     let items = $('a.dnews font')
         .slice(0, limit)
@@ -70,7 +69,7 @@ async function handler(ctx) {
                     responseType: 'buffer',
                 });
 
-                const content = load(iconv.decode(detailResponse, 'gbk'));
+                const content = load(new TextDecoder('gbk').decode(detailResponse));
 
                 item.description = content('table tbody tr td.dd').last().html();
 

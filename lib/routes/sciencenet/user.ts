@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import NotFoundError from '@/errors/types/not-found';
@@ -45,7 +44,7 @@ async function handler(ctx) {
         responseType: 'buffer',
     });
 
-    let $ = load(iconv.decode(response.data, 'gbk'));
+    let $ = load(new TextDecoder('gbk').decode(response.data));
 
     response = await got({
         method: 'get',
@@ -82,7 +81,7 @@ async function handler(ctx) {
                     responseType: 'buffer',
                 });
 
-                const content = load(iconv.decode(detailResponse.data, 'gbk'));
+                const content = load(new TextDecoder('gbk').decode(detailResponse.data));
 
                 return { author: content('.xs2').text(), description: content('#blog_article').html(), pubDate: parseDate(content('.xg1').eq(5).text(), 8) };
             })),

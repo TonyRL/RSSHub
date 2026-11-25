@@ -1,7 +1,6 @@
 import { load } from 'cheerio';
 import { raw } from 'hono/html';
 import { renderToString } from 'hono/jsx/dom/server';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import type { DataItem, Route } from '@/types';
@@ -42,7 +41,7 @@ async function handler(ctx) {
     const response = await got(url, {
         responseType: 'buffer',
     });
-    const $ = load(iconv.decode(response.data, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response.data));
     const title = $('div.z > a').last().text();
     const list = $('tbody > tr')
         .slice(0, 25)
@@ -64,7 +63,7 @@ async function handler(ctx) {
                     const detailResponse = await got(item.link, {
                         responseType: 'buffer',
                     });
-                    const content = load(iconv.decode(detailResponse.data, 'gbk'));
+                    const content = load(new TextDecoder('gbk').decode(detailResponse.data));
                     const permissionMessage = content('#messagetext p').text();
                     if (permissionMessage.includes('抱歉，您所在的用户组(游客)无法进行此操作') || permissionMessage.includes('抱歉，您尚未登录，没有权限访问该版块')) {
                         throw new ArticlePermissionError(`The source topic requires permission unavailable to anonymous readers: ${item.link}`);

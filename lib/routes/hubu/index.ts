@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import type { DataItem, Language, Route } from '@/types';
@@ -78,7 +77,7 @@ const handler = async (ctx) => {
                 }
                 const { data: detailBuffer } = await got(item.link, { responseType: 'buffer' });
                 const charset = /charset=["']?([^"'\s>;]+)/i.exec(detailBuffer.toString('ascii'))?.[1] ?? 'utf-8';
-                const $$ = load(iconv.decode(detailBuffer, charset));
+                const $$ = load(new TextDecoder(charset).decode(detailBuffer));
                 const hubeiChinanews = articleUrl.hostname === 'www.hb.chinanews.com.cn';
                 const title = $$('div.dtl-tit h4, div.con-tit h4').text() || (hubeiChinanews ? $$('.de_head .t1').text() : '');
                 if (!title) {

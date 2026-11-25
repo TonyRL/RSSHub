@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import type { Route } from '@/types';
 import ofetch from '@/utils/ofetch';
@@ -38,7 +37,7 @@ async function handler(ctx) {
     });
 
     const charset = response.headers.get('content-type')!.match(/charset=([\w-]+)/)![1]; // windows-1251
-    const $ = load(iconv.decode(Buffer.from(response._data!), charset));
+    const $ = load(new TextDecoder(charset).decode(Buffer.from(response._data!)));
 
     const items = $('.story__main')
         .not('.story__placeholder')

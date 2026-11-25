@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 import pMap from 'p-map';
 
 import InvalidParameterError from '@/errors/types/invalid-parameter';
@@ -45,7 +44,7 @@ async function handler(ctx) {
         responseType: 'buffer',
     });
 
-    const $ = load(iconv.decode(response, 'gbk'));
+    const $ = load(new TextDecoder('gbk').decode(response));
 
     const author = $('meta[name="Author"]').prop('content');
     const keywords = $('meta[name="Keywords"]').prop('content').split(/,/);
@@ -108,7 +107,7 @@ async function handler(ctx) {
                               responseType: 'buffer',
                           });
 
-                          const content = load(iconv.decode(detailResponse, 'gbk'));
+                          const content = load(new TextDecoder('gbk').decode(detailResponse));
 
                           content('span.favorite_novel').parent().remove();
 

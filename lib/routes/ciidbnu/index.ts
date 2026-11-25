@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import type { DataItem, Route } from '@/types';
 import cache from '@/utils/cache';
@@ -58,7 +57,7 @@ async function handler(ctx) {
                     url: item.link,
                     responseType: 'buffer',
                 });
-                const content = load(iconv.decode(detailResponse.data, 'gbk'));
+                const content = load(new TextDecoder('gbk').decode(detailResponse.data));
 
                 item.description = content('#text').html();
                 item.pubDate = parseDate(content('.t8').eq(0).text(), 'YYYY/M/D H:mm:ss', 8);

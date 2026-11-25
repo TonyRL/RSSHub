@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import cache from '@/utils/cache';
 import got from '@/utils/got';
@@ -17,7 +16,7 @@ export default {
             // Fetch binary data before decoding the site's legacy GBK encoding.
             responseType: 'buffer',
         });
-        const data = iconv.decode(listRes.data, 'gb2312');
+        const data = new TextDecoder('gb2312').decode(listRes.data);
         const $ = load(data);
         // Fetch the latest three entries with their full public content.
         const list = $('li', 'ul').slice(0, 3).toArray();
@@ -35,7 +34,7 @@ export default {
                         },
                         responseType: 'buffer',
                     });
-                    const articleHtml = iconv.decode(articleResponse.data, 'gbk');
+                    const articleHtml = new TextDecoder('gbk').decode(articleResponse.data);
                     const $article = load(articleHtml);
                     const description = $article('body > table > tbody > tr > td.oblog_t_2 > div > table > tbody > tr:nth-child(2) > td');
                     const pubInfo = description.find('span span.oblog_text').text().split('发布于');

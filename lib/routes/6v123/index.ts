@@ -2,7 +2,6 @@ import type { Cheerio, CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';
 import type { Element } from 'domhandler';
 import type { Context } from 'hono';
-import iconv from 'iconv-lite';
 
 import type { Data, DataItem, Language, Route } from '@/types';
 import { ViewType } from '@/types';
@@ -51,7 +50,7 @@ const handler = async (ctx: Context): Promise<Data> => {
     const response = await ofetch(targetUrl, {
         responseType: 'arrayBuffer',
     });
-    const $: CheerioAPI = load(iconv.decode(Buffer.from(response), encoding));
+    const $: CheerioAPI = load(new TextDecoder(encoding).decode(Buffer.from(response)));
     const language = ($('html').attr('lang') ?? 'zh') as Language;
 
     let items: DataItem[] = $('ul.list li')
@@ -92,7 +91,7 @@ const handler = async (ctx: Context): Promise<Data> => {
                 const detailResponse = await ofetch(item.link!, {
                     responseType: 'arrayBuffer',
                 });
-                const $$: CheerioAPI = load(iconv.decode(Buffer.from(detailResponse), encoding));
+                const $$: CheerioAPI = load(new TextDecoder(encoding).decode(Buffer.from(detailResponse)));
 
                 $$('div#endText div.fl').remove();
                 $$('div#endText div.fr').remove();

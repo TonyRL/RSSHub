@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import type { Route } from '@/types';
 import got from '@/utils/got';
@@ -419,7 +418,7 @@ async function handler(ctx) {
         url,
     });
 
-    const data = type === 'iet' ? iconv.decode(response.data, 'gb2312') : response.data;
+    const data = type === 'iet' ? new TextDecoder('gb2312').decode(response.data) : response.data;
     const $ = load(data);
     // logger.info("data:" + data);
 

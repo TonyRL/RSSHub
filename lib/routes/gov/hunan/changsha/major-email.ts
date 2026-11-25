@@ -1,5 +1,4 @@
 import { load } from 'cheerio';
-import iconv from 'iconv-lite';
 
 import type { Route } from '@/types';
 import cache from '@/utils/cache';
@@ -37,7 +36,7 @@ async function handler() {
     const listPage = await got('http://wlwz.changsha.gov.cn/webapp/cs2020/email/index.jsp', {
         responseType: 'buffer',
     });
-    listPage.data = iconv.decode(listPage.data, 'gbk');
+    listPage.data = new TextDecoder('gbk').decode(listPage.data);
     const $ = load(listPage.data);
     const list = $('.table1 tbody tr')
         .slice(1)
@@ -58,7 +57,7 @@ async function handler() {
                 const postPage = await got(item.link, {
                     responseType: 'buffer',
                 });
-                postPage.data = iconv.decode(postPage.data, 'gbk');
+                postPage.data = new TextDecoder('gbk').decode(postPage.data);
                 const $ = load(postPage.data);
 
                 const pubDate = $('.letter-details div:first table tr:nth-child(2) > .td_label2').text().trim();
